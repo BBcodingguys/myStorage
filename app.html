@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mô Phỏng Mạch Logic - Toggle Wire Delete</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0f1117;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      touch-action: none;
+    }
+    #info-banner {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: #00ffcc;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 5;
+      text-align: center;
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      backdrop-filter: blur(8px);
+    }
+    #layer-bar {
+      position: absolute;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      background: rgba(18, 22, 31, 0.95);
+      padding: 6px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 9;
+    }
+    .layer-btn {
+      border: none;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.4;
+      transition: all 0.15s ease;
+    }
+    .layer-btn.active {
+      opacity: 1;
+      box-shadow: 0 0 10px currentColor;
+    }
+    .layer-btn[data-layer="1"] { background: #3498db; }
+    .layer-btn[data-layer="2"] { background: #9b59b6; }
+    .layer-btn[data-layer="3"] { background: #e67e22; }
+
+    #hotbar {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      background: rgba(18, 22, 31, 0.95);
+      padding: 8px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      z-index: 10;
+      max-width: 98vw;
+      overflow-x: auto;
+    }
+    .tool-btn {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ccc;
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      min-width: 52px;
+      cursor: pointer;
+    }
+    .tool-btn .icon { font-size: 16px; }
+    .tool-btn.active {
+      background: #3498db;
+      color: #fff;
+      border-color: #5adeff;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    }
+    .tool-btn[data-tool="wire"].active { background: #2ecc71; border-color: #82e0aa; }
+    .tool-btn[data-tool="wrench"].active { background: #f39c12; border-color: #f1c40f; }
+    .tool-btn[data-tool="eraser"].active { background: #e74c3c; border-color: #f1948a; }
+    canvas { display: block; width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+
+  <div id="info-banner">⚡ NỐI / XÓA DÂY: Chạm Nguồn ➔ Chạm Đích (Nối lại để Xóa dây)</div>
+
+  <div id="layer-bar">
+    <button class="layer-btn active" data-layer="1">Tầng 1 (Xanh)</button>
+    <button class="layer-btn" data-layer="2">Tầng 2 (Tím)</button>
+    <button class="layer-btn" data-layer="3">Tầng 3 (Cam)</button>
+  </div>
+
+  <div id="hotbar">
+    <button class="tool-btn active" data-tool="wire"><span class="icon">⚡</span><span>Nối Dây</span></button>
+    <button class="tool-btn" data-tool="lever"><span class="icon">🎛️</span><span>Cần gạt</span></button>
+    <button class="tool-btn" data-tool="lamp"><span class="icon">💡</span><span>Đèn</span></button>
+    <button class="tool-btn" data-tool="not"><span class="icon">🔴</span><span>NOT</span></button>
+    <button class="tool-btn" data-tool="and"><span class="icon">🟦</span><span>AND</span></button>
+    <button class="tool-btn" data-tool="or"><span class="icon">🟩</span><span>OR</span></button>
+    <button class="tool-btn" data-tool="xor"><span class="icon">🟨</span><span>XOR</span></button>
+    <button class="tool-btn" data-tool="wrench"><span class="icon">🔧</span><span>Cờ lê</span></button>
+    <button class="tool-btn" data-tool="eraser"><span class="icon">🧹</span><span>Xóa</span></button>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const layerBar = document.getElementById('layer-bar');
+    const infoBanner = document.getElementById('info-banner');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      draw();
+    }
+    window.addEventListener('resize', resize);
+
+    const GRID = 60;
+    let currentTool = 'wire';
+    let currentLayer = 1;
+    let selectedSourceId = null;
+
+    const objects = new Map();
+    const wires = [];
+
+    const LAYER_COLORS = {
+      1: { off: '#1a5276', on: '#00d2ff', curve: 0 },
+      2: { off: '#5b2c6f', on: '#e056fd', curve: 30 },
+      3: { off: '#7e5109', on: '#ff9f43', curve: -30 }
+    };
+
+    // Tool Selection
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        const target = e.currentTarget;
+        target.classList.add('active');
+        currentTool = target.dataset.tool;
+
+        selectedSourceId = null;
+        layerBar.style.display = (currentTool === 'wire') ? 'flex' : 'none';
+
+        if (currentTool === 'wire') {
+          infoBanner.textContent = `⚡ NỐI / XÓA DÂY (Tầng ${currentLayer}): Chạm Nguồn ➔ Chạm Đích (Nối lại để Xóa)`;
+        } else if (currentTool === 'wrench') {
+          infoBanner.textContent = "🔧 CỜ LÊ: Chạm linh kiện để xoay hướng";
+        } else if (currentTool === 'eraser') {
+          infoBanner.textContent = "🧹 XÓA: Chạm linh kiện hoặc chạm thẳng sợi dây để cắt";
+        } else {
+          infoBanner.textContent = "🛠️ Chạm ô trống để đặt linh kiện | Chạm Cần gạt để Bật/Tắt";
+        }
+        draw();
+      });
+    });
+
+    // Layer Selection
+    document.querySelectorAll('.layer-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
+        const target = e.currentTarget;
+        target.classList.add('active');
+        currentLayer = parseInt(target.dataset.layer);
+        infoBanner.textContent = `⚡ NỐI / XÓA DÂY (Tầng ${currentLayer}): Chạm Nguồn ➔ Chạm Đích`;
+      });
+    });
+
+    // Mô phỏng mạch điện
+    function updateCircuit() {
+      objects.forEach(obj => obj.powered = false);
+      wires.forEach(w => w.powered = false);
+
+      for (let pass = 0; pass < 12; pass++) {
+        let changed = false;
+
+        objects.forEach(obj => {
+          let newPowered = false;
+          if (obj.type === 'lever') {
+            newPowered = obj.state;
+          } else if (obj.type === 'lamp') {
+            const incoming = wires.filter(w => w.toId === obj.id);
+            newPowered = incoming.some(w => w.powered);
+          } else if (['not', 'and', 'or', 'xor'].includes(obj.type)) {
+            newPowered = evaluateGate(obj);
+          }
+
+          if (obj.powered !== newPowered) {
+            obj.powered = newPowered;
+            changed = true;
+          }
+        });
+
+        wires.forEach(w => {
+          const src = objects.get(w.fromId);
+          const newWirePowered = src ? src.powered : false;
+          if (w.powered !== newWirePowered) {
+            w.powered = newWirePowered;
+            changed = true;
+          }
+        });
+
+        if (!changed) break;
+      }
+    }
+
+    function evaluateGate(gate) {
+      const incoming = wires.filter(w => w.toId === gate.id);
+      const total = incoming.length;
+      const active = incoming.filter(w => w.powered).length;
+
+      if (gate.type === 'not') return active === 0;
+      if (total === 0) return false;
+      if (gate.type === 'and') return active === total;
+      if (gate.type === 'or') return active >= 1;
+      if (gate.type === 'xor') return active === 1;
+      return false;
+    }
+
+    // Vẽ Canvas
+    let scale = 1.0, offsetX = window.innerWidth / 2, offsetY = window.innerHeight / 2;
+
+    function draw() {
+      updateCircuit();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(offsetX, offsetY);
+      ctx.scale(scale, scale);
+
+      const left = Math.floor((-offsetX / scale) / GRID) - 1;
+      const right = Math.floor(((canvas.width - offsetX) / scale) / GRID) + 1;
+      const top = Math.floor((-offsetY / scale) / GRID) - 1;
+      const bottom = Math.floor(((canvas.height - offsetY) / scale) / GRID) + 1;
+
+      ctx.strokeStyle = '#181c26';
+      ctx.lineWidth = 1 / scale;
+      ctx.beginPath();
+      for (let x = left; x <= right; x++) {
+        ctx.moveTo(x * GRID, top * GRID); ctx.lineTo(x * GRID, bottom * GRID);
+      }
+      for (let y = top; y <= bottom; y++) {
+        ctx.moveTo(left * GRID, y * GRID); ctx.lineTo(right * GRID, y * GRID);
+      }
+      ctx.stroke();
+
+      wires.forEach(w => drawWire(w));
+      objects.forEach(obj => drawObject(obj));
+
+      if (selectedSourceId && objects.has(selectedSourceId)) {
+        const srcObj = objects.get(selectedSourceId);
+        ctx.strokeStyle = '#00ffcc';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#00ffcc'; ctx.shadowBlur = 12;
+        ctx.strokeRect(srcObj.gx * GRID + 2, srcObj.gy * GRID + 2, GRID - 4, GRID - 4);
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.restore();
+    }
+
+    function drawWire(w) {
+      const objA = objects.get(w.fromId);
+      const objB = objects.get(w.toId);
+      if (!objA || !objB) return;
+
+      const ax = objA.gx * GRID + GRID / 2;
+      const ay = objA.gy * GRID + GRID / 2;
+      const bx = objB.gx * GRID + GRID / 2;
+      const by = objB.gy * GRID + GRID / 2;
+
+      const style = LAYER_COLORS[w.layer] || LAYER_COLORS[1];
+      ctx.strokeStyle = w.powered ? style.on : style.off;
+      ctx.lineWidth = w.powered ? 4 : 2.5;
+
+      if (w.powered) {
+        ctx.shadowColor = style.on;
+        ctx.shadowBlur = 10;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+
+      let midX = (ax + bx) / 2;
+      let midY = (ay + by) / 2;
+
+      if (style.curve !== 0) {
+        midX += style.curve;
+        midY += style.curve;
+        ctx.quadraticCurveTo(midX, midY, bx, by);
+      } else {
+        ctx.lineTo(bx, by);
+      }
+
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
+
+      // Mũi tên hướng truyền
+      const angle = Math.atan2(by - midY, bx - midX);
+      ctx.save();
+      ctx.translate(midX, midY);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(6, 0); ctx.lineTo(-4, -4); ctx.lineTo(-4, 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawObject(obj) {
+      const x = obj.gx * GRID;
+      const y = obj.gy * GRID;
+      const cx = x + GRID / 2;
+      const cy = y + GRID / 2;
+
+      if (obj.type === 'lever') {
+        ctx.fillStyle = obj.state ? '#1e382b' : '#2c3e50';
+        ctx.fillRect(x + 5, y + 5, GRID - 10, GRID - 10);
+        ctx.strokeStyle = obj.state ? '#2ecc71' : '#7f8c8d';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 5, y + 5, GRID - 10, GRID - 10);
+
+        ctx.fillStyle = '#111';
+        ctx.fillRect(cx - 16, cy - 6, 32, 12);
+        const kx = obj.state ? cx + 8 : cx - 8;
+        ctx.fillStyle = obj.state ? '#2ecc71' : '#e74c3c';
+        ctx.beginPath(); ctx.arc(kx, cy, 7, 0, Math.PI * 2); ctx.fill();
+      } 
+      else if (obj.type === 'lamp') {
+        ctx.fillStyle = obj.powered ? '#f39c12' : '#222';
+        ctx.beginPath(); ctx.arc(cx, cy, 16, 0, Math.PI * 2); ctx.fill();
+        if (obj.powered) {
+          ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 18;
+          ctx.fillStyle = '#fff7b1';
+          ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.fill();
+          ctx.shadowBlur = 0;
+        } else {
+          ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
+        }
+      } 
+      else if (['not', 'and', 'or', 'xor'].includes(obj.type)) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(obj.dir * Math.PI / 2);
+
+        ctx.fillStyle = obj.powered ? '#1e4620' : '#2c3e50';
+        ctx.fillRect(-20, -20, 40, 40);
+        ctx.strokeStyle = obj.powered ? '#2ecc71' : '#95a5a6';
+        ctx.lineWidth = 2; ctx.strokeRect(-20, -20, 40, 40);
+
+        ctx.fillStyle = obj.powered ? '#2ecc71' : '#fff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(obj.type.toUpperCase(), 0, 0);
+        ctx.restore();
+      }
+    }
+
+    function distToSegment(px, py, x1, y1, x2, y2) {
+      const l2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+      if (l2 === 0) return Math.hypot(px - x1, py - y1);
+      let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
+      t = Math.max(0, Math.min(1, t));
+      return Math.hypot(px - (x1 + t * (x2 - x1)), py - (y1 + t * (y2 - y1)));
+    }
+
+    // --- XỬ LÝ TAP / CLICK ---
+    function handleTap(screenX, screenY) {
+      const rect = canvas.getBoundingClientRect();
+      const worldX = (screenX - rect.left - offsetX) / scale;
+      const worldY = (screenY - rect.top - offsetY) / scale;
+
+      const gx = Math.floor(worldX / GRID);
+      const gy = Math.floor(worldY / GRID);
+      const key = `${gx},${gy}`;
+      const clickedObj = objects.get(key);
+
+      // 1. CÔNG CỤ NỐI / XÓA DÂY
+      if (currentTool === 'wire') {
+        if (clickedObj) {
+          if (!selectedSourceId) {
+            // Chọn Nguồn
+            selectedSourceId = key;
+          } else if (selectedSourceId === key) {
+            // Bấm lại chính nó -> Bật/Tắt Cần gạt hoặc Hủy chọn
+            if (clickedObj.type === 'lever') clickedObj.state = !clickedObj.state;
+            selectedSourceId = null;
+          } else {
+            // KIỂM TRA Xem ĐÃ CÓ dây từ Nguồn -> Đích (ở Layer hiện tại) hay chưa?
+            const existingWireIndex = wires.findIndex(w => 
+              w.fromId === selectedSourceId && w.toId === key && w.layer === currentLayer
+            );
+
+            if (existingWireIndex !== -1) {
+              // 👉 NẾU ĐÃ CÓ DÂY: XÓA DÂY ĐÓ ĐI! ("Chạm từ gốc đến cội")
+              wires.splice(existingWireIndex, 1);
+            } else {
+              // 👉 NẾU CHƯA CÓ DÂY: NỐI DÂY MỚI!
+              wires.push({
+                id: Date.now().toString(),
+                fromId: selectedSourceId,
+                toId: key,
+                layer: currentLayer,
+                powered: false
+              });
+            }
+            selectedSourceId = null;
+          }
+        } else {
+          selectedSourceId = null;
+        }
+      }
+      // 2. CỜ LÊ (🔧)
+      else if (currentTool === 'wrench') {
+        if (clickedObj) clickedObj.dir = (clickedObj.dir + 1) % 4;
+      }
+      // 3. XÓA (🧹)
+      else if (currentTool === 'eraser') {
+        if (clickedObj) {
+          objects.delete(key);
+          for (let i = wires.length - 1; i >= 0; i--) {
+            if (wires[i].fromId === key || wires[i].toId === key) wires.splice(i, 1);
+          }
+        } else {
+          // Chạm vào dây để cắt
+          for (let i = wires.length - 1; i >= 0; i--) {
+            const w = wires[i];
+            const oA = objects.get(w.fromId);
+            const oB = objects.get(w.toId);
+            if (oA && oB) {
+              const ax = oA.gx * GRID + GRID / 2;
+              const ay = oA.gy * GRID + GRID / 2;
+              const bx = oB.gx * GRID + GRID / 2;
+              const by = oB.gy * GRID + GRID / 2;
+              if (distToSegment(worldX, worldY, ax, ay, bx, by) < 12) {
+                wires.splice(i, 1);
+                break;
+              }
+            }
+          }
+        }
+      }
+      // 4. ĐẶT ĐỒ / BẬT CẦN GẠT
+      else {
+        if (clickedObj) {
+          if (clickedObj.type === 'lever') clickedObj.state = !clickedObj.state;
+        } else {
+          objects.set(key, {
+            id: key, gx, gy, type: currentTool, dir: 0, state: false, powered: false
+          });
+        }
+      }
+
+      draw();
+    }
+
+    // Pan & Zoom
+    let isDragging = false, dragStartX = 0, dragStartY = 0;
+    let startOffsetX = 0, startOffsetY = 0, startScale = 1, startDist = 0;
+
+    let isMouseDown = false;
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const zoom = e.deltaY < 0 ? 1.1 : 0.9;
+      const newScale = Math.min(Math.max(scale * zoom, 0.3), 3.0);
+      offsetX = e.clientX - (e.clientX - offsetX) * (newScale / scale);
+      offsetY = e.clientY - (e.clientY - offsetY) * (newScale / scale);
+      scale = newScale;
+      draw();
+    }, { passive: false });
+
+    canvas.addEventListener('mousedown', e => {
+      isMouseDown = true; isDragging = false;
+      dragStartX = e.clientX; dragStartY = e.clientY;
+      startOffsetX = offsetX; startOffsetY = offsetY;
+    });
+    window.addEventListener('mousemove', e => {
+      if (!isMouseDown) return;
+      if (Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY) > 5) {
+        isDragging = true;
+        offsetX = startOffsetX + (e.clientX - dragStartX);
+        offsetY = startOffsetY + (e.clientY - dragStartY);
+        draw();
+      }
+    });
+    window.addEventListener('mouseup', e => {
+      if (isMouseDown && !isDragging) handleTap(e.clientX, e.clientY);
+      isMouseDown = false; isDragging = false;
+    });
+
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        isDragging = false;
+        dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY;
+        startOffsetX = offsetX; startOffsetY = offsetY;
+      } else if (e.touches.length === 2) {
+        isDragging = true;
+        startDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        startScale = scale; startOffsetX = offsetX; startOffsetY = offsetY;
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (e.touches.length === 1 && !startDist) {
+        const dx = e.touches[0].clientX - dragStartX;
+        const dy = e.touches[0].clientY - dragStartY;
+        if (Math.hypot(dx, dy) > 8) {
+          isDragging = true;
+          offsetX = startOffsetX + dx; offsetY = startOffsetY + dy;
+          draw();
+        }
+      } else if (e.touches.length === 2) {
+        isDragging = true;
+        const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        if (startDist > 0) {
+          const newScale = Math.min(Math.max(startScale * (dist / startDist), 0.3), 3.0);
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          offsetX = midX - (midX - startOffsetX) * (newScale / scale);
+          offsetY = midY - (midY - startOffsetY) * (newScale / scale);
+          scale = newScale;
+          draw();
+        }
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', e => {
+      e.preventDefault();
+      if (e.touches.length === 0) {
+        if (!isDragging && e.changedTouches.length > 0) {
+          handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        }
+        startDist = 0; isDragging = false;
+      }
+    }, { passive: false });
+
+    resize();
+  </script>
+</body>
+</html>
