@@ -3,136 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mô Phỏng Mạch Logic - Toggle Wire Delete</title>
+  <title>Mô Phỏng Mạch Logic - V3</title>
   <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      margin: 0;
-      padding: 0;
-    }
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #0f1117;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      touch-action: none;
-    }
-    #info-banner {
-      position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.85);
-      color: #00ffcc;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      pointer-events: none;
-      z-index: 5;
-      text-align: center;
-      border: 1px solid rgba(0, 255, 204, 0.3);
-      backdrop-filter: blur(8px);
-    }
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background-color: #0f1117; touch-action: none; }
+
+    /* LAYER BAR - Đưa sang bên trái xếp dọc */
     #layer-bar {
-      position: absolute;
-      bottom: 72px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 8px;
-      background: rgba(18, 22, 31, 0.95);
-      padding: 6px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      z-index: 9;
+      position: absolute; top: 50%; left: 16px; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 8px; background: rgba(18, 22, 31, 0.95);
+      padding: 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 9; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     .layer-btn {
-      border: none;
-      padding: 5px 12px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: bold;
-      color: #fff;
-      cursor: pointer;
-      opacity: 0.4;
-      transition: all 0.15s ease;
+      border: none; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: bold;
+      color: #fff; cursor: pointer; opacity: 0.4; transition: all 0.15s ease;
+      display: flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px;
     }
-    .layer-btn.active {
-      opacity: 1;
-      box-shadow: 0 0 10px currentColor;
-    }
+    .layer-btn.active { opacity: 1; box-shadow: 0 0 10px currentColor; }
+    .layer-btn[data-layer="all"] { background: #1abc9c; }
     .layer-btn[data-layer="1"] { background: #3498db; }
     .layer-btn[data-layer="2"] { background: #9b59b6; }
     .layer-btn[data-layer="3"] { background: #e67e22; }
+    .layer-btn[data-layer="4"] { background: #e84393; }
+    .layer-btn[data-layer="5"] { background: #bdc3c7; color: #000; }
 
+    /* HOTBAR - Dưới cùng */
     #hotbar {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-      background: rgba(18, 22, 31, 0.95);
-      padding: 8px 10px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.12);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      z-index: 10;
-      max-width: 98vw;
-      overflow-x: auto;
+      position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 6px; background: rgba(18, 22, 31, 0.95);
+      padding: 8px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 10; max-width: 98vw; overflow-x: auto;
     }
     .tool-btn {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: #ccc;
-      padding: 6px 10px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      min-width: 52px;
-      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04);
+      color: #ccc; padding: 6px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 55px; cursor: pointer;
     }
-    .tool-btn .icon { font-size: 16px; }
-    .tool-btn.active {
-      background: #3498db;
-      color: #fff;
-      border-color: #5adeff;
-      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-    }
+    .tool-btn.active { background: #3498db; color: #fff; border-color: #5adeff; box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); }
     .tool-btn[data-tool="wire"].active { background: #2ecc71; border-color: #82e0aa; }
     .tool-btn[data-tool="wrench"].active { background: #f39c12; border-color: #f1c40f; }
     .tool-btn[data-tool="eraser"].active { background: #e74c3c; border-color: #f1948a; }
-    canvas { display: block; width: 100%; height: 100%; }
+    .tool-btn[data-tool="control"].active { background: #9b59b6; border-color: #d2b4de; }
+
+    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+
+    /* BẢNG THUỘC TÍNH (CỜ LÊ) GÓC PHẢI - KIỂU BUILD A BOAT */
+    #prop-panel {
+      display: none; position: absolute; top: 20px; right: 20px;
+      background: rgba(15, 17, 23, 0.9); border: 2px solid #f1c40f; border-radius: 12px;
+      padding: 15px; width: 160px; text-align: center; color: #fff; z-index: 100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    }
+    #prop-panel h3 { margin: 0 0 10px 0; color: #f1c40f; font-size: 14px; text-transform: uppercase; }
+    #prop-panel label { display: block; margin-bottom: 5px; color: #ccc; font-size: 11px; font-weight: bold; }
+    #prop-panel input {
+      width: 100%; background: #222; border: 1px solid #555; color: #f1c40f;
+      padding: 8px; font-size: 16px; text-align: center; border-radius: 6px; outline: none; font-weight: bold;
+    }
+    #prop-panel input:focus { border-color: #f1c40f; }
+    .close-btn { position: absolute; top: 5px; right: 8px; color: #aaa; cursor: pointer; font-size: 16px; font-weight: bold; }
+    .close-btn:hover { color: #fff; }
+
+    /* MENU NGỮ CẢNH (ĐIỀU KHIỂN) */
+    #context-menu {
+      display: none; position: fixed; background: rgba(20, 25, 35, 0.95);
+      border: 1px solid #9b59b6; border-radius: 8px; padding: 6px;
+      flex-direction: column; gap: 5px; z-index: 50; box-shadow: 0 5px 20px rgba(0,0,0,0.7);
+    }
+    .ctx-btn {
+      background: transparent; color: #fff; border: none; padding: 10px 15px;
+      text-align: left; cursor: pointer; border-radius: 4px; font-size: 13px; font-weight: bold;
+    }
+    .ctx-btn:hover { background: #9b59b6; }
   </style>
 </head>
 <body>
 
-  <div id="info-banner">⚡ NỐI / XÓA DÂY: Chạm Nguồn ➔ Chạm Đích (Nối lại để Xóa dây)</div>
-
-  <div id="layer-bar">
-    <button class="layer-btn active" data-layer="1">Tầng 1 (Xanh)</button>
-    <button class="layer-btn" data-layer="2">Tầng 2 (Tím)</button>
-    <button class="layer-btn" data-layer="3">Tầng 3 (Cam)</button>
+  <!-- LƯU / TẢI FILE -->
+  <div id="io-bar" style="position:absolute; top:16px; left:16px; display:flex; gap:8px; z-index:9;">
+    <button id="btn-save" style="border:1px solid rgba(255,255,255,0.15); background: rgba(18,22,31,0.95); color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">💾 Lưu</button>
+    <button id="btn-load" style="border:1px solid rgba(255,255,255,0.15); background: rgba(18,22,31,0.95); color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">📂 Tải</button>
+    <input type="file" id="file-input" accept=".json,application/json" style="display:none;">
   </div>
 
+  <!-- BỘ TẦNG (LAYER) -->
+  <div id="layer-bar">
+    <button class="layer-btn active" data-layer="all" title="Tất cả">All</button>
+    <button class="layer-btn" data-layer="1" title="Tầng 1">1</button>
+    <button class="layer-btn" data-layer="2" title="Tầng 2">2</button>
+    <button class="layer-btn" data-layer="3" title="Tầng 3">3</button>
+    <button class="layer-btn" data-layer="4" title="Tầng 4">4</button>
+    <button class="layer-btn" data-layer="5" title="Tầng 5">5</button>
+  </div>
+
+  <!-- BẢNG CÔNG CỤ -->
   <div id="hotbar">
-    <button class="tool-btn active" data-tool="wire"><span class="icon">⚡</span><span>Nối Dây</span></button>
-    <button class="tool-btn" data-tool="lever"><span class="icon">🎛️</span><span>Cần gạt</span></button>
+    <button class="tool-btn active" data-tool="wire"><span class="icon">⚡</span><span>Dây</span></button>
+    <button class="tool-btn" data-tool="lever"><span class="icon">🎛️</span><span>Gạt</span></button>
+    <button class="tool-btn" data-tool="button"><span class="icon">🔘</span><span>Nút</span></button>
+    <button class="tool-btn" data-tool="delay"><span class="icon">⏳</span><span>Trễ</span></button>
     <button class="tool-btn" data-tool="lamp"><span class="icon">💡</span><span>Đèn</span></button>
+    <button class="tool-btn" data-tool="note"><span class="icon">🎵</span><span>Nốt</span></button>
     <button class="tool-btn" data-tool="not"><span class="icon">🔴</span><span>NOT</span></button>
     <button class="tool-btn" data-tool="and"><span class="icon">🟦</span><span>AND</span></button>
     <button class="tool-btn" data-tool="or"><span class="icon">🟩</span><span>OR</span></button>
     <button class="tool-btn" data-tool="xor"><span class="icon">🟨</span><span>XOR</span></button>
-    <button class="tool-btn" data-tool="wrench"><span class="icon">🔧</span><span>Cờ lê</span></button>
+    <button class="tool-btn" data-tool="control"><span class="icon">✨</span><span>Select</span></button>
+    <button class="tool-btn" data-tool="wrench"><span class="icon">🔧</span><span>Chỉnh</span></button>
     <button class="tool-btn" data-tool="eraser"><span class="icon">🧹</span><span>Xóa</span></button>
+  </div>
+
+  <!-- BẢNG CỜ LÊ BÊN PHẢI -->
+  <div id="prop-panel">
+    <div class="close-btn" id="close-prop">×</div>
+    <h3 id="prop-title">Nút nhấn</h3>
+    <label>T.GIAN TICK</label>
+    <input type="number" id="prop-tick" min="1" step="1">
+  </div>
+
+  <!-- MENU COPY / BỎ QUA NÚT MOVE VÌ ĐÃ CÓ KÉO THẢ TRỰC TIẾP -->
+  <div id="context-menu">
+    <button class="ctx-btn" id="btn-copy">Sao chép</button>
+    <button class="ctx-btn" id="btn-paste" style="display: none;">Dán (Paste)</button>
   </div>
 
   <canvas id="canvas"></canvas>
@@ -141,435 +134,639 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const layerBar = document.getElementById('layer-bar');
-    const infoBanner = document.getElementById('info-banner');
+    const ctxMenu = document.getElementById('context-menu');
+    const propPanel = document.getElementById('prop-panel');
+    const propInput = document.getElementById('prop-tick');
 
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      draw();
-    }
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; draw(); }
     window.addEventListener('resize', resize);
 
     const GRID = 60;
+    const TICK_MS = 100; // 0.1 giây / tick
+    
     let currentTool = 'wire';
-    let currentLayer = 1;
+    let viewLayer = 'all';
+    let activeDrawLayer = 1;
     let selectedSourceId = null;
 
-    const objects = new Map();
-    const wires = [];
+    let objects = new Map();
+    let wires = [];
 
     const LAYER_COLORS = {
-      1: { off: '#1a5276', on: '#00d2ff', curve: 0 },
-      2: { off: '#5b2c6f', on: '#e056fd', curve: 30 },
-      3: { off: '#7e5109', on: '#ff9f43', curve: -30 }
+      1: { off: '#1a5276', on: '#00d2ff' },
+      2: { off: '#5b2c6f', on: '#e056fd' },
+      3: { off: '#7e5109', on: '#ff9f43' },
+      4: { off: '#78281f', on: '#ff7675' },
+      5: { off: '#4d5656', on: '#ffffff' }
     };
 
-    // Tool Selection
+    // --- BẢNG NỐT NHẠC C4 -> C6 (25 nốt, bán cung) ---
+    const NOTE_LETTERS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    function noteFreq(octave, idx) {
+      const semitoneFromC0 = octave * 12 + idx;
+      const A4_SEMITONE = 4 * 12 + 9; // A4
+      return 440 * Math.pow(2, (semitoneFromC0 - A4_SEMITONE) / 12);
+    }
+    const NOTES = [];
+    for (let o = 4; o <= 5; o++) {
+      for (let i = 0; i < 12; i++) NOTES.push({ name: NOTE_LETTERS[i] + o, freq: noteFreq(o, i) });
+    }
+    NOTES.push({ name: 'C6', freq: noteFreq(6, 0) });
+
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+    function playNote(noteIdx) {
+      try {
+        const ac = getAudioCtx();
+        const note = NOTES[noteIdx] || NOTES[0];
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = note.freq;
+        gain.gain.setValueAtTime(0.0001, ac.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.35, ac.currentTime + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.6);
+        osc.connect(gain); gain.connect(ac.destination);
+        osc.start(); osc.stop(ac.currentTime + 0.6);
+      } catch (e) { /* audio không khả dụng */ }
+    }
+
+    // TRẠNG THÁI ĐIỀU KHIỂN & GHOST PREVIEW
+    let clipboard = { objects: [], wires: [], minX: 0, minY: 0 };
+    let controlState = 'IDLE'; // IDLE, SELECTING, SELECTED, DRAGGING, PASTING
+    let selStart = null, selEnd = null; 
+    let selectionBox = null; 
+    let hoverGx = 0, hoverGy = 0; // Vị trí con trỏ hiện tại theo Lưới
+    let dragStartGx = 0, dragStartGy = 0; // Điểm bắt đầu kéo
+    let dragOffsetX = 0, dragOffsetY = 0; // Khoảng cách đã kéo
+
+    function getObjectAt(gx, gy) {
+      for (let obj of objects.values()) {
+        if (obj.gx === gx && obj.gy === gy) return obj;
+      }
+      return null;
+    }
+    function generateID() { return 'obj_' + Date.now() + '_' + Math.floor(Math.random() * 10000); }
+
+    // ĐỔI CÔNG CỤ
     document.querySelectorAll('.tool-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        const target = e.currentTarget;
-        target.classList.add('active');
-        currentTool = target.dataset.tool;
+        e.currentTarget.classList.add('active');
+        currentTool = e.currentTarget.dataset.tool;
 
-        selectedSourceId = null;
-        layerBar.style.display = (currentTool === 'wire') ? 'flex' : 'none';
-
-        if (currentTool === 'wire') {
-          infoBanner.textContent = `⚡ NỐI / XÓA DÂY (Tầng ${currentLayer}): Chạm Nguồn ➔ Chạm Đích (Nối lại để Xóa)`;
-        } else if (currentTool === 'wrench') {
-          infoBanner.textContent = "🔧 CỜ LÊ: Chạm linh kiện để xoay hướng";
-        } else if (currentTool === 'eraser') {
-          infoBanner.textContent = "🧹 XÓA: Chạm linh kiện hoặc chạm thẳng sợi dây để cắt";
-        } else {
-          infoBanner.textContent = "🛠️ Chạm ô trống để đặt linh kiện | Chạm Cần gạt để Bật/Tắt";
-        }
+        selectedSourceId = null; controlState = 'IDLE'; selectionBox = null; ctxMenu.style.display = 'none';
+        propPanel.style.display = 'none';
+        layerBar.style.display = (currentTool === 'wire' || currentTool === 'control' || currentTool === 'eraser') ? 'flex' : 'none';
         draw();
       });
     });
 
-    // Layer Selection
     document.querySelectorAll('.layer-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
-        const target = e.currentTarget;
-        target.classList.add('active');
-        currentLayer = parseInt(target.dataset.layer);
-        infoBanner.textContent = `⚡ NỐI / XÓA DÂY (Tầng ${currentLayer}): Chạm Nguồn ➔ Chạm Đích`;
+        e.currentTarget.classList.add('active');
+        viewLayer = e.currentTarget.dataset.layer;
+        if (viewLayer !== 'all') activeDrawLayer = parseInt(viewLayer);
+        selectedSourceId = null; draw();
       });
     });
 
-    // Mô phỏng mạch điện
+    // BẢNG CỜ LÊ (CẬP NHẬT TRỰC TIẾP)
+    let targetEditObjId = null;
+    document.getElementById('close-prop').onclick = () => { propPanel.style.display = 'none'; };
+    propInput.addEventListener('input', (e) => {
+      const obj = objects.get(targetEditObjId);
+      let val = parseInt(e.target.value);
+      if (!isNaN(val) && val > 0 && obj) {
+        if (obj.type === 'delay') obj.delayTicks = val;
+        else if (obj.type === 'button') obj.durationTicks = val;
+        draw();
+      }
+    });
+
+    function openPropPanel(obj) {
+      targetEditObjId = obj.id;
+      document.getElementById('prop-title').textContent = obj.type === 'delay' ? "CỤC TRỄ (DELAY)" : "NÚT NHẤN";
+      propInput.value = (obj.type === 'delay' ? obj.delayTicks : obj.durationTicks) || 4;
+      propPanel.style.display = 'block';
+    }
+
+    // TÍNH TOÁN DÒNG ĐIỆN
     function updateCircuit() {
-      objects.forEach(obj => obj.powered = false);
-      wires.forEach(w => w.powered = false);
-
-      for (let pass = 0; pass < 12; pass++) {
-        let changed = false;
-
-        objects.forEach(obj => {
+      let changed = true, iterations = 0;
+      while (changed && iterations < 20) {
+        changed = false; iterations++;
+        let nextStates = new Map();
+        
+        for (let obj of objects.values()) {
           let newPowered = false;
-          if (obj.type === 'lever') {
-            newPowered = obj.state;
-          } else if (obj.type === 'lamp') {
-            const incoming = wires.filter(w => w.toId === obj.id);
-            newPowered = incoming.some(w => w.powered);
-          } else if (['not', 'and', 'or', 'xor'].includes(obj.type)) {
-            newPowered = evaluateGate(obj);
-          }
+          if (obj.type === 'lever' || obj.type === 'button') newPowered = obj.state;
+          else if (obj.type === 'delay') newPowered = obj.outState || false; 
+          else if (obj.type === 'lamp') newPowered = wires.filter(w => w.toId === obj.id).some(w => w.powered);
+          else if (obj.type === 'note') newPowered = wires.filter(w => w.toId === obj.id).some(w => w.powered);
+          else if (['not', 'and', 'or', 'xor', 'nand', 'nor', 'xnor'].includes(obj.type)) newPowered = evaluateGate(obj);
+          nextStates.set(obj.id, newPowered);
+        }
 
-          if (obj.powered !== newPowered) {
-            obj.powered = newPowered;
-            changed = true;
-          }
-        });
+        for (let obj of objects.values()) {
+          if (obj.powered !== nextStates.get(obj.id)) { obj.powered = nextStates.get(obj.id); changed = true; }
+        }
 
         wires.forEach(w => {
           const src = objects.get(w.fromId);
           const newWirePowered = src ? src.powered : false;
-          if (w.powered !== newWirePowered) {
-            w.powered = newWirePowered;
-            changed = true;
-          }
+          if (w.powered !== newWirePowered) { w.powered = newWirePowered; changed = true; }
         });
+      }
 
-        if (!changed) break;
+      // Phát nốt nhạc khi vừa được cấp điện (cạnh lên)
+      for (let obj of objects.values()) {
+        if (obj.type === 'note') {
+          if (obj.powered && !obj._wasOn) playNote(obj.noteIdx || 0);
+          obj._wasOn = obj.powered;
+        }
+      }
+
+      for (let obj of objects.values()) {
+        if (obj.type === 'delay') {
+          const isInputPowered = wires.filter(w => w.toId === obj.id).some(w => w.powered);
+          if (isInputPowered !== obj.inState) {
+            obj.inState = isInputPowered; clearTimeout(obj.timer);      
+            obj.timer = setTimeout(() => { obj.outState = isInputPowered; draw(); }, (obj.delayTicks || 4) * TICK_MS); 
+          }
+        }
       }
     }
 
     function evaluateGate(gate) {
       const incoming = wires.filter(w => w.toId === gate.id);
-      const total = incoming.length;
-      const active = incoming.filter(w => w.powered).length;
-
-      if (gate.type === 'not') return active === 0;
-      if (total === 0) return false;
-      if (gate.type === 'and') return active === total;
-      if (gate.type === 'or') return active >= 1;
-      if (gate.type === 'xor') return active === 1;
-      return false;
+      let in1 = false, in2 = false;
+      if (incoming.length >= 1) in1 = incoming[0].powered;
+      if (incoming.length >= 2) in2 = incoming[1].powered;
+      switch(gate.type) {
+        case 'not': return !in1; case 'and': return in1 && in2; case 'nand': return !(in1 && in2);
+        case 'or': return in1 || in2; case 'nor': return !(in1 || in2);
+        case 'xor': return in1 !== in2; case 'xnor': return in1 === in2;
+      } return false;
     }
 
-    // Vẽ Canvas
+    function pulseButton(btn) {
+      if (btn.state) return; btn.state = true; draw();
+      setTimeout(() => { btn.state = false; draw(); }, (btn.durationTicks || 4) * TICK_MS);
+    }
+
+    // --- RENDER HÌNH ẢNH (GHOST PREVIEW) ---
     let scale = 1.0, offsetX = window.innerWidth / 2, offsetY = window.innerHeight / 2;
 
     function draw() {
       updateCircuit();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.save();
-      ctx.translate(offsetX, offsetY);
-      ctx.scale(scale, scale);
+      ctx.save(); ctx.translate(offsetX, offsetY); ctx.scale(scale, scale);
 
-      const left = Math.floor((-offsetX / scale) / GRID) - 1;
-      const right = Math.floor(((canvas.width - offsetX) / scale) / GRID) + 1;
-      const top = Math.floor((-offsetY / scale) / GRID) - 1;
-      const bottom = Math.floor(((canvas.height - offsetY) / scale) / GRID) + 1;
-
-      ctx.strokeStyle = '#181c26';
-      ctx.lineWidth = 1 / scale;
-      ctx.beginPath();
-      for (let x = left; x <= right; x++) {
-        ctx.moveTo(x * GRID, top * GRID); ctx.lineTo(x * GRID, bottom * GRID);
-      }
-      for (let y = top; y <= bottom; y++) {
-        ctx.moveTo(left * GRID, y * GRID); ctx.lineTo(right * GRID, y * GRID);
-      }
+      // Kẻ ô lưới
+      const left = Math.floor((-offsetX / scale) / GRID) - 1, right = Math.floor(((canvas.width - offsetX) / scale) / GRID) + 1;
+      const top = Math.floor((-offsetY / scale) / GRID) - 1, bottom = Math.floor(((canvas.height - offsetY) / scale) / GRID) + 1;
+      ctx.strokeStyle = '#181c26'; ctx.lineWidth = 1 / scale; ctx.beginPath();
+      for (let x = left; x <= right; x++) { ctx.moveTo(x * GRID, top * GRID); ctx.lineTo(x * GRID, bottom * GRID); }
+      for (let y = top; y <= bottom; y++) { ctx.moveTo(left * GRID, y * GRID); ctx.lineTo(right * GRID, y * GRID); }
       ctx.stroke();
 
-      wires.forEach(w => drawWire(w));
-      objects.forEach(obj => drawObject(obj));
+      // Phân tách Objects và Wires đang được DRAG
+      let draggingObjIds = new Set();
+      if (controlState === 'DRAGGING' && selectionBox) {
+        for (let obj of objects.values()) {
+          if (obj.gx >= selectionBox.minX && obj.gx <= selectionBox.maxX && obj.gy >= selectionBox.minY && obj.gy <= selectionBox.maxY) {
+            draggingObjIds.add(obj.id);
+          }
+        }
+      }
 
-      if (selectedSourceId && objects.has(selectedSourceId)) {
+      // 1. Vẽ dây bình thường
+      wires.forEach(w => {
+        if (viewLayer !== 'all' && parseInt(viewLayer) !== w.layer) return;
+        if (draggingObjIds.has(w.fromId) && draggingObjIds.has(w.toId)) return; // Bỏ qua dây đang bị kéo
+        drawWire(w);
+      });
+
+      // 2. Vẽ linh kiện bình thường
+      for (let obj of objects.values()) {
+        if (draggingObjIds.has(obj.id)) continue; // Bỏ qua linh kiện đang bị kéo
+        drawObject(obj);
+      }
+
+      // Xanh lá báo chọn nối dây
+      if (currentTool === 'wire' && selectedSourceId) {
         const srcObj = objects.get(selectedSourceId);
-        ctx.strokeStyle = '#00ffcc';
-        ctx.lineWidth = 3;
-        ctx.shadowColor = '#00ffcc'; ctx.shadowBlur = 12;
-        ctx.strokeRect(srcObj.gx * GRID + 2, srcObj.gy * GRID + 2, GRID - 4, GRID - 4);
-        ctx.shadowBlur = 0;
+        if (srcObj) {
+          ctx.strokeStyle = '#00ffcc'; ctx.lineWidth = 3; ctx.shadowColor = '#00ffcc'; ctx.shadowBlur = 12;
+          ctx.strokeRect(srcObj.gx * GRID + 2, srcObj.gy * GRID + 2, GRID - 4, GRID - 4); ctx.shadowBlur = 0;
+        }
+      }
+
+      // 3. VẼ GHOST (BÓNG MA) KHI DRAGGING
+      if (controlState === 'DRAGGING' && selectionBox) {
+        ctx.save();
+        ctx.translate(dragOffsetX * GRID, dragOffsetY * GRID);
+        ctx.globalAlpha = 0.6; // Làm mờ
+
+        wires.forEach(w => {
+          if (draggingObjIds.has(w.fromId) && draggingObjIds.has(w.toId) && (viewLayer === 'all' || parseInt(viewLayer) === w.layer)) drawWire(w);
+        });
+        for (let obj of objects.values()) {
+          if (draggingObjIds.has(obj.id)) drawObject(obj);
+        }
+        ctx.restore();
+
+        // Viền đích đến
+        ctx.strokeStyle = '#00ffcc'; ctx.lineWidth = 2 / scale; ctx.setLineDash([8 / scale, 4 / scale]);
+        ctx.strokeRect((selectionBox.minX + dragOffsetX) * GRID, (selectionBox.minY + dragOffsetY) * GRID, (selectionBox.maxX - selectionBox.minX + 1) * GRID, (selectionBox.maxY - selectionBox.minY + 1) * GRID);
+        ctx.setLineDash([]);
+      }
+
+      // 4. VẼ GHOST KHI PASTING (DÁN)
+      if (controlState === 'PASTING') {
+        ctx.save();
+        ctx.translate((hoverGx - clipboard.minX) * GRID, (hoverGy - clipboard.minY) * GRID);
+        ctx.globalAlpha = 0.6; // Làm mờ
+
+        clipboard.wires.forEach(w => drawWire(w));
+        clipboard.objects.forEach(obj => drawObject(obj));
+        ctx.restore();
+        
+        // Khung viền vùng dán
+        let w = 0, h = 0;
+        clipboard.objects.forEach(o => { w = Math.max(w, o.gx - clipboard.minX); h = Math.max(h, o.gy - clipboard.minY); });
+        ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 2 / scale; ctx.setLineDash([8 / scale, 4 / scale]);
+        ctx.strokeRect(hoverGx * GRID, hoverGy * GRID, (w + 1) * GRID, (h + 1) * GRID);
+        ctx.setLineDash([]);
+      }
+
+      // 5. VẼ KHUNG CHỌN CHUNG
+      if ((currentTool === 'control' && selectionBox && controlState !== 'DRAGGING') || controlState === 'SELECTING') {
+        ctx.fillStyle = 'rgba(155, 89, 182, 0.2)';
+        ctx.fillRect(selectionBox.minX * GRID, selectionBox.minY * GRID, (selectionBox.maxX - selectionBox.minX + 1) * GRID, (selectionBox.maxY - selectionBox.minY + 1) * GRID);
+        ctx.strokeStyle = '#9b59b6'; ctx.lineWidth = 2 / scale; ctx.setLineDash([8 / scale, 6 / scale]);
+        ctx.strokeRect(selectionBox.minX * GRID, selectionBox.minY * GRID, (selectionBox.maxX - selectionBox.minX + 1) * GRID, (selectionBox.maxY - selectionBox.minY + 1) * GRID);
+        ctx.setLineDash([]);
+        
+        // Nút Mũi Tên Di Chuyển (Drag Handle) ở chính giữa vùng chọn
+        if (controlState === 'SELECTED') {
+          const cx = ((selectionBox.minX + selectionBox.maxX + 1) / 2) * GRID;
+          const cy = ((selectionBox.minY + selectionBox.maxY + 1) / 2) * GRID;
+          ctx.fillStyle = 'rgba(0,0,0,0.6)';
+          ctx.beginPath(); ctx.arc(cx, cy, 20 / scale, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2 / scale;
+          // Vẽ 4 mũi tên
+          ctx.beginPath();
+          ctx.moveTo(cx - 10/scale, cy); ctx.lineTo(cx + 10/scale, cy); // Ngang
+          ctx.moveTo(cx, cy - 10/scale); ctx.lineTo(cx, cy + 10/scale); // Dọc
+          // Đầu mũi tên
+          ctx.moveTo(cx - 10/scale, cy); ctx.lineTo(cx - 5/scale, cy - 4/scale); ctx.moveTo(cx - 10/scale, cy); ctx.lineTo(cx - 5/scale, cy + 4/scale);
+          ctx.moveTo(cx + 10/scale, cy); ctx.lineTo(cx + 5/scale, cy - 4/scale); ctx.moveTo(cx + 10/scale, cy); ctx.lineTo(cx + 5/scale, cy + 4/scale);
+          ctx.moveTo(cx, cy - 10/scale); ctx.lineTo(cx - 4/scale, cy - 5/scale); ctx.moveTo(cx, cy - 10/scale); ctx.lineTo(cx + 4/scale, cy - 5/scale);
+          ctx.moveTo(cx, cy + 10/scale); ctx.lineTo(cx - 4/scale, cy + 5/scale); ctx.moveTo(cx, cy + 10/scale); ctx.lineTo(cx + 4/scale, cy + 5/scale);
+          ctx.stroke();
+        }
       }
 
       ctx.restore();
     }
 
     function drawWire(w) {
-      const objA = objects.get(w.fromId);
-      const objB = objects.get(w.toId);
+      // Vì đã dùng context.translate để vẽ ghost, tọa độ gx gy vẫn là của obj gốc!
+      const objA = (controlState==='PASTING') ? clipboard.objects.find(o=>o.id===w.fromId) : objects.get(w.fromId);
+      const objB = (controlState==='PASTING') ? clipboard.objects.find(o=>o.id===w.toId) : objects.get(w.toId);
       if (!objA || !objB) return;
 
-      const ax = objA.gx * GRID + GRID / 2;
-      const ay = objA.gy * GRID + GRID / 2;
-      const bx = objB.gx * GRID + GRID / 2;
-      const by = objB.gy * GRID + GRID / 2;
+      const ax = objA.gx * GRID + GRID / 2, ay = objA.gy * GRID + GRID / 2;
+      const bx = objB.gx * GRID + GRID / 2, by = objB.gy * GRID + GRID / 2;
 
       const style = LAYER_COLORS[w.layer] || LAYER_COLORS[1];
-      ctx.strokeStyle = w.powered ? style.on : style.off;
-      ctx.lineWidth = w.powered ? 4 : 2.5;
+      ctx.strokeStyle = w.powered ? style.on : style.off; ctx.lineWidth = w.powered ? 4 : 2.5;
+      if (w.powered) { ctx.shadowColor = style.on; ctx.shadowBlur = 10; }
 
-      if (w.powered) {
-        ctx.shadowColor = style.on;
-        ctx.shadowBlur = 10;
-      }
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.fillStyle = ctx.strokeStyle; ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
 
-      ctx.beginPath();
-      ctx.moveTo(ax, ay);
-
-      let midX = (ax + bx) / 2;
-      let midY = (ay + by) / 2;
-
-      if (style.curve !== 0) {
-        midX += style.curve;
-        midY += style.curve;
-        ctx.quadraticCurveTo(midX, midY, bx, by);
-      } else {
-        ctx.lineTo(bx, by);
-      }
-
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      ctx.fillStyle = ctx.strokeStyle;
-      ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
-
-      // Mũi tên hướng truyền
+      let midX = (ax + bx) / 2, midY = (ay + by) / 2;
       const angle = Math.atan2(by - midY, bx - midX);
-      ctx.save();
-      ctx.translate(midX, midY);
-      ctx.rotate(angle);
-      ctx.beginPath();
-      ctx.moveTo(6, 0); ctx.lineTo(-4, -4); ctx.lineTo(-4, 4);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+      ctx.save(); ctx.translate(midX, midY); ctx.rotate(angle);
+      ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-4, -4); ctx.lineTo(-4, 4); ctx.closePath(); ctx.fill(); ctx.restore();
     }
 
     function drawObject(obj) {
-      const x = obj.gx * GRID;
-      const y = obj.gy * GRID;
-      const cx = x + GRID / 2;
-      const cy = y + GRID / 2;
+      const x = obj.gx * GRID, y = obj.gy * GRID, cx = x + GRID / 2, cy = y + GRID / 2;
 
       if (obj.type === 'lever') {
-        ctx.fillStyle = obj.state ? '#1e382b' : '#2c3e50';
-        ctx.fillRect(x + 5, y + 5, GRID - 10, GRID - 10);
-        ctx.strokeStyle = obj.state ? '#2ecc71' : '#7f8c8d';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x + 5, y + 5, GRID - 10, GRID - 10);
-
-        ctx.fillStyle = '#111';
-        ctx.fillRect(cx - 16, cy - 6, 32, 12);
-        const kx = obj.state ? cx + 8 : cx - 8;
-        ctx.fillStyle = obj.state ? '#2ecc71' : '#e74c3c';
-        ctx.beginPath(); ctx.arc(kx, cy, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = obj.state ? '#1e382b' : '#2c3e50'; ctx.fillRect(x + 5, y + 5, GRID - 10, GRID - 10);
+        ctx.strokeStyle = obj.state ? '#2ecc71' : '#7f8c8d'; ctx.lineWidth = 2; ctx.strokeRect(x + 5, y + 5, GRID - 10, GRID - 10);
+        ctx.fillStyle = '#111'; ctx.fillRect(cx - 16, cy - 6, 32, 12);
+        ctx.fillStyle = obj.state ? '#2ecc71' : '#e74c3c'; ctx.beginPath(); ctx.arc(obj.state ? cx + 8 : cx - 8, cy, 7, 0, Math.PI * 2); ctx.fill();
       } 
+      else if (obj.type === 'button') {
+        ctx.fillStyle = '#34495e'; ctx.fillRect(x + 10, y + 10, GRID - 20, GRID - 20);
+        const offset = obj.state ? 3 : 0;
+        ctx.fillStyle = obj.state ? '#c0392b' : '#e74c3c'; ctx.fillRect(x + 16, y + 16 + offset, GRID - 32, GRID - 32 - offset);
+        ctx.strokeStyle = obj.state ? '#e74c3c' : '#c0392b'; ctx.lineWidth = 2; ctx.strokeRect(x + 10, y + 10, GRID - 20, GRID - 20);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText((obj.durationTicks || 4) + 't', cx, cy + offset);
+      }
+      else if (obj.type === 'delay') {
+        ctx.fillStyle = obj.powered ? '#5b2c6f' : '#2c3e50'; ctx.fillRect(x + 8, y + 10, GRID - 16, GRID - 20);
+        ctx.strokeStyle = obj.powered ? '#9b59b6' : '#95a5a6'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 10, GRID - 16, GRID - 20);
+        ctx.fillStyle = obj.powered ? '#e056fd' : '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('DELAY', cx, cy - 6);
+        ctx.fillStyle = '#f1c40f'; ctx.font = 'bold 12px sans-serif'; ctx.fillText((obj.delayTicks || 4) + 't', cx, cy + 6);
+      }
       else if (obj.type === 'lamp') {
-        ctx.fillStyle = obj.powered ? '#f39c12' : '#222';
-        ctx.beginPath(); ctx.arc(cx, cy, 16, 0, Math.PI * 2); ctx.fill();
-        if (obj.powered) {
-          ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 18;
-          ctx.fillStyle = '#fff7b1';
-          ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.fill();
-          ctx.shadowBlur = 0;
-        } else {
-          ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
-        }
+        ctx.fillStyle = obj.powered ? '#f39c12' : '#222'; ctx.fillRect(x + 8, y + 8, GRID - 16, GRID - 16);
+        if (obj.powered) { ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 25; ctx.fillStyle = '#fff7b1'; ctx.fillRect(x + 16, y + 16, GRID - 32, GRID - 32); ctx.shadowBlur = 0; } 
+        else { ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 8, GRID - 16, GRID - 16); }
       } 
-      else if (['not', 'and', 'or', 'xor'].includes(obj.type)) {
-        ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(obj.dir * Math.PI / 2);
-
-        ctx.fillStyle = obj.powered ? '#1e4620' : '#2c3e50';
-        ctx.fillRect(-20, -20, 40, 40);
-        ctx.strokeStyle = obj.powered ? '#2ecc71' : '#95a5a6';
-        ctx.lineWidth = 2; ctx.strokeRect(-20, -20, 40, 40);
-
-        ctx.fillStyle = obj.powered ? '#2ecc71' : '#fff';
-        ctx.font = 'bold 11px sans-serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(obj.type.toUpperCase(), 0, 0);
-        ctx.restore();
+      else if (obj.type === 'note') {
+        const note = NOTES[obj.noteIdx || 0] || NOTES[0];
+        ctx.fillStyle = obj.powered ? '#0e6655' : '#222'; ctx.fillRect(x + 8, y + 8, GRID - 16, GRID - 16);
+        if (obj.powered) { ctx.shadowColor = '#1abc9c'; ctx.shadowBlur = 22; }
+        ctx.strokeStyle = obj.powered ? '#1abc9c' : '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 8, GRID - 16, GRID - 16);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = obj.powered ? '#a2f5e2' : '#ccc'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('♪', cx, cy - 10);
+        ctx.fillStyle = obj.powered ? '#fff' : '#aaa'; ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(note.name, cx, cy + 9);
+      }
+      else if (['not', 'and', 'or', 'xor', 'nand', 'nor', 'xnor'].includes(obj.type)) {
+        ctx.fillStyle = obj.powered ? '#1e4620' : '#2c3e50'; ctx.fillRect(x + 10, y + 10, GRID - 20, GRID - 20);
+        ctx.strokeStyle = obj.powered ? '#2ecc71' : '#95a5a6'; ctx.lineWidth = 2; ctx.strokeRect(x + 10, y + 10, GRID - 20, GRID - 20);
+        ctx.fillStyle = obj.powered ? '#2ecc71' : '#fff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(obj.type.toUpperCase(), cx, cy);
       }
     }
 
-    function distToSegment(px, py, x1, y1, x2, y2) {
-      const l2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
-      if (l2 === 0) return Math.hypot(px - x1, py - y1);
-      let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
-      t = Math.max(0, Math.min(1, t));
-      return Math.hypot(px - (x1 + t * (x2 - x1)), py - (y1 + t * (y2 - y1)));
+    function deleteObject(id) {
+      const obj = objects.get(id);
+      if (obj && obj.timer) clearTimeout(obj.timer);
+      objects.delete(id);
+      for (let i = wires.length - 1; i >= 0; i--) { if (wires[i].fromId === id || wires[i].toId === id) wires.splice(i, 1); }
     }
 
-    // --- XỬ LÝ TAP / CLICK ---
+    // COPY VÀ PASTE LOGIC
+    document.getElementById('btn-copy').onclick = () => {
+      if (!selectionBox) return;
+      clipboard.objects = []; clipboard.minX = selectionBox.minX; clipboard.minY = selectionBox.minY;
+      const selIds = new Set();
+      for (let obj of objects.values()) {
+        if (obj.gx >= selectionBox.minX && obj.gx <= selectionBox.maxX && obj.gy >= selectionBox.minY && obj.gy <= selectionBox.maxY) {
+          clipboard.objects.push({ ...obj }); selIds.add(obj.id);
+        }
+      }
+      clipboard.wires = wires.filter(w => selIds.has(w.fromId) && selIds.has(w.toId)).map(w => ({...w}));
+      ctxMenu.style.display = 'none'; document.getElementById('btn-paste').style.display = 'block'; controlState = 'IDLE'; draw();
+    };
+
+    document.getElementById('btn-paste').onclick = () => {
+      controlState = 'PASTING'; ctxMenu.style.display = 'none'; draw();
+    };
+
+    function applyPaste() {
+      if (clipboard.objects.length === 0) return;
+      const idMap = {};
+      const targetX = hoverGx, targetY = hoverGy;
+      
+      clipboard.objects.forEach(co => {
+        const newId = generateID(); idMap[co.id] = newId;
+        const placeX = targetX + (co.gx - clipboard.minX), placeY = targetY + (co.gy - clipboard.minY);
+        
+        const existing = getObjectAt(placeX, placeY); if (existing) deleteObject(existing.id);
+        
+        const newObj = { ...co, id: newId, gx: placeX, gy: placeY, timer: null };
+        objects.set(newId, newObj);
+      });
+      
+      clipboard.wires.forEach(cw => {
+        wires.push({ ...cw, id: generateID(), fromId: idMap[cw.fromId], toId: idMap[cw.toId] });
+      });
+
+      controlState = 'IDLE'; draw();
+    }
+
+    function applyMove() {
+      if (dragOffsetX === 0 && dragOffsetY === 0) { controlState = 'SELECTED'; return; }
+      
+      let toMove = [];
+      for (let obj of objects.values()) {
+        if (obj.gx >= selectionBox.minX && obj.gx <= selectionBox.maxX && obj.gy >= selectionBox.minY && obj.gy <= selectionBox.maxY) {
+          toMove.push(obj);
+        }
+      }
+      
+      toMove.forEach(obj => {
+        const targetObj = getObjectAt(obj.gx + dragOffsetX, obj.gy + dragOffsetY);
+        // Cẩn thận đừng xóa chính các vật thể cùng được di chuyển
+        if (targetObj && !toMove.find(o => o.id === targetObj.id)) deleteObject(targetObj.id);
+        obj.gx += dragOffsetX; obj.gy += dragOffsetY;
+      });
+
+      selectionBox.minX += dragOffsetX; selectionBox.maxX += dragOffsetX;
+      selectionBox.minY += dragOffsetY; selectionBox.maxY += dragOffsetY;
+      
+      dragOffsetX = 0; dragOffsetY = 0; controlState = 'SELECTED'; draw();
+    }
+
+    // TƯƠNG TÁC CHÍNH (CLICK/TAP)
     function handleTap(screenX, screenY) {
-      const rect = canvas.getBoundingClientRect();
-      const worldX = (screenX - rect.left - offsetX) / scale;
-      const worldY = (screenY - rect.top - offsetY) / scale;
+      if (ctxMenu.style.display === 'flex') { ctxMenu.style.display = 'none'; return; }
 
-      const gx = Math.floor(worldX / GRID);
-      const gy = Math.floor(worldY / GRID);
-      const key = `${gx},${gy}`;
-      const clickedObj = objects.get(key);
+      if (controlState === 'PASTING') { applyPaste(); return; }
+      
+      // Nếu bấm ra ngoài vùng chọn, hủy chọn và hiện context menu
+      if (controlState === 'SELECTED') {
+        if (hoverGx < selectionBox.minX || hoverGx > selectionBox.maxX || hoverGy < selectionBox.minY || hoverGy > selectionBox.maxY) {
+           selectionBox = null; controlState = 'IDLE'; draw(); return;
+        }
+      }
 
-      // 1. CÔNG CỤ NỐI / XÓA DÂY
-      if (currentTool === 'wire') {
+      const clickedObj = getObjectAt(hoverGx, hoverGy);
+
+      if (currentTool === 'control') {
+        if (controlState === 'IDLE') {
+          selectionBox = { minX: hoverGx, maxX: hoverGx, minY: hoverGy, maxY: hoverGy };
+          ctxMenu.style.display = 'flex'; ctxMenu.style.left = screenX + 'px'; ctxMenu.style.top = screenY + 'px';
+        }
+      }
+      else if (currentTool === 'wire') {
         if (clickedObj) {
-          if (!selectedSourceId) {
-            // Chọn Nguồn
-            selectedSourceId = key;
-          } else if (selectedSourceId === key) {
-            // Bấm lại chính nó -> Bật/Tắt Cần gạt hoặc Hủy chọn
+          if (!selectedSourceId) selectedSourceId = clickedObj.id;
+          else if (selectedSourceId === clickedObj.id) {
             if (clickedObj.type === 'lever') clickedObj.state = !clickedObj.state;
+            if (clickedObj.type === 'button') pulseButton(clickedObj);
             selectedSourceId = null;
           } else {
-            // KIỂM TRA Xem ĐÃ CÓ dây từ Nguồn -> Đích (ở Layer hiện tại) hay chưa?
-            const existingWireIndex = wires.findIndex(w => 
-              w.fromId === selectedSourceId && w.toId === key && w.layer === currentLayer
-            );
-
-            if (existingWireIndex !== -1) {
-              // 👉 NẾU ĐÃ CÓ DÂY: XÓA DÂY ĐÓ ĐI! ("Chạm từ gốc đến cội")
-              wires.splice(existingWireIndex, 1);
-            } else {
-              // 👉 NẾU CHƯA CÓ DÂY: NỐI DÂY MỚI!
-              wires.push({
-                id: Date.now().toString(),
-                fromId: selectedSourceId,
-                toId: key,
-                layer: currentLayer,
-                powered: false
-              });
+            const drawLayer = viewLayer === 'all' ? activeDrawLayer : parseInt(viewLayer);
+            const existingIndex = wires.findIndex(w => w.fromId === selectedSourceId && w.toId === clickedObj.id && w.layer === drawLayer);
+            if (existingIndex !== -1) wires.splice(existingIndex, 1);
+            else {
+              let maxIn = (['not', 'delay'].includes(clickedObj.type)) ? 1 : (['and', 'or', 'xor', 'nand', 'nor', 'xnor'].includes(clickedObj.type) ? 2 : 999);
+              if (wires.filter(w => w.toId === clickedObj.id).length >= maxIn) alert(`Tối đa ${maxIn} đầu vào!`);
+              else wires.push({ id: generateID(), fromId: selectedSourceId, toId: clickedObj.id, layer: drawLayer, powered: false });
             }
             selectedSourceId = null;
           }
-        } else {
-          selectedSourceId = null;
-        }
+        } else selectedSourceId = null;
       }
-      // 2. CỜ LÊ (🔧)
       else if (currentTool === 'wrench') {
-        if (clickedObj) clickedObj.dir = (clickedObj.dir + 1) % 4;
-      }
-      // 3. XÓA (🧹)
-      else if (currentTool === 'eraser') {
         if (clickedObj) {
-          objects.delete(key);
-          for (let i = wires.length - 1; i >= 0; i--) {
-            if (wires[i].fromId === key || wires[i].toId === key) wires.splice(i, 1);
-          }
-        } else {
-          // Chạm vào dây để cắt
-          for (let i = wires.length - 1; i >= 0; i--) {
-            const w = wires[i];
-            const oA = objects.get(w.fromId);
-            const oB = objects.get(w.toId);
-            if (oA && oB) {
-              const ax = oA.gx * GRID + GRID / 2;
-              const ay = oA.gy * GRID + GRID / 2;
-              const bx = oB.gx * GRID + GRID / 2;
-              const by = oB.gy * GRID + GRID / 2;
-              if (distToSegment(worldX, worldY, ax, ay, bx, by) < 12) {
-                wires.splice(i, 1);
-                break;
-              }
-            }
+          if (clickedObj.type === 'button' || clickedObj.type === 'delay') openPropPanel(clickedObj);
+          else {
+            const swapMap = { 'and': 'nand', 'nand': 'and', 'or': 'nor', 'nor': 'or', 'xor': 'xnor', 'xnor': 'xor' };
+            if (swapMap[clickedObj.type]) clickedObj.type = swapMap[clickedObj.type];
           }
         }
       }
-      // 4. ĐẶT ĐỒ / BẬT CẦN GẠT
-      else {
+      else if (currentTool === 'eraser') {
+        if (clickedObj) deleteObject(clickedObj.id);
+      }
+      else { // Đặt linh kiện
         if (clickedObj) {
           if (clickedObj.type === 'lever') clickedObj.state = !clickedObj.state;
+          if (clickedObj.type === 'button') pulseButton(clickedObj);
+          if (clickedObj.type === 'note') {
+            clickedObj.noteIdx = ((clickedObj.noteIdx || 0) + 1) % NOTES.length;
+            playNote(clickedObj.noteIdx);
+          }
         } else {
-          objects.set(key, {
-            id: key, gx, gy, type: currentTool, dir: 0, state: false, powered: false
-          });
+          let newObj = { id: generateID(), gx: hoverGx, gy: hoverGy, type: currentTool, state: false, powered: false };
+          if (currentTool === 'button') newObj.durationTicks = 4;
+          if (currentTool === 'delay') { newObj.delayTicks = 4; newObj.inState = false; newObj.outState = false; newObj.timer = null; }
+          if (currentTool === 'note') { newObj.noteIdx = 0; newObj._wasOn = false; }
+          objects.set(newObj.id, newObj);
         }
       }
-
       draw();
     }
 
-    // Pan & Zoom
-    let isDragging = false, dragStartX = 0, dragStartY = 0;
-    let startOffsetX = 0, startOffsetY = 0, startScale = 1, startDist = 0;
-
-    let isMouseDown = false;
-    canvas.addEventListener('wheel', e => {
-      e.preventDefault();
-      const zoom = e.deltaY < 0 ? 1.1 : 0.9;
-      const newScale = Math.min(Math.max(scale * zoom, 0.3), 3.0);
-      offsetX = e.clientX - (e.clientX - offsetX) * (newScale / scale);
-      offsetY = e.clientY - (e.clientY - offsetY) * (newScale / scale);
-      scale = newScale;
-      draw();
-    }, { passive: false });
-
+    // PAN, ZOOM, KÉO DI CHUYỂN BẰNG CHUỘT
+    let isDraggingView = false, startMouseX = 0, startMouseY = 0, startOffsetX = 0, startOffsetY = 0, isMouseDown = false;
+    
     canvas.addEventListener('mousedown', e => {
-      isMouseDown = true; isDragging = false;
-      dragStartX = e.clientX; dragStartY = e.clientY;
+      isMouseDown = true; startMouseX = e.clientX; startMouseY = e.clientY;
       startOffsetX = offsetX; startOffsetY = offsetY;
+      
+      // Xử lý kéo thả vùng chọn (Bấm vào bên trong vùng chọn)
+      if (controlState === 'SELECTED' && selectionBox) {
+        if (hoverGx >= selectionBox.minX && hoverGx <= selectionBox.maxX && hoverGy >= selectionBox.minY && hoverGy <= selectionBox.maxY) {
+          controlState = 'DRAGGING';
+          dragStartGx = hoverGx; dragStartGy = hoverGy;
+          dragOffsetX = 0; dragOffsetY = 0;
+          ctxMenu.style.display = 'none';
+          return;
+        }
+      }
+
+      if (currentTool === 'control' && controlState === 'IDLE') {
+        ctxMenu.style.display = 'none'; selStart = { gx: hoverGx, gy: hoverGy }; selEnd = { gx: hoverGx, gy: hoverGy };
+        selectionBox = { minX: hoverGx, maxX: hoverGx, minY: hoverGy, maxY: hoverGy };
+        controlState = 'SELECTING'; draw(); return;
+      }
     });
+
     window.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      const worldX = (e.clientX - rect.left - offsetX) / scale, worldY = (e.clientY - rect.top - offsetY) / scale;
+      hoverGx = Math.floor(worldX / GRID); hoverGy = Math.floor(worldY / GRID);
+
+      // Cập nhật vị trí bóng ma khi DRAGGING hoặc PASTING
+      if (controlState === 'PASTING') { draw(); return; }
+      if (controlState === 'DRAGGING') {
+        dragOffsetX = hoverGx - dragStartGx; dragOffsetY = hoverGy - dragStartGy; draw(); return;
+      }
+
       if (!isMouseDown) return;
-      if (Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY) > 5) {
-        isDragging = true;
-        offsetX = startOffsetX + (e.clientX - dragStartX);
-        offsetY = startOffsetY + (e.clientY - dragStartY);
-        draw();
+      
+      if (currentTool === 'control' && controlState === 'SELECTING') {
+        selEnd = { gx: hoverGx, gy: hoverGy };
+        selectionBox = { minX: Math.min(selStart.gx, selEnd.gx), maxX: Math.max(selStart.gx, selEnd.gx), minY: Math.min(selStart.gy, selEnd.gy), maxY: Math.max(selStart.gy, selEnd.gy) };
+        draw(); return;
+      }
+
+      // Kéo màn hình (Pan)
+      if (Math.hypot(e.clientX - startMouseX, e.clientY - startMouseY) > 5) {
+        isDraggingView = true; offsetX = startOffsetX + (e.clientX - startMouseX); offsetY = startOffsetY + (e.clientY - startMouseY); draw();
       }
     });
+
     window.addEventListener('mouseup', e => {
-      if (isMouseDown && !isDragging) handleTap(e.clientX, e.clientY);
-      isMouseDown = false; isDragging = false;
+      isMouseDown = false;
+      if (controlState === 'DRAGGING') { applyMove(); return; }
+      
+      if (currentTool === 'control' && controlState === 'SELECTING') {
+        controlState = 'SELECTED';
+        if (selStart.gx !== selEnd.gx || selStart.gy !== selEnd.gy) {
+          ctxMenu.style.display = 'flex'; ctxMenu.style.left = e.clientX + 'px'; ctxMenu.style.top = e.clientY + 'px';
+        } else {
+          if (e.target === canvas) handleTap(e.clientX, e.clientY);
+        }
+        return;
+      }
+
+      if (!isDraggingView && e.target === canvas) handleTap(e.clientX, e.clientY);
+      isDraggingView = false;
     });
 
-    canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
-      if (e.touches.length === 1) {
-        isDragging = false;
-        dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY;
-        startOffsetX = offsetX; startOffsetY = offsetY;
-      } else if (e.touches.length === 2) {
-        isDragging = true;
-        startDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-        startScale = scale; startOffsetX = offsetX; startOffsetY = offsetY;
-      }
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault(); const zoom = e.deltaY < 0 ? 1.1 : 0.9; const newScale = Math.min(Math.max(scale * zoom, 0.3), 3.0);
+      offsetX = e.clientX - (e.clientX - offsetX) * (newScale / scale); offsetY = e.clientY - (e.clientY - offsetY) * (newScale / scale); scale = newScale; draw();
     }, { passive: false });
 
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (e.touches.length === 1 && !startDist) {
-        const dx = e.touches[0].clientX - dragStartX;
-        const dy = e.touches[0].clientY - dragStartY;
-        if (Math.hypot(dx, dy) > 8) {
-          isDragging = true;
-          offsetX = startOffsetX + dx; offsetY = startOffsetY + dy;
-          draw();
-        }
-      } else if (e.touches.length === 2) {
-        isDragging = true;
-        const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-        if (startDist > 0) {
-          const newScale = Math.min(Math.max(startScale * (dist / startDist), 0.3), 3.0);
-          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-          offsetX = midX - (midX - startOffsetX) * (newScale / scale);
-          offsetY = midY - (midY - startOffsetY) * (newScale / scale);
-          scale = newScale;
-          draw();
-        }
-      }
-    }, { passive: false });
+    // --- LƯU FILE ---
+    document.getElementById('btn-save').addEventListener('click', () => {
+      const data = {
+        version: 1,
+        objects: Array.from(objects.values()).map(o => {
+          const { timer, ...rest } = o; // bỏ timer (không lưu được)
+          return rest;
+        }),
+        wires: wires
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+      a.href = url; a.download = `mach-dien-${ts}.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
 
-    canvas.addEventListener('touchend', e => {
-      e.preventDefault();
-      if (e.touches.length === 0) {
-        if (!isDragging && e.changedTouches.length > 0) {
-          handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    // --- TẢI FILE ---
+    document.getElementById('btn-load').addEventListener('click', () => {
+      document.getElementById('file-input').click();
+    });
+    document.getElementById('file-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const data = JSON.parse(evt.target.result);
+          // Dọn dẹp timer cũ trước khi thay thế
+          for (let obj of objects.values()) { if (obj.timer) clearTimeout(obj.timer); }
+          objects = new Map();
+          wires = [];
+          (data.objects || []).forEach(o => {
+            objects.set(o.id, { ...o, timer: null });
+          });
+          wires = (data.wires || []).map(w => ({ ...w }));
+          selectedSourceId = null; selectionBox = null; controlState = 'IDLE';
+          ctxMenu.style.display = 'none'; propPanel.style.display = 'none';
+          draw();
+        } catch (err) {
+          alert('File không hợp lệ! Vui lòng chọn đúng file JSON đã lưu từ sandbox này.');
         }
-        startDist = 0; isDragging = false;
-      }
-    }, { passive: false });
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
 
     resize();
   </script>
