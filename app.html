@@ -46,7 +46,7 @@
     .tool-btn[data-tool="eraser"].active { background: #e74c3c; border-color: #f1948a; }
     .tool-btn[data-tool="control"].active { background: #9b59b6; border-color: #d2b4de; }
 
-    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
 
     /* BẢNG THUỘC TÍNH (CỜ LÊ) GÓC PHẢI - KIỂU BUILD A BOAT */
     #prop-panel {
@@ -257,9 +257,32 @@
     }
 
     // TÍNH TOÁN DÒNG ĐIỆN
+    // Tối ưu: xây chỉ mục "dây đi vào mỗi linh kiện" 1 lần/lượt tính, thay vì
+    // quét lại toàn bộ mảng wires cho từng linh kiện (vốn là nguyên nhân chính gây lag/khựng
+    // khi mạch có nhiều linh kiện & dây nối - độ phức tạp giảm từ O(N×M) xuống O(N+M)).
     function updateCircuit() {
+      // Chỉ mục: objId (đích đến) -> danh sách dây trỏ vào nó
+      const incoming = new Map();
+      for (let i = 0; i < wires.length; i++) {
+        const w = wires[i];
+        let arr = incoming.get(w.toId);
+        if (!arr) { arr = []; incoming.set(w.toId, arr); }
+        arr.push(w);
+      }
+      function anyPoweredIn(objId) {
+        const arr = incoming.get(objId);
+        if (!arr) return false;
+        for (let i = 0; i < arr.length; i++) if (arr[i].powered) return true;
+        return false;
+      }
+
       let changed = true, iterations = 0;
-      while (changed && iterations < 20) {
+      const MAX_ITER = 1000; // Đủ lớn cho mạch cực sâu (VD: bộ cộng nhiều bit).
+      // Trước đây giới hạn 20 vòng, KHÔNG đủ để tín hiệu lan truyền hết qua chuỗi
+      // cổng dài (>~18 tầng nối tiếp) trong 1 lần gọi -> kết quả bị dừng giữa chừng,
+      // sai lệch. Vì mỗi vòng lặp giờ chỉ O(N+M) (đã có chỉ mục), tăng lên 1000 vòng
+      // vẫn cực nhanh (mili-giây), không ảnh hưởng hiệu năng.
+      while (changed && iterations < MAX_ITER) {
         changed = false; iterations++;
         let nextStates = new Map();
         
@@ -267,9 +290,8 @@
           let newPowered = false;
           if (obj.type === 'lever' || obj.type === 'button') newPowered = obj.state;
           else if (obj.type === 'delay') newPowered = obj.outState || false; 
-          else if (obj.type === 'lamp') newPowered = wires.filter(w => w.toId === obj.id).some(w => w.powered);
-          else if (obj.type === 'note') newPowered = wires.filter(w => w.toId === obj.id).some(w => w.powered);
-          else if (['not', 'and', 'or', 'xor', 'nand', 'nor', 'xnor'].includes(obj.type)) newPowered = evaluateGate(obj);
+          else if (obj.type === 'lamp' || obj.type === 'note') newPowered = anyPoweredIn(obj.id);
+          else if (['not', 'and', 'or', 'xor', 'nand', 'nor', 'xnor'].includes(obj.type)) newPowered = evaluateGate(obj, incoming);
           nextStates.set(obj.id, newPowered);
         }
 
@@ -277,11 +299,12 @@
           if (obj.powered !== nextStates.get(obj.id)) { obj.powered = nextStates.get(obj.id); changed = true; }
         }
 
-        wires.forEach(w => {
+        for (let i = 0; i < wires.length; i++) {
+          const w = wires[i];
           const src = objects.get(w.fromId);
           const newWirePowered = src ? src.powered : false;
           if (w.powered !== newWirePowered) { w.powered = newWirePowered; changed = true; }
-        });
+        }
       }
 
       // Phát nốt nhạc khi vừa được cấp điện (cạnh lên)
@@ -294,7 +317,7 @@
 
       for (let obj of objects.values()) {
         if (obj.type === 'delay') {
-          const isInputPowered = wires.filter(w => w.toId === obj.id).some(w => w.powered);
+          const isInputPowered = anyPoweredIn(obj.id);
           if (isInputPowered !== obj.inState) {
             obj.inState = isInputPowered; clearTimeout(obj.timer);      
             obj.timer = setTimeout(() => { obj.outState = isInputPowered; draw(); }, (obj.delayTicks || 4) * TICK_MS); 
@@ -303,11 +326,11 @@
       }
     }
 
-    function evaluateGate(gate) {
-      const incoming = wires.filter(w => w.toId === gate.id);
+    function evaluateGate(gate, incoming) {
+      const arr = incoming.get(gate.id);
       let in1 = false, in2 = false;
-      if (incoming.length >= 1) in1 = incoming[0].powered;
-      if (incoming.length >= 2) in2 = incoming[1].powered;
+      if (arr && arr.length >= 1) in1 = arr[0].powered;
+      if (arr && arr.length >= 2) in2 = arr[1].powered;
       switch(gate.type) {
         case 'not': return !in1; case 'and': return in1 && in2; case 'nand': return !(in1 && in2);
         case 'or': return in1 || in2; case 'nor': return !(in1 || in2);
@@ -323,8 +346,24 @@
     // --- RENDER HÌNH ẢNH (GHOST PREVIEW) ---
     let scale = 1.0, offsetX = window.innerWidth / 2, offsetY = window.innerHeight / 2;
 
+    // draw() = tính lại mạch điện (nặng) + vẽ. Dùng khi trạng thái mạch có thể đổi
+    // (bật/tắt gạt, nối/xóa dây, đặt/xóa linh kiện, timer trễ...).
     function draw() {
       updateCircuit();
+      render();
+    }
+
+    // render() = CHỈ vẽ lại canvas, KHÔNG tính lại mạch điện. Dùng khi chỉ có
+    // thay đổi hiển thị thuần túy (kéo màn hình, zoom, xem trước kéo-thả/dán) để
+    // tránh phải chạy lại toàn bộ mô phỏng mỗi khung hình -> hết bị khựng khi mạch lớn.
+    let renderPending = false;
+    function scheduleRender() {
+      if (renderPending) return;
+      renderPending = true;
+      requestAnimationFrame(() => { renderPending = false; render(); });
+    }
+
+    function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save(); ctx.translate(offsetX, offsetY); ctx.scale(scale, scale);
 
@@ -482,9 +521,9 @@
         ctx.fillStyle = '#f1c40f'; ctx.font = 'bold 12px sans-serif'; ctx.fillText((obj.delayTicks || 4) + 't', cx, cy + 6);
       }
       else if (obj.type === 'lamp') {
-        ctx.fillStyle = obj.powered ? '#f39c12' : '#222'; ctx.fillRect(x + 8, y + 8, GRID - 16, GRID - 16);
-        if (obj.powered) { ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 25; ctx.fillStyle = '#fff7b1'; ctx.fillRect(x + 16, y + 16, GRID - 32, GRID - 32); ctx.shadowBlur = 0; } 
-        else { ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 8, GRID - 16, GRID - 16); }
+        ctx.fillStyle = obj.powered ? '#f39c12' : '#222'; ctx.fillRect(x + 2, y + 2, GRID - 4, GRID - 4);
+        if (obj.powered) { ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 25; ctx.fillStyle = '#fff7b1'; ctx.fillRect(x + 8, y + 8, GRID - 16, GRID - 16); ctx.shadowBlur = 0; } 
+        else { ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 2, y + 2, GRID - 4, GRID - 4); }
       } 
       else if (obj.type === 'note') {
         const note = NOTES[obj.noteIdx || 0] || NOTES[0];
@@ -646,13 +685,21 @@
       draw();
     }
 
-    // PAN, ZOOM, KÉO DI CHUYỂN BẰNG CHUỘT
+    // PAN, ZOOM, KÉO DI CHUYỂN BẰNG CHUỘT / CẢM ỨNG
     let isDraggingView = false, startMouseX = 0, startMouseY = 0, startOffsetX = 0, startOffsetY = 0, isMouseDown = false;
-    
-    canvas.addEventListener('mousedown', e => {
-      isMouseDown = true; startMouseX = e.clientX; startMouseY = e.clientY;
+
+    function updateHover(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const worldX = (clientX - rect.left - offsetX) / scale, worldY = (clientY - rect.top - offsetY) / scale;
+      hoverGx = Math.floor(worldX / GRID); hoverGy = Math.floor(worldY / GRID);
+    }
+
+    // Logic dùng chung cho chuột (mousedown) VÀ cảm ứng 1 ngón (touchstart)
+    function pointerDown(clientX, clientY) {
+      isMouseDown = true; startMouseX = clientX; startMouseY = clientY;
       startOffsetX = offsetX; startOffsetY = offsetY;
-      
+      updateHover(clientX, clientY);
+
       // Xử lý kéo thả vùng chọn (Bấm vào bên trong vùng chọn)
       if (controlState === 'SELECTED' && selectionBox) {
         if (hoverGx >= selectionBox.minX && hoverGx <= selectionBox.maxX && hoverGy >= selectionBox.minY && hoverGy <= selectionBox.maxY) {
@@ -669,54 +716,134 @@
         selectionBox = { minX: hoverGx, maxX: hoverGx, minY: hoverGy, maxY: hoverGy };
         controlState = 'SELECTING'; draw(); return;
       }
-    });
+    }
 
-    window.addEventListener('mousemove', e => {
-      const rect = canvas.getBoundingClientRect();
-      const worldX = (e.clientX - rect.left - offsetX) / scale, worldY = (e.clientY - rect.top - offsetY) / scale;
-      hoverGx = Math.floor(worldX / GRID); hoverGy = Math.floor(worldY / GRID);
+    // Logic dùng chung cho chuột (mousemove) VÀ cảm ứng 1 ngón (touchmove)
+    function pointerMove(clientX, clientY) {
+      updateHover(clientX, clientY);
 
-      // Cập nhật vị trí bóng ma khi DRAGGING hoặc PASTING
-      if (controlState === 'PASTING') { draw(); return; }
+      // Cập nhật vị trí bóng ma khi DRAGGING hoặc PASTING (chỉ vẽ lại, không tính mạch)
+      if (controlState === 'PASTING') { scheduleRender(); return; }
       if (controlState === 'DRAGGING') {
-        dragOffsetX = hoverGx - dragStartGx; dragOffsetY = hoverGy - dragStartGy; draw(); return;
+        dragOffsetX = hoverGx - dragStartGx; dragOffsetY = hoverGy - dragStartGy; scheduleRender(); return;
       }
 
       if (!isMouseDown) return;
-      
+
       if (currentTool === 'control' && controlState === 'SELECTING') {
         selEnd = { gx: hoverGx, gy: hoverGy };
         selectionBox = { minX: Math.min(selStart.gx, selEnd.gx), maxX: Math.max(selStart.gx, selEnd.gx), minY: Math.min(selStart.gy, selEnd.gy), maxY: Math.max(selStart.gy, selEnd.gy) };
-        draw(); return;
+        scheduleRender(); return;
       }
 
-      // Kéo màn hình (Pan)
-      if (Math.hypot(e.clientX - startMouseX, e.clientY - startMouseY) > 5) {
-        isDraggingView = true; offsetX = startOffsetX + (e.clientX - startMouseX); offsetY = startOffsetY + (e.clientY - startMouseY); draw();
+      // Kéo màn hình (Pan) - chỉ vẽ lại, không tính lại mạch điện mỗi khung hình
+      if (Math.hypot(clientX - startMouseX, clientY - startMouseY) > 5) {
+        isDraggingView = true; offsetX = startOffsetX + (clientX - startMouseX); offsetY = startOffsetY + (clientY - startMouseY); scheduleRender();
       }
-    });
+    }
 
-    window.addEventListener('mouseup', e => {
+    // Logic dùng chung cho chuột (mouseup) VÀ cảm ứng 1 ngón (touchend)
+    function pointerUp(clientX, clientY, isCanvasTarget) {
       isMouseDown = false;
       if (controlState === 'DRAGGING') { applyMove(); return; }
-      
+
       if (currentTool === 'control' && controlState === 'SELECTING') {
         controlState = 'SELECTED';
         if (selStart.gx !== selEnd.gx || selStart.gy !== selEnd.gy) {
-          ctxMenu.style.display = 'flex'; ctxMenu.style.left = e.clientX + 'px'; ctxMenu.style.top = e.clientY + 'px';
+          ctxMenu.style.display = 'flex'; ctxMenu.style.left = clientX + 'px'; ctxMenu.style.top = clientY + 'px';
         } else {
-          if (e.target === canvas) handleTap(e.clientX, e.clientY);
+          if (isCanvasTarget) handleTap(clientX, clientY);
         }
         return;
       }
 
-      if (!isDraggingView && e.target === canvas) handleTap(e.clientX, e.clientY);
+      if (!isDraggingView && isCanvasTarget) handleTap(clientX, clientY);
       isDraggingView = false;
-    });
+    }
+
+    canvas.addEventListener('mousedown', e => pointerDown(e.clientX, e.clientY));
+    window.addEventListener('mousemove', e => pointerMove(e.clientX, e.clientY));
+    window.addEventListener('mouseup', e => pointerUp(e.clientX, e.clientY, e.target === canvas));
 
     canvas.addEventListener('wheel', e => {
       e.preventDefault(); const zoom = e.deltaY < 0 ? 1.1 : 0.9; const newScale = Math.min(Math.max(scale * zoom, 0.3), 3.0);
-      offsetX = e.clientX - (e.clientX - offsetX) * (newScale / scale); offsetY = e.clientY - (e.clientY - offsetY) * (newScale / scale); scale = newScale; draw();
+      offsetX = e.clientX - (e.clientX - offsetX) * (newScale / scale); offsetY = e.clientY - (e.clientY - offsetY) * (newScale / scale); scale = newScale; scheduleRender();
+    }, { passive: false });
+
+    // --- ĐIỀU KHIỂN CẢM ỨNG (ĐIỆN THOẠI/MÁY TÍNH BẢNG) ---
+    // 1 ngón: chạm/kéo giống chuột (dùng lại pointerDown/Move/Up ở trên).
+    // 2 ngón: chụm để phóng to/thu nhỏ (pinch-to-zoom), đồng thời có thể kéo màn hình bằng 2 ngón.
+    let isPinching = false;
+    let pinchStartDist = 1, pinchStartScale = 1;
+    let pinchWorldMidX = 0, pinchWorldMidY = 0;
+
+    function touchDistAndMid(t1, t2) {
+      const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      const midX = (t1.clientX + t2.clientX) / 2, midY = (t1.clientY + t2.clientY) / 2;
+      return { dist, midX, midY };
+    }
+
+    function startPinch(t1, t2) {
+      // Hủy mọi thao tác 1 ngón đang dở để chuyển sang chụm 2 ngón cho an toàn
+      isMouseDown = false; isDraggingView = false;
+      if (controlState === 'SELECTING') { controlState = 'IDLE'; selectionBox = null; }
+      if (controlState === 'DRAGGING') { applyMove(); }
+
+      isPinching = true;
+      const { dist, midX, midY } = touchDistAndMid(t1, t2);
+      pinchStartDist = Math.max(dist, 1); pinchStartScale = scale;
+      // Ghi lại tọa độ "thế giới" đang nằm dưới điểm giữa 2 ngón, để giữ nguyên điểm đó
+      // khi phóng to/thu nhỏ (zoom đúng vào chỗ đang chụm, không bị trôi màn hình).
+      pinchWorldMidX = (midX - offsetX) / scale;
+      pinchWorldMidY = (midY - offsetY) / scale;
+    }
+
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        isPinching = false;
+        const t = e.touches[0];
+        pointerDown(t.clientX, t.clientY);
+      } else if (e.touches.length === 2) {
+        startPinch(e.touches[0], e.touches[1]);
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (isPinching && e.touches.length === 2) {
+        const { dist, midX, midY } = touchDistAndMid(e.touches[0], e.touches[1]);
+        const newScale = Math.min(Math.max(pinchStartScale * (dist / pinchStartDist), 0.3), 3.0);
+        offsetX = midX - pinchWorldMidX * newScale;
+        offsetY = midY - pinchWorldMidY * newScale;
+        scale = newScale;
+        scheduleRender();
+        return;
+      }
+      if (e.touches.length === 1 && !isPinching) {
+        const t = e.touches[0];
+        pointerMove(t.clientX, t.clientY);
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', e => {
+      e.preventDefault();
+      if (e.touches.length === 0) {
+        if (isPinching) { isPinching = false; return; } // Nhấc nốt ngón cuối sau khi chụm -> không tính là chạm (tap)
+        const t = e.changedTouches[0];
+        if (t) pointerUp(t.clientX, t.clientY, true);
+      } else if (e.touches.length === 1 && isPinching) {
+        // Từ 2 ngón về còn 1 ngón: kết thúc chụm, chuyển êm sang chế độ kéo 1 ngón tiếp theo
+        isPinching = false;
+        const t = e.touches[0];
+        isMouseDown = true; startMouseX = t.clientX; startMouseY = t.clientY;
+        startOffsetX = offsetX; startOffsetY = offsetY;
+        isDraggingView = true; // đã đang thao tác nên không để nhấc ngón còn lại bị hiểu nhầm thành chạm (tap)
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchcancel', e => {
+      isPinching = false; isMouseDown = false; isDraggingView = false;
     }, { passive: false });
 
     // --- LƯU FILE ---
