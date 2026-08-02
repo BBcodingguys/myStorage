@@ -8,25 +8,23 @@
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body, html { width: 100%; height: 100%; overflow: hidden; background-color: #0f1117; touch-action: none; }
 
-    /* LAYER BAR - Đưa sang bên trái xếp dọc */
+    /* LAYER BAR - Kiểu điều hướng trái/phải (giống chọn Layer trong Geometry Dash) */
     #layer-bar {
       position: absolute; top: 50%; left: 16px; transform: translateY(-50%);
-      display: flex; flex-direction: column; gap: 8px; background: rgba(18, 22, 31, 0.95);
-      padding: 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(18, 22, 31, 0.95);
+      padding: 10px 8px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.15);
       z-index: 9; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    .layer-btn {
-      border: none; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: bold;
-      color: #fff; cursor: pointer; opacity: 0.4; transition: all 0.15s ease;
-      display: flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px;
+    .layer-nav-btn {
+      border: none; background: rgba(255,255,255,0.08); color: #fff; width: 34px; height: 34px;
+      border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
-    .layer-btn.active { opacity: 1; box-shadow: 0 0 10px currentColor; }
-    .layer-btn[data-layer="all"] { background: #1abc9c; }
-    .layer-btn[data-layer="1"] { background: #3498db; }
-    .layer-btn[data-layer="2"] { background: #9b59b6; }
-    .layer-btn[data-layer="3"] { background: #e67e22; }
-    .layer-btn[data-layer="4"] { background: #e84393; }
-    .layer-btn[data-layer="5"] { background: #bdc3c7; color: #000; }
+    .layer-nav-btn:hover { background: #3498db; }
+    .layer-nav-btn:active { transform: scale(0.92); }
+    #layer-current {
+      color: #fff; font-size: 13px; font-weight: bold; min-width: 34px; text-align: center;
+      padding: 4px 2px; user-select: none;
+    }
 
     /* HOTBAR - Dưới cùng */
     #hotbar {
@@ -62,8 +60,11 @@
       padding: 8px; font-size: 16px; text-align: center; border-radius: 6px; outline: none; font-weight: bold;
     }
     #prop-panel input:focus { border-color: #f1c40f; }
+    #prop-panel input[type="color"] { padding: 3px; height: 38px; cursor: pointer; }
+    #prop-panel input[type="text"] { text-transform: none; font-size: 14px; }
     .close-btn { position: absolute; top: 5px; right: 8px; color: #aaa; cursor: pointer; font-size: 16px; font-weight: bold; }
     .close-btn:hover { color: #fff; }
+    #btn-undo:disabled, #btn-redo:disabled { opacity: 0.35; cursor: not-allowed; }
 
     /* MENU NGỮ CẢNH (ĐIỀU KHIỂN) */
     #context-menu {
@@ -76,25 +77,89 @@
       text-align: left; cursor: pointer; border-radius: 4px; font-size: 13px; font-weight: bold;
     }
     .ctx-btn:hover { background: #9b59b6; }
+    #btn-delete-sel:hover { background: #e74c3c; }
+
+    /* BẢNG CÀI ĐẶT */
+    #settings-panel {
+      display: none; position: absolute; top: 20px; right: 20px;
+      background: rgba(15, 17, 23, 0.95); border: 2px solid #3498db; border-radius: 12px;
+      padding: 16px; width: 220px; color: #fff; z-index: 110;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    }
+    #settings-panel h3 { margin: 0 0 12px 0; color: #3498db; font-size: 14px; text-transform: uppercase; text-align: center; }
+    #settings-panel .settings-row { margin-bottom: 14px; }
+    #settings-panel label.settings-label { display: block; margin-bottom: 6px; color: #ccc; font-size: 11px; font-weight: bold; }
+    .segmented { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); }
+    .segmented button {
+      flex: 1; border: none; background: rgba(255,255,255,0.06); color: #ccc; padding: 8px 4px;
+      font-size: 12px; font-weight: bold; cursor: pointer;
+    }
+    .segmented button.active { background: #3498db; color: #fff; }
+
+    /* GIAO DIỆN SÁNG */
+    body.theme-light { background-color: #eef1f5; }
+    body.theme-light #hotbar, body.theme-light #layer-bar, body.theme-light #prop-panel,
+    body.theme-light #settings-panel, body.theme-light #context-menu, body.theme-light #io-bar button {
+      background: rgba(255,255,255,0.96); color: #1a1a1a; border-color: rgba(0,0,0,0.12);
+    }
+    body.theme-light .tool-btn { color: #333; background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+    body.theme-light .ctx-btn, body.theme-light .layer-nav-btn, body.theme-light #layer-current { color: #1a1a1a; }
+    body.theme-light .layer-nav-btn { background: rgba(0,0,0,0.06); }
+    body.theme-light #prop-panel input { background: #fff; color: #1a1a1a; border-color: #ccc; }
+    body.theme-light .segmented button { background: rgba(0,0,0,0.05); color: #333; }
+
+    /* ĐIỆN THOẠI / MÀN HÌNH NHỎ */
+    @media (max-width: 700px) {
+      #io-bar { flex-wrap: wrap; max-width: 60vw; gap: 6px; }
+      #io-bar button { padding: 7px 9px; font-size: 10px; border-radius: 8px; }
+      .tool-btn { min-width: 44px; padding: 5px 7px; font-size: 9px; }
+      .tool-btn .icon { font-size: 14px; }
+      #hotbar { padding: 6px 8px; gap: 4px; bottom: 10px; }
+      #prop-panel, #settings-panel { width: 150px; padding: 10px; right: 10px; top: 10px; }
+      #prop-panel input { padding: 6px; font-size: 14px; }
+      #layer-bar { left: 8px; padding: 8px 6px; }
+      .layer-nav-btn { width: 28px; height: 28px; font-size: 15px; }
+      #context-menu { max-width: 60vw; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- LƯU / TẢI FILE -->
+  <!-- LƯU / TẢI FILE / UNDO / REDO -->
   <div id="io-bar" style="position:absolute; top:16px; left:16px; display:flex; gap:8px; z-index:9;">
     <button id="btn-save" style="border:1px solid rgba(255,255,255,0.15); background: rgba(18,22,31,0.95); color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">💾 Lưu</button>
     <button id="btn-load" style="border:1px solid rgba(255,255,255,0.15); background: rgba(18,22,31,0.95); color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">📂 Tải</button>
+    <button id="btn-undo" title="Hoàn tác (Ctrl+Z)" style="border:1px solid rgba(255,255,255,0.15); background: rgba(18,22,31,0.95); color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">↩️ Undo</button>
+    <button id="btn-redo" title="Làm lại (Ctrl+Y)" style="border:1px solid rgba(255,255,255,0.15); background: rgba(18,22,31,0.95); color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">↪️ Redo</button>
+    <button id="btn-settings" title="Cài đặt" style="border:1px solid rgba(255,255,255,0.15); background: rgba(18,22,31,0.95); color:#fff; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">⚙️</button>
     <input type="file" id="file-input" accept=".json,application/json" style="display:none;">
   </div>
 
-  <!-- BỘ TẦNG (LAYER) -->
+  <!-- BẢNG CÀI ĐẶT -->
+  <div id="settings-panel">
+    <div class="close-btn" id="close-settings">×</div>
+    <h3 id="settings-title">Cài đặt</h3>
+    <div class="settings-row">
+      <label class="settings-label" id="settings-theme-label">GIAO DIỆN</label>
+      <div class="segmented">
+        <button id="theme-dark-btn" class="active">Tối</button>
+        <button id="theme-light-btn">Sáng</button>
+      </div>
+    </div>
+    <div class="settings-row" style="margin-bottom:0;">
+      <label class="settings-label" id="settings-lang-label">NGÔN NGỮ</label>
+      <div class="segmented">
+        <button id="lang-vi-btn" class="active">Tiếng Việt</button>
+        <button id="lang-en-btn">English</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BỘ TẦNG (LAYER) - Kiểu điều hướng trái/phải -->
   <div id="layer-bar">
-    <button class="layer-btn active" data-layer="all" title="Tất cả">All</button>
-    <button class="layer-btn" data-layer="1" title="Tầng 1">1</button>
-    <button class="layer-btn" data-layer="2" title="Tầng 2">2</button>
-    <button class="layer-btn" data-layer="3" title="Tầng 3">3</button>
-    <button class="layer-btn" data-layer="4" title="Tầng 4">4</button>
-    <button class="layer-btn" data-layer="5" title="Tầng 5">5</button>
+    <button id="layer-prev" class="layer-nav-btn">‹</button>
+    <div id="layer-current">All</div>
+    <button id="layer-next" class="layer-nav-btn">›</button>
   </div>
 
   <!-- BẢNG CÔNG CỤ -->
@@ -109,7 +174,7 @@
     <button class="tool-btn" data-tool="and"><span class="icon">🟦</span><span>AND</span></button>
     <button class="tool-btn" data-tool="or"><span class="icon">🟩</span><span>OR</span></button>
     <button class="tool-btn" data-tool="xor"><span class="icon">🟨</span><span>XOR</span></button>
-    <button class="tool-btn" data-tool="control"><span class="icon">✨</span><span>Select</span></button>
+    <button class="tool-btn" data-tool="control"><span class="icon">✨</span><span>Chỉnh sửa</span></button>
     <button class="tool-btn" data-tool="wrench"><span class="icon">🔧</span><span>Chỉnh</span></button>
     <button class="tool-btn" data-tool="eraser"><span class="icon">🧹</span><span>Xóa</span></button>
   </div>
@@ -118,14 +183,29 @@
   <div id="prop-panel">
     <div class="close-btn" id="close-prop">×</div>
     <h3 id="prop-title">Nút nhấn</h3>
-    <label>T.GIAN TICK</label>
-    <input type="number" id="prop-tick" min="1" step="1">
+    <div id="prop-tick-row">
+      <label>T.GIAN TICK</label>
+      <input type="number" id="prop-tick" min="1" step="1">
+    </div>
+    <div id="prop-color-row" style="margin-top:10px;">
+      <label>MÀU SẮC</label>
+      <input type="color" id="prop-color">
+    </div>
+    <div id="prop-label-row" style="margin-top:10px;">
+      <label>CHỮ HIỂN THỊ</label>
+      <input type="text" id="prop-label" maxlength="6" placeholder="(trống)">
+    </div>
+    <div id="prop-textcolor-row" style="margin-top:10px;">
+      <label>MÀU CHỮ</label>
+      <input type="color" id="prop-textcolor">
+    </div>
   </div>
 
   <!-- MENU COPY / BỎ QUA NÚT MOVE VÌ ĐÃ CÓ KÉO THẢ TRỰC TIẾP -->
   <div id="context-menu">
     <button class="ctx-btn" id="btn-copy">Sao chép</button>
     <button class="ctx-btn" id="btn-paste" style="display: none;">Dán (Paste)</button>
+    <button class="ctx-btn" id="btn-delete-sel" style="color:#ff8b7d;">Xóa vùng chọn</button>
   </div>
 
   <canvas id="canvas"></canvas>
@@ -137,6 +217,13 @@
     const ctxMenu = document.getElementById('context-menu');
     const propPanel = document.getElementById('prop-panel');
     const propInput = document.getElementById('prop-tick');
+    const propTickRow = document.getElementById('prop-tick-row');
+    const propColorRow = document.getElementById('prop-color-row');
+    const propLabelRow = document.getElementById('prop-label-row');
+    const propColorInput = document.getElementById('prop-color');
+    const propLabelInput = document.getElementById('prop-label');
+    const propTextColorRow = document.getElementById('prop-textcolor-row');
+    const propTextColorInput = document.getElementById('prop-textcolor');
 
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; draw(); }
     window.addEventListener('resize', resize);
@@ -152,13 +239,153 @@
     let objects = new Map();
     let wires = [];
 
-    const LAYER_COLORS = {
-      1: { off: '#1a5276', on: '#00d2ff' },
-      2: { off: '#5b2c6f', on: '#e056fd' },
-      3: { off: '#7e5109', on: '#ff9f43' },
-      4: { off: '#78281f', on: '#ff7675' },
-      5: { off: '#4d5656', on: '#ffffff' }
+    // --- CÀI ĐẶT: NGÔN NGỮ (VI/EN) & GIAO DIỆN (TỐI/SÁNG) ---
+    let currentLang = 'vi';
+    let currentTheme = 'dark';
+
+    const I18N = {
+      vi: {
+        save: '💾 Lưu', load: '📂 Tải', undo: '↩️ Undo', redo: '↪️ Redo',
+        tool_wire: 'Dây', tool_lever: 'Gạt', tool_button: 'Nút', tool_delay: 'Trễ', tool_lamp: 'Đèn',
+        tool_note: 'Nốt', tool_not: 'NOT', tool_and: 'AND', tool_or: 'OR', tool_xor: 'XOR',
+        tool_control: 'Chỉnh sửa', tool_wrench: 'Chỉnh', tool_eraser: 'Xóa',
+        ctx_copy: 'Sao chép', ctx_paste: 'Dán (Paste)', ctx_delete: 'Xóa vùng chọn',
+        prop_tick: 'T.GIAN TICK', prop_color: 'MÀU SẮC', prop_label: 'CHỮ HIỂN THỊ', prop_textcolor: 'MÀU CHỮ',
+        settings_title: 'CÀI ĐẶT', settings_theme: 'GIAO DIỆN', theme_dark: 'Tối', theme_light: 'Sáng',
+        settings_lang: 'NGÔN NGỮ', layer_all: 'All', max_input: 'Tối đa {n} đầu vào!',
+        invalid_file: 'File không hợp lệ! Vui lòng chọn đúng file JSON đã lưu từ sandbox này.',
+        titles: { delay: 'CỤC TRỄ (DELAY)', button: 'NÚT NHẤN', lever: 'CẦN GẠT', lamp: 'ĐÈN' },
+        batch_title: 'CHỈNH {n} KHỐI'
+      },
+      en: {
+        save: '💾 Save', load: '📂 Load', undo: '↩️ Undo', redo: '↪️ Redo',
+        tool_wire: 'Wire', tool_lever: 'Switch', tool_button: 'Button', tool_delay: 'Delay', tool_lamp: 'Lamp',
+        tool_note: 'Note', tool_not: 'NOT', tool_and: 'AND', tool_or: 'OR', tool_xor: 'XOR',
+        tool_control: 'Edit', tool_wrench: 'Config', tool_eraser: 'Erase',
+        ctx_copy: 'Copy', ctx_paste: 'Paste', ctx_delete: 'Delete selection',
+        prop_tick: 'TICK TIME', prop_color: 'COLOR', prop_label: 'DISPLAY TEXT', prop_textcolor: 'TEXT COLOR',
+        settings_title: 'SETTINGS', settings_theme: 'THEME', theme_dark: 'Dark', theme_light: 'Light',
+        settings_lang: 'LANGUAGE', layer_all: 'All', max_input: 'Max {n} inputs!',
+        invalid_file: 'Invalid file! Please choose a JSON file saved from this sandbox.',
+        titles: { delay: 'DELAY BLOCK', button: 'PUSH BUTTON', lever: 'SWITCH', lamp: 'LAMP' },
+        batch_title: 'EDIT {n} BLOCKS'
+      }
     };
+
+    function applyLanguage() {
+      const t = I18N[currentLang];
+      document.getElementById('btn-save').textContent = t.save;
+      document.getElementById('btn-load').textContent = t.load;
+      document.getElementById('btn-undo').textContent = t.undo;
+      document.getElementById('btn-redo').textContent = t.redo;
+      const toolKeys = ['wire','lever','button','delay','lamp','note','not','and','or','xor','control','wrench','eraser'];
+      toolKeys.forEach(k => {
+        const btn = document.querySelector(`.tool-btn[data-tool="${k}"] span:last-child`);
+        if (btn) btn.textContent = t['tool_' + k];
+      });
+      document.getElementById('btn-copy').textContent = t.ctx_copy;
+      document.getElementById('btn-paste').textContent = t.ctx_paste;
+      document.getElementById('btn-delete-sel').textContent = t.ctx_delete;
+      document.querySelector('#prop-tick-row label').textContent = t.prop_tick;
+      document.querySelector('#prop-color-row label').textContent = t.prop_color;
+      document.querySelector('#prop-label-row label').textContent = t.prop_label;
+      document.querySelector('#prop-textcolor-row label').textContent = t.prop_textcolor;
+      document.getElementById('settings-title').textContent = t.settings_title;
+      document.getElementById('settings-theme-label').textContent = t.settings_theme;
+      document.getElementById('theme-dark-btn').textContent = t.theme_dark;
+      document.getElementById('theme-light-btn').textContent = t.theme_light;
+      document.getElementById('settings-lang-label').textContent = t.settings_lang;
+      document.getElementById('layer-current').textContent = viewLayer === 'all' ? t.layer_all : viewLayer;
+    }
+
+    function setTheme(theme) {
+      currentTheme = theme;
+      document.body.classList.toggle('theme-light', theme === 'light');
+      document.getElementById('theme-dark-btn').classList.toggle('active', theme === 'dark');
+      document.getElementById('theme-light-btn').classList.toggle('active', theme === 'light');
+      scheduleRender();
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.getElementById('lang-vi-btn').classList.toggle('active', lang === 'vi');
+      document.getElementById('lang-en-btn').classList.toggle('active', lang === 'en');
+      applyLanguage();
+    }
+
+    // Giữ menu ngữ cảnh / bảng thuộc tính trong màn hình (quan trọng trên điện thoại màn hình nhỏ)
+    function clampToViewport(el, x, y) {
+      el.style.left = x + 'px'; el.style.top = y + 'px';
+      const rect = el.getBoundingClientRect();
+      let nx = x, ny = y;
+      if (rect.right > window.innerWidth) nx -= (rect.right - window.innerWidth) + 8;
+      if (rect.bottom > window.innerHeight) ny -= (rect.bottom - window.innerHeight) + 8;
+      if (nx < 4) nx = 4; if (ny < 4) ny = 4;
+      el.style.left = nx + 'px'; el.style.top = ny + 'px';
+    }
+
+    // --- UNDO / REDO & CẢNH BÁO CHƯA LƯU ---
+    let history = [];       // Mảng các snapshot trạng thái (chuỗi JSON)
+    let historyIndex = -1;  // Vị trí hiện tại trong history
+    const MAX_HISTORY = 60;
+    let hasUnsavedChanges = false;
+
+    function snapshotState() {
+      return JSON.stringify({
+        objects: Array.from(objects.values()).map(o => { const { timer, ...rest } = o; return rest; }),
+        wires: wires.map(w => ({ ...w }))
+      });
+    }
+
+    function restoreState(snapStr) {
+      const snap = JSON.parse(snapStr);
+      for (let obj of objects.values()) { if (obj.timer) clearTimeout(obj.timer); }
+      objects = new Map();
+      (snap.objects || []).forEach(o => objects.set(o.id, { ...o, timer: null }));
+      wires = (snap.wires || []).map(w => ({ ...w }));
+      selectedSourceId = null; controlState = 'IDLE'; selectionBox = null;
+      ctxMenu.style.display = 'none'; propPanel.style.display = 'none';
+    }
+
+    // Gọi ngay SAU khi một thao tác chỉnh sửa của người dùng đã hoàn tất
+    function commitHistory() {
+      history = history.slice(0, historyIndex + 1);
+      history.push(snapshotState());
+      if (history.length > MAX_HISTORY) history.shift(); else historyIndex++;
+      historyIndex = history.length - 1;
+      hasUnsavedChanges = true;
+      updateUndoRedoButtons();
+    }
+
+    function undo() {
+      if (historyIndex <= 0) return;
+      historyIndex--;
+      restoreState(history[historyIndex]);
+      hasUnsavedChanges = true;
+      updateUndoRedoButtons(); draw();
+    }
+
+    function redo() {
+      if (historyIndex >= history.length - 1) return;
+      historyIndex++;
+      restoreState(history[historyIndex]);
+      hasUnsavedChanges = true;
+      updateUndoRedoButtons(); draw();
+    }
+
+    function updateUndoRedoButtons() {
+      const btnUndo = document.getElementById('btn-undo'), btnRedo = document.getElementById('btn-redo');
+      if (btnUndo) btnUndo.disabled = historyIndex <= 0;
+      if (btnRedo) btnRedo.disabled = historyIndex >= history.length - 1;
+    }
+
+    const MAX_LAYER = 50; // Tầng dây cao nhất (từ 1 -> MAX_LAYER, cộng với "All")
+    // Sinh màu cho từng tầng dây theo công thức (không cần khai báo tay từng màu như trước) -
+    // dùng "góc vàng" (137.5°) để các tầng liền kề luôn có màu khác biệt rõ ràng.
+    function getLayerColors(layerNum) {
+      const hue = Math.round((layerNum * 137.508) % 360);
+      return { off: `hsl(${hue}, 45%, 28%)`, on: `hsl(${hue}, 90%, 60%)` };
+    }
 
     // --- BẢNG NỐT NHẠC C4 -> C6 (25 nốt, bán cung) ---
     const NOTE_LETTERS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
@@ -204,9 +431,40 @@
     let dragStartGx = 0, dragStartGy = 0; // Điểm bắt đầu kéo
     let dragOffsetX = 0, dragOffsetY = 0; // Khoảng cách đã kéo
 
+    // --- RESIZE (chỉ khi đang chọn đúng 1 khối, không phải chọn cả vùng) ---
+    let resizeObjId = null, resizeEdge = null, resizeAnchor = 0;
+    const RESIZE_HANDLE_R = 9; // bán kính quả bóng kéo resize (px màn hình)
+
+    // Trả về linh kiện DUY NHẤT nếu selectionBox hiện tại khớp CHÍNH XÁC với đúng 1 khối
+    function getSingleSelectedObject() {
+      if (!selectionBox) return null;
+      for (let obj of objects.values()) {
+        const w = obj.w || 1, h = obj.h || 1;
+        if (obj.gx === selectionBox.minX && obj.gy === selectionBox.minY &&
+            obj.gx + w - 1 === selectionBox.maxX && obj.gy + h - 1 === selectionBox.maxY) {
+          return obj;
+        }
+      }
+      return null;
+    }
+
+    // Toạ độ THẾ GIỚI (world, chưa qua scale/offset) của 4 quả bóng resize quanh 1 khối
+    function getResizeHandles(obj) {
+      const w = obj.w || 1, h = obj.h || 1;
+      const left = obj.gx * GRID, top = obj.gy * GRID, right = (obj.gx + w) * GRID, bottom = (obj.gy + h) * GRID;
+      const midX = (left + right) / 2, midY = (top + bottom) / 2;
+      return {
+        top:    { x: midX, y: top },
+        bottom: { x: midX, y: bottom },
+        left:   { x: left, y: midY },
+        right:  { x: right, y: midY }
+      };
+    }
+
     function getObjectAt(gx, gy) {
       for (let obj of objects.values()) {
-        if (obj.gx === gx && obj.gy === gy) return obj;
+        const w = obj.w || 1, h = obj.h || 1;
+        if (gx >= obj.gx && gx <= obj.gx + w - 1 && gy >= obj.gy && gy <= obj.gy + h - 1) return obj;
       }
       return null;
     }
@@ -226,35 +484,109 @@
       });
     });
 
-    document.querySelectorAll('.layer-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        viewLayer = e.currentTarget.dataset.layer;
-        if (viewLayer !== 'all') activeDrawLayer = parseInt(viewLayer);
-        selectedSourceId = null; draw();
-      });
+    // ĐIỀU HƯỚNG LAYER KIỂU GEOMETRY DASH: '<' 'All/1/2/.../MAX_LAYER' '>'
+    function setViewLayer(newLayer) {
+      viewLayer = newLayer; // 'all' hoặc số nguyên
+      if (viewLayer !== 'all') activeDrawLayer = viewLayer;
+      document.getElementById('layer-current').textContent = viewLayer === 'all' ? I18N[currentLang].layer_all : viewLayer;
+      selectedSourceId = null; draw();
+    }
+    document.getElementById('layer-prev').addEventListener('click', () => {
+      if (viewLayer === 'all') return;
+      setViewLayer(viewLayer === 1 ? 'all' : viewLayer - 1);
+    });
+    document.getElementById('layer-next').addEventListener('click', () => {
+      if (viewLayer === 'all') setViewLayer(1);
+      else if (viewLayer < MAX_LAYER) setViewLayer(viewLayer + 1);
     });
 
     // BẢNG CỜ LÊ (CẬP NHẬT TRỰC TIẾP)
-    let targetEditObjId = null;
-    document.getElementById('close-prop').onclick = () => { propPanel.style.display = 'none'; };
+    let targetEditObjId = null;   // Chế độ sửa 1 khối
+    let targetEditObjIds = null;  // Chế độ sửa NHIỀU khối cùng lúc (khi kéo vùng bằng công cụ Chỉnh)
+    document.getElementById('close-prop').onclick = () => {
+      propPanel.style.display = 'none';
+      if (currentTool === 'wrench') { controlState = 'IDLE'; selectionBox = null; draw(); }
+    };
+
+    function currentEditIds() { return targetEditObjIds || (targetEditObjId ? [targetEditObjId] : []); }
+
     propInput.addEventListener('input', (e) => {
-      const obj = objects.get(targetEditObjId);
       let val = parseInt(e.target.value);
-      if (!isNaN(val) && val > 0 && obj) {
+      if (isNaN(val) || val <= 0) return;
+      currentEditIds().forEach(id => {
+        const obj = objects.get(id); if (!obj) return;
         if (obj.type === 'delay') obj.delayTicks = val;
         else if (obj.type === 'button') obj.durationTicks = val;
-        draw();
-      }
+      });
+      draw();
     });
 
     function openPropPanel(obj) {
-      targetEditObjId = obj.id;
-      document.getElementById('prop-title').textContent = obj.type === 'delay' ? "CỤC TRỄ (DELAY)" : "NÚT NHẤN";
-      propInput.value = (obj.type === 'delay' ? obj.delayTicks : obj.durationTicks) || 4;
+      targetEditObjId = obj.id; targetEditObjIds = null;
+      const titles = I18N[currentLang].titles;
+      document.getElementById('prop-title').textContent = titles[obj.type] || obj.type.toUpperCase();
+
+      const hasTick = obj.type === 'delay' || obj.type === 'button';
+      propTickRow.style.display = hasTick ? 'block' : 'none';
+      if (hasTick) propInput.value = (obj.type === 'delay' ? obj.delayTicks : obj.durationTicks) || 4;
+
+      const hasColor = ['lever', 'button', 'lamp'].includes(obj.type);
+      propColorRow.style.display = hasColor ? 'block' : 'none';
+      if (hasColor) propColorInput.value = obj.color || DEFAULT_COLORS[obj.type];
+
+      const hasLabel = obj.type === 'button' || obj.type === 'lamp';
+      propLabelRow.style.display = hasLabel ? 'block' : 'none';
+      if (hasLabel) propLabelInput.value = obj.label || '';
+
+      propTextColorRow.style.display = hasLabel ? 'block' : 'none'; // Màu chữ: chỉ áp dụng cho nút & đèn (giống chữ hiển thị)
+      if (hasLabel) propTextColorInput.value = obj.textColor || DEFAULT_TEXT_COLORS[obj.type];
+
       propPanel.style.display = 'block';
     }
+
+    // Mở bảng CHỈNH HÀNG LOẠT cho nhiều khối được chọn cùng lúc (công cụ Chỉnh - kéo chọn vùng)
+    function openBatchPropPanel(objList) {
+      targetEditObjId = null; targetEditObjIds = objList.map(o => o.id);
+      document.getElementById('prop-title').textContent = I18N[currentLang].batch_title.replace('{n}', objList.length);
+
+      // Luôn hiện đủ các hàng vì vùng chọn có thể gồm nhiều loại khối khác nhau;
+      // mỗi ô chỉ áp dụng cho những khối có thuộc tính tương ứng.
+      propTickRow.style.display = 'block';
+      propColorRow.style.display = 'block';
+      propLabelRow.style.display = 'block';
+      propTextColorRow.style.display = 'block';
+
+      const firstTick = objList.find(o => o.type === 'delay' || o.type === 'button');
+      propInput.value = firstTick ? ((firstTick.type === 'delay' ? firstTick.delayTicks : firstTick.durationTicks) || 4) : 4;
+
+      const firstColor = objList.find(o => ['lever', 'button', 'lamp'].includes(o.type));
+      propColorInput.value = firstColor ? (firstColor.color || DEFAULT_COLORS[firstColor.type]) : '#f1c40f';
+
+      const firstLabelable = objList.find(o => o.type === 'button' || o.type === 'lamp');
+      propLabelInput.value = firstLabelable ? (firstLabelable.label || '') : '';
+      propTextColorInput.value = firstLabelable ? (firstLabelable.textColor || DEFAULT_TEXT_COLORS[firstLabelable.type]) : '#ffffff';
+
+      propPanel.style.display = 'block';
+    }
+
+    propColorInput.addEventListener('input', (e) => {
+      currentEditIds().forEach(id => { const obj = objects.get(id); if (obj) obj.color = e.target.value; });
+      scheduleRender();
+    });
+    propLabelInput.addEventListener('input', (e) => {
+      const val = e.target.value.slice(0, 6);
+      currentEditIds().forEach(id => { const obj = objects.get(id); if (obj && (obj.type === 'button' || obj.type === 'lamp')) obj.label = val; });
+      scheduleRender();
+    });
+    propTextColorInput.addEventListener('input', (e) => {
+      currentEditIds().forEach(id => { const obj = objects.get(id); if (obj && (obj.type === 'button' || obj.type === 'lamp')) obj.textColor = e.target.value; });
+      scheduleRender();
+    });
+    // Chỉ lưu vào lịch sử Undo khi người dùng HOÀN TẤT chỉnh (thả màu / rời ô nhập / bấm Enter),
+    // tránh việc gõ từng ký tự hay kéo từng điểm trên bảng màu tạo ra hàng chục bước Undo vụn vặt.
+    [propInput, propColorInput, propLabelInput, propTextColorInput].forEach(inp => {
+      inp.addEventListener('change', () => commitHistory());
+    });
 
     // TÍNH TOÁN DÒNG ĐIỆN
     // Tối ưu: xây chỉ mục "dây đi vào mỗi linh kiện" 1 lần/lượt tính, thay vì
@@ -370,7 +702,7 @@
       // Kẻ ô lưới
       const left = Math.floor((-offsetX / scale) / GRID) - 1, right = Math.floor(((canvas.width - offsetX) / scale) / GRID) + 1;
       const top = Math.floor((-offsetY / scale) / GRID) - 1, bottom = Math.floor(((canvas.height - offsetY) / scale) / GRID) + 1;
-      ctx.strokeStyle = '#181c26'; ctx.lineWidth = 1 / scale; ctx.beginPath();
+      ctx.strokeStyle = currentTheme === 'light' ? '#d7dce3' : '#181c26'; ctx.lineWidth = 1 / scale; ctx.beginPath();
       for (let x = left; x <= right; x++) { ctx.moveTo(x * GRID, top * GRID); ctx.lineTo(x * GRID, bottom * GRID); }
       for (let y = top; y <= bottom; y++) { ctx.moveTo(left * GRID, y * GRID); ctx.lineTo(right * GRID, y * GRID); }
       ctx.stroke();
@@ -387,7 +719,7 @@
 
       // 1. Vẽ dây bình thường
       wires.forEach(w => {
-        if (viewLayer !== 'all' && parseInt(viewLayer) !== w.layer) return;
+        if (viewLayer !== 'all' && viewLayer !== w.layer) return;
         if (draggingObjIds.has(w.fromId) && draggingObjIds.has(w.toId)) return; // Bỏ qua dây đang bị kéo
         drawWire(w);
       });
@@ -414,7 +746,7 @@
         ctx.globalAlpha = 0.6; // Làm mờ
 
         wires.forEach(w => {
-          if (draggingObjIds.has(w.fromId) && draggingObjIds.has(w.toId) && (viewLayer === 'all' || parseInt(viewLayer) === w.layer)) drawWire(w);
+          if (draggingObjIds.has(w.fromId) && draggingObjIds.has(w.toId) && (viewLayer === 'all' || viewLayer === w.layer)) drawWire(w);
         });
         for (let obj of objects.values()) {
           if (draggingObjIds.has(obj.id)) drawObject(obj);
@@ -446,15 +778,40 @@
       }
 
       // 5. VẼ KHUNG CHỌN CHUNG
-      if ((currentTool === 'control' && selectionBox && controlState !== 'DRAGGING') || controlState === 'SELECTING') {
+      if (controlState === 'RESIZING') {
+        const robj = objects.get(resizeObjId);
+        if (robj) {
+          const rw = robj.w || 1, rh = robj.h || 1;
+          ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 3 / scale; ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 12;
+          ctx.strokeRect(robj.gx * GRID, robj.gy * GRID, rw * GRID, rh * GRID);
+          ctx.shadowBlur = 0;
+        }
+      } else if (((currentTool === 'control' || currentTool === 'wrench') && selectionBox && controlState !== 'DRAGGING') || controlState === 'SELECTING') {
         ctx.fillStyle = 'rgba(155, 89, 182, 0.2)';
         ctx.fillRect(selectionBox.minX * GRID, selectionBox.minY * GRID, (selectionBox.maxX - selectionBox.minX + 1) * GRID, (selectionBox.maxY - selectionBox.minY + 1) * GRID);
         ctx.strokeStyle = '#9b59b6'; ctx.lineWidth = 2 / scale; ctx.setLineDash([8 / scale, 6 / scale]);
         ctx.strokeRect(selectionBox.minX * GRID, selectionBox.minY * GRID, (selectionBox.maxX - selectionBox.minX + 1) * GRID, (selectionBox.maxY - selectionBox.minY + 1) * GRID);
         ctx.setLineDash([]);
-        
-        // Nút Mũi Tên Di Chuyển (Drag Handle) ở chính giữa vùng chọn
-        if (controlState === 'SELECTED') {
+
+        const singleObj = (currentTool === 'control' && controlState === 'SELECTED') ? getSingleSelectedObject() : null;
+
+        if (singleObj) {
+          // CHỌN ĐÚNG 1 KHỐI -> viền sáng lên + 4 quả bóng resize giữa các cạnh
+          const rw = singleObj.w || 1, rh = singleObj.h || 1;
+          ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 3 / scale; ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 10;
+          ctx.strokeRect(singleObj.gx * GRID, singleObj.gy * GRID, rw * GRID, rh * GRID);
+          ctx.shadowBlur = 0;
+
+          const handles = getResizeHandles(singleObj);
+          for (const edge of ['top', 'bottom', 'left', 'right']) {
+            const hpt = handles[edge];
+            ctx.fillStyle = '#fff'; ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 2 / scale;
+            ctx.beginPath(); ctx.arc(hpt.x, hpt.y, RESIZE_HANDLE_R / scale, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          }
+        }
+
+        // Nút Mũi Tên Di Chuyển (Drag Handle) ở chính giữa vùng chọn - chỉ cho công cụ Chỉnh sửa (control)
+        if (currentTool === 'control' && controlState === 'SELECTED') {
           const cx = ((selectionBox.minX + selectionBox.maxX + 1) / 2) * GRID;
           const cy = ((selectionBox.minY + selectionBox.maxY + 1) / 2) * GRID;
           ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -482,10 +839,10 @@
       const objB = (controlState==='PASTING') ? clipboard.objects.find(o=>o.id===w.toId) : objects.get(w.toId);
       if (!objA || !objB) return;
 
-      const ax = objA.gx * GRID + GRID / 2, ay = objA.gy * GRID + GRID / 2;
-      const bx = objB.gx * GRID + GRID / 2, by = objB.gy * GRID + GRID / 2;
+      const ax = objA.gx * GRID + (objA.w || 1) * GRID / 2, ay = objA.gy * GRID + (objA.h || 1) * GRID / 2;
+      const bx = objB.gx * GRID + (objB.w || 1) * GRID / 2, by = objB.gy * GRID + (objB.h || 1) * GRID / 2;
 
-      const style = LAYER_COLORS[w.layer] || LAYER_COLORS[1];
+      const style = getLayerColors(w.layer || 1);
       ctx.strokeStyle = w.powered ? style.on : style.off; ctx.lineWidth = w.powered ? 4 : 2.5;
       if (w.powered) { ctx.shadowColor = style.on; ctx.shadowBlur = 10; }
 
@@ -498,48 +855,66 @@
       ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-4, -4); ctx.lineTo(-4, 4); ctx.closePath(); ctx.fill(); ctx.restore();
     }
 
+    const DEFAULT_COLORS = { lever: '#2ecc71', button: '#e74c3c', lamp: '#f39c12' };
+    const DEFAULT_TEXT_COLORS = { button: '#ffffff', lamp: '#3a2a00' };
+
+    // Làm sáng/tối 1 màu hex theo % (âm = tối hơn, dương = sáng hơn)
+    function shadeColor(hex, percent) {
+      hex = (hex || '#888888').replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const num = parseInt(hex, 16);
+      let r = (num >> 16) + percent, g = ((num >> 8) & 0xff) + percent, b = (num & 0xff) + percent;
+      r = Math.max(Math.min(255, r), 0); g = Math.max(Math.min(255, g), 0); b = Math.max(Math.min(255, b), 0);
+      return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+    }
+
     function drawObject(obj) {
-      const x = obj.gx * GRID, y = obj.gy * GRID, cx = x + GRID / 2, cy = y + GRID / 2;
+      const w = obj.w || 1, h = obj.h || 1;
+      const x = obj.gx * GRID, y = obj.gy * GRID, W = w * GRID, H = h * GRID, cx = x + W / 2, cy = y + H / 2;
+      const sizeMul = Math.min(w, h); // hệ số phóng các chi tiết nhỏ (nút gạt, nốt nhạc...) theo kích thước khối
 
       if (obj.type === 'lever') {
-        ctx.fillStyle = obj.state ? '#1e382b' : '#2c3e50'; ctx.fillRect(x + 5, y + 5, GRID - 10, GRID - 10);
-        ctx.strokeStyle = obj.state ? '#2ecc71' : '#7f8c8d'; ctx.lineWidth = 2; ctx.strokeRect(x + 5, y + 5, GRID - 10, GRID - 10);
-        ctx.fillStyle = '#111'; ctx.fillRect(cx - 16, cy - 6, 32, 12);
-        ctx.fillStyle = obj.state ? '#2ecc71' : '#e74c3c'; ctx.beginPath(); ctx.arc(obj.state ? cx + 8 : cx - 8, cy, 7, 0, Math.PI * 2); ctx.fill();
+        const onColor = obj.color || DEFAULT_COLORS.lever;
+        ctx.fillStyle = obj.state ? shadeColor(onColor, -70) : '#2c3e50'; ctx.fillRect(x + 5, y + 5, W - 10, H - 10);
+        ctx.strokeStyle = obj.state ? onColor : '#7f8c8d'; ctx.lineWidth = 2; ctx.strokeRect(x + 5, y + 5, W - 10, H - 10);
+        ctx.fillStyle = '#111'; ctx.fillRect(cx - 16 * sizeMul, cy - 6 * sizeMul, 32 * sizeMul, 12 * sizeMul);
+        ctx.fillStyle = obj.state ? onColor : '#e74c3c'; ctx.beginPath(); ctx.arc(obj.state ? cx + 8 * sizeMul : cx - 8 * sizeMul, cy, 7 * sizeMul, 0, Math.PI * 2); ctx.fill();
       } 
       else if (obj.type === 'button') {
-        ctx.fillStyle = '#34495e'; ctx.fillRect(x + 10, y + 10, GRID - 20, GRID - 20);
+        const base = obj.color || DEFAULT_COLORS.button;
+        ctx.fillStyle = '#34495e'; ctx.fillRect(x + 10, y + 10, W - 20, H - 20);
         const offset = obj.state ? 3 : 0;
-        ctx.fillStyle = obj.state ? '#c0392b' : '#e74c3c'; ctx.fillRect(x + 16, y + 16 + offset, GRID - 32, GRID - 32 - offset);
-        ctx.strokeStyle = obj.state ? '#e74c3c' : '#c0392b'; ctx.lineWidth = 2; ctx.strokeRect(x + 10, y + 10, GRID - 20, GRID - 20);
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText((obj.durationTicks || 4) + 't', cx, cy + offset);
+        ctx.fillStyle = obj.state ? shadeColor(base, -25) : base; ctx.fillRect(x + 16, y + 16 + offset, W - 32, H - 32 - offset);
+        ctx.strokeStyle = obj.state ? base : shadeColor(base, -25); ctx.lineWidth = 2; ctx.strokeRect(x + 10, y + 10, W - 20, H - 20);
+        if (obj.label) { ctx.fillStyle = obj.textColor || DEFAULT_TEXT_COLORS.button; ctx.font = `bold ${Math.round(Math.min(W,H) * 0.18)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(obj.label, cx, cy + offset); }
       }
       else if (obj.type === 'delay') {
-        ctx.fillStyle = obj.powered ? '#5b2c6f' : '#2c3e50'; ctx.fillRect(x + 8, y + 10, GRID - 16, GRID - 20);
-        ctx.strokeStyle = obj.powered ? '#9b59b6' : '#95a5a6'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 10, GRID - 16, GRID - 20);
-        ctx.fillStyle = obj.powered ? '#e056fd' : '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('DELAY', cx, cy - 6);
-        ctx.fillStyle = '#f1c40f'; ctx.font = 'bold 12px sans-serif'; ctx.fillText((obj.delayTicks || 4) + 't', cx, cy + 6);
+        ctx.fillStyle = obj.powered ? '#5b2c6f' : '#2c3e50'; ctx.fillRect(x + 8, y + 10, W - 16, H - 20);
+        ctx.strokeStyle = obj.powered ? '#9b59b6' : '#95a5a6'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 10, W - 16, H - 20);
+        ctx.fillStyle = obj.powered ? '#e056fd' : '#fff'; ctx.font = `bold ${Math.round(Math.min(W,H) * 0.15)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('DELAY', cx, cy);
       }
       else if (obj.type === 'lamp') {
-        ctx.fillStyle = obj.powered ? '#f39c12' : '#222'; ctx.fillRect(x + 2, y + 2, GRID - 4, GRID - 4);
-        if (obj.powered) { ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 25; ctx.fillStyle = '#fff7b1'; ctx.fillRect(x + 8, y + 8, GRID - 16, GRID - 16); ctx.shadowBlur = 0; } 
-        else { ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 2, y + 2, GRID - 4, GRID - 4); }
+        const onColor = obj.color || DEFAULT_COLORS.lamp;
+        ctx.fillStyle = obj.powered ? onColor : '#222'; ctx.fillRect(x + 2, y + 2, W - 4, H - 4);
+        if (obj.powered) { ctx.shadowColor = onColor; ctx.shadowBlur = 25; ctx.fillStyle = shadeColor(onColor, 130); ctx.fillRect(x + 8, y + 8, W - 16, H - 16); ctx.shadowBlur = 0; } 
+        else { ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 2, y + 2, W - 4, H - 4); }
+        if (obj.label) { ctx.fillStyle = obj.textColor || (obj.powered ? DEFAULT_TEXT_COLORS.lamp : '#aaa'); ctx.font = `bold ${Math.round(Math.min(W,H) * 0.18)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(obj.label, cx, cy); }
       } 
       else if (obj.type === 'note') {
         const note = NOTES[obj.noteIdx || 0] || NOTES[0];
-        ctx.fillStyle = obj.powered ? '#0e6655' : '#222'; ctx.fillRect(x + 8, y + 8, GRID - 16, GRID - 16);
+        ctx.fillStyle = obj.powered ? '#0e6655' : '#222'; ctx.fillRect(x + 8, y + 8, W - 16, H - 16);
         if (obj.powered) { ctx.shadowColor = '#1abc9c'; ctx.shadowBlur = 22; }
-        ctx.strokeStyle = obj.powered ? '#1abc9c' : '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 8, GRID - 16, GRID - 16);
+        ctx.strokeStyle = obj.powered ? '#1abc9c' : '#555'; ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 8, W - 16, H - 16);
         ctx.shadowBlur = 0;
-        ctx.fillStyle = obj.powered ? '#a2f5e2' : '#ccc'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('♪', cx, cy - 10);
-        ctx.fillStyle = obj.powered ? '#fff' : '#aaa'; ctx.font = 'bold 10px sans-serif';
-        ctx.fillText(note.name, cx, cy + 9);
+        ctx.fillStyle = obj.powered ? '#a2f5e2' : '#ccc'; ctx.font = `bold ${Math.round(14 * sizeMul)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('♪', cx, cy - 10 * sizeMul);
+        ctx.fillStyle = obj.powered ? '#fff' : '#aaa'; ctx.font = `bold ${Math.round(10 * sizeMul)}px sans-serif`;
+        ctx.fillText(note.name, cx, cy + 9 * sizeMul);
       }
       else if (['not', 'and', 'or', 'xor', 'nand', 'nor', 'xnor'].includes(obj.type)) {
-        ctx.fillStyle = obj.powered ? '#1e4620' : '#2c3e50'; ctx.fillRect(x + 10, y + 10, GRID - 20, GRID - 20);
-        ctx.strokeStyle = obj.powered ? '#2ecc71' : '#95a5a6'; ctx.lineWidth = 2; ctx.strokeRect(x + 10, y + 10, GRID - 20, GRID - 20);
-        ctx.fillStyle = obj.powered ? '#2ecc71' : '#fff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(obj.type.toUpperCase(), cx, cy);
+        ctx.fillStyle = obj.powered ? '#1e4620' : '#2c3e50'; ctx.fillRect(x + 10, y + 10, W - 20, H - 20);
+        ctx.strokeStyle = obj.powered ? '#2ecc71' : '#95a5a6'; ctx.lineWidth = 2; ctx.strokeRect(x + 10, y + 10, W - 20, H - 20);
+        ctx.fillStyle = obj.powered ? '#2ecc71' : '#fff'; ctx.font = `bold ${Math.round(Math.min(W,H) * 0.17)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(obj.type.toUpperCase(), cx, cy);
       }
     }
 
@@ -568,6 +943,19 @@
       controlState = 'PASTING'; ctxMenu.style.display = 'none'; draw();
     };
 
+    // XÓA VÙNG CHỌN (công cụ Chỉnh sửa: kéo chọn vùng -> Xóa)
+    document.getElementById('btn-delete-sel').onclick = () => {
+      if (!selectionBox) return;
+      const toDelete = [];
+      for (let obj of objects.values()) {
+        if (obj.gx >= selectionBox.minX && obj.gx <= selectionBox.maxX && obj.gy >= selectionBox.minY && obj.gy <= selectionBox.maxY) toDelete.push(obj.id);
+      }
+      toDelete.forEach(id => deleteObject(id));
+      ctxMenu.style.display = 'none'; controlState = 'IDLE'; selectionBox = null;
+      if (toDelete.length > 0) commitHistory();
+      draw();
+    };
+
     function applyPaste() {
       if (clipboard.objects.length === 0) return;
       const idMap = {};
@@ -587,7 +975,7 @@
         wires.push({ ...cw, id: generateID(), fromId: idMap[cw.fromId], toId: idMap[cw.toId] });
       });
 
-      controlState = 'IDLE'; draw();
+      controlState = 'IDLE'; commitHistory(); draw();
     }
 
     function applyMove() {
@@ -610,7 +998,7 @@
       selectionBox.minX += dragOffsetX; selectionBox.maxX += dragOffsetX;
       selectionBox.minY += dragOffsetY; selectionBox.maxY += dragOffsetY;
       
-      dragOffsetX = 0; dragOffsetY = 0; controlState = 'SELECTED'; draw();
+      dragOffsetX = 0; dragOffsetY = 0; controlState = 'SELECTED'; commitHistory(); draw();
     }
 
     // TƯƠNG TÁC CHÍNH (CLICK/TAP)
@@ -627,28 +1015,29 @@
       }
 
       const clickedObj = getObjectAt(hoverGx, hoverGy);
+      let didMutate = false; // Chỉ lưu lịch sử Undo khi hành động này THỰC SỰ làm thay đổi mạch
 
       if (currentTool === 'control') {
         if (controlState === 'IDLE') {
           selectionBox = { minX: hoverGx, maxX: hoverGx, minY: hoverGy, maxY: hoverGy };
-          ctxMenu.style.display = 'flex'; ctxMenu.style.left = screenX + 'px'; ctxMenu.style.top = screenY + 'px';
+          ctxMenu.style.display = 'flex'; clampToViewport(ctxMenu, screenX, screenY);
         }
       }
       else if (currentTool === 'wire') {
         if (clickedObj) {
           if (!selectedSourceId) selectedSourceId = clickedObj.id;
           else if (selectedSourceId === clickedObj.id) {
-            if (clickedObj.type === 'lever') clickedObj.state = !clickedObj.state;
-            if (clickedObj.type === 'button') pulseButton(clickedObj);
+            if (clickedObj.type === 'lever') { clickedObj.state = !clickedObj.state; didMutate = true; }
+            if (clickedObj.type === 'button') { pulseButton(clickedObj); didMutate = true; }
             selectedSourceId = null;
           } else {
-            const drawLayer = viewLayer === 'all' ? activeDrawLayer : parseInt(viewLayer);
+            const drawLayer = viewLayer === 'all' ? activeDrawLayer : viewLayer;
             const existingIndex = wires.findIndex(w => w.fromId === selectedSourceId && w.toId === clickedObj.id && w.layer === drawLayer);
-            if (existingIndex !== -1) wires.splice(existingIndex, 1);
+            if (existingIndex !== -1) { wires.splice(existingIndex, 1); didMutate = true; }
             else {
               let maxIn = (['not', 'delay'].includes(clickedObj.type)) ? 1 : (['and', 'or', 'xor', 'nand', 'nor', 'xnor'].includes(clickedObj.type) ? 2 : 999);
-              if (wires.filter(w => w.toId === clickedObj.id).length >= maxIn) alert(`Tối đa ${maxIn} đầu vào!`);
-              else wires.push({ id: generateID(), fromId: selectedSourceId, toId: clickedObj.id, layer: drawLayer, powered: false });
+              if (wires.filter(w => w.toId === clickedObj.id).length >= maxIn) alert(I18N[currentLang].max_input.replace('{n}', maxIn));
+              else { wires.push({ id: generateID(), fromId: selectedSourceId, toId: clickedObj.id, layer: drawLayer, powered: false }); didMutate = true; }
             }
             selectedSourceId = null;
           }
@@ -656,32 +1045,35 @@
       }
       else if (currentTool === 'wrench') {
         if (clickedObj) {
-          if (clickedObj.type === 'button' || clickedObj.type === 'delay') openPropPanel(clickedObj);
+          if (['button', 'delay', 'lever', 'lamp'].includes(clickedObj.type)) openPropPanel(clickedObj);
           else {
             const swapMap = { 'and': 'nand', 'nand': 'and', 'or': 'nor', 'nor': 'or', 'xor': 'xnor', 'xnor': 'xor' };
-            if (swapMap[clickedObj.type]) clickedObj.type = swapMap[clickedObj.type];
+            if (swapMap[clickedObj.type]) { clickedObj.type = swapMap[clickedObj.type]; didMutate = true; }
           }
         }
       }
       else if (currentTool === 'eraser') {
-        if (clickedObj) deleteObject(clickedObj.id);
+        if (clickedObj) { deleteObject(clickedObj.id); didMutate = true; }
       }
       else { // Đặt linh kiện
         if (clickedObj) {
-          if (clickedObj.type === 'lever') clickedObj.state = !clickedObj.state;
-          if (clickedObj.type === 'button') pulseButton(clickedObj);
+          if (clickedObj.type === 'lever') { clickedObj.state = !clickedObj.state; didMutate = true; }
+          if (clickedObj.type === 'button') { pulseButton(clickedObj); didMutate = true; }
           if (clickedObj.type === 'note') {
             clickedObj.noteIdx = ((clickedObj.noteIdx || 0) + 1) % NOTES.length;
             playNote(clickedObj.noteIdx);
+            didMutate = true;
           }
         } else {
-          let newObj = { id: generateID(), gx: hoverGx, gy: hoverGy, type: currentTool, state: false, powered: false };
+          let newObj = { id: generateID(), gx: hoverGx, gy: hoverGy, type: currentTool, state: false, powered: false, w: 1, h: 1 };
           if (currentTool === 'button') newObj.durationTicks = 4;
           if (currentTool === 'delay') { newObj.delayTicks = 4; newObj.inState = false; newObj.outState = false; newObj.timer = null; }
           if (currentTool === 'note') { newObj.noteIdx = 0; newObj._wasOn = false; }
           objects.set(newObj.id, newObj);
+          didMutate = true;
         }
       }
+      if (didMutate) commitHistory();
       draw();
     }
 
@@ -700,8 +1092,32 @@
       startOffsetX = offsetX; startOffsetY = offsetY;
       updateHover(clientX, clientY);
 
-      // Xử lý kéo thả vùng chọn (Bấm vào bên trong vùng chọn)
-      if (controlState === 'SELECTED' && selectionBox) {
+      // Ưu tiên kiểm tra chạm vào quả bóng RESIZE trước (khi đang chọn đúng 1 khối)
+      if (currentTool === 'control' && controlState === 'SELECTED') {
+        const singleObj = getSingleSelectedObject();
+        if (singleObj) {
+          const rect = canvas.getBoundingClientRect();
+          const worldX = (clientX - rect.left - offsetX) / scale, worldY = (clientY - rect.top - offsetY) / scale;
+          const handles = getResizeHandles(singleObj);
+          const hitR = RESIZE_HANDLE_R / scale;
+          for (const edge of ['top', 'bottom', 'left', 'right']) {
+            const h = handles[edge];
+            if (Math.hypot(worldX - h.x, worldY - h.y) <= hitR) {
+              controlState = 'RESIZING'; resizeObjId = singleObj.id; resizeEdge = edge;
+              const w = singleObj.w || 1, hh = singleObj.h || 1;
+              if (edge === 'right') resizeAnchor = singleObj.gx;
+              else if (edge === 'left') resizeAnchor = singleObj.gx + w - 1;
+              else if (edge === 'bottom') resizeAnchor = singleObj.gy;
+              else if (edge === 'top') resizeAnchor = singleObj.gy + hh - 1;
+              ctxMenu.style.display = 'none';
+              return;
+            }
+          }
+        }
+      }
+
+      // Xử lý kéo thả vùng chọn (Bấm vào bên trong vùng chọn) - chỉ áp dụng cho công cụ Chỉnh sửa
+      if (currentTool === 'control' && controlState === 'SELECTED' && selectionBox) {
         if (hoverGx >= selectionBox.minX && hoverGx <= selectionBox.maxX && hoverGy >= selectionBox.minY && hoverGy <= selectionBox.maxY) {
           controlState = 'DRAGGING';
           dragStartGx = hoverGx; dragStartGy = hoverGy;
@@ -711,7 +1127,7 @@
         }
       }
 
-      if (currentTool === 'control' && controlState === 'IDLE') {
+      if ((currentTool === 'control' || currentTool === 'wrench') && controlState === 'IDLE') {
         ctxMenu.style.display = 'none'; selStart = { gx: hoverGx, gy: hoverGy }; selEnd = { gx: hoverGx, gy: hoverGy };
         selectionBox = { minX: hoverGx, maxX: hoverGx, minY: hoverGy, maxY: hoverGy };
         controlState = 'SELECTING'; draw(); return;
@@ -722,6 +1138,17 @@
     function pointerMove(clientX, clientY) {
       updateHover(clientX, clientY);
 
+      // Đang kéo quả bóng resize
+      if (controlState === 'RESIZING') {
+        const obj = objects.get(resizeObjId);
+        if (!obj) { controlState = 'SELECTED'; return; }
+        if (resizeEdge === 'right') { obj.w = Math.max(1, hoverGx - resizeAnchor + 1); obj.gx = resizeAnchor; }
+        else if (resizeEdge === 'left') { const newW = Math.max(1, resizeAnchor - hoverGx + 1); obj.gx = resizeAnchor - newW + 1; obj.w = newW; }
+        else if (resizeEdge === 'bottom') { obj.h = Math.max(1, hoverGy - resizeAnchor + 1); obj.gy = resizeAnchor; }
+        else if (resizeEdge === 'top') { const newH = Math.max(1, resizeAnchor - hoverGy + 1); obj.gy = resizeAnchor - newH + 1; obj.h = newH; }
+        scheduleRender(); return;
+      }
+
       // Cập nhật vị trí bóng ma khi DRAGGING hoặc PASTING (chỉ vẽ lại, không tính mạch)
       if (controlState === 'PASTING') { scheduleRender(); return; }
       if (controlState === 'DRAGGING') {
@@ -730,7 +1157,7 @@
 
       if (!isMouseDown) return;
 
-      if (currentTool === 'control' && controlState === 'SELECTING') {
+      if ((currentTool === 'control' || currentTool === 'wrench') && controlState === 'SELECTING') {
         selEnd = { gx: hoverGx, gy: hoverGy };
         selectionBox = { minX: Math.min(selStart.gx, selEnd.gx), maxX: Math.max(selStart.gx, selEnd.gx), minY: Math.min(selStart.gy, selEnd.gy), maxY: Math.max(selStart.gy, selEnd.gy) };
         scheduleRender(); return;
@@ -745,13 +1172,48 @@
     // Logic dùng chung cho chuột (mouseup) VÀ cảm ứng 1 ngón (touchend)
     function pointerUp(clientX, clientY, isCanvasTarget) {
       isMouseDown = false;
+      if (controlState === 'RESIZING') {
+        const obj = objects.get(resizeObjId);
+        controlState = 'SELECTED';
+        if (obj) { const w = obj.w || 1, h = obj.h || 1; selectionBox = { minX: obj.gx, maxX: obj.gx + w - 1, minY: obj.gy, maxY: obj.gy + h - 1 }; }
+        resizeObjId = null; resizeEdge = null;
+        commitHistory();
+        draw(); return;
+      }
       if (controlState === 'DRAGGING') { applyMove(); return; }
 
       if (currentTool === 'control' && controlState === 'SELECTING') {
         controlState = 'SELECTED';
         if (selStart.gx !== selEnd.gx || selStart.gy !== selEnd.gy) {
-          ctxMenu.style.display = 'flex'; ctxMenu.style.left = clientX + 'px'; ctxMenu.style.top = clientY + 'px';
+          ctxMenu.style.display = 'flex'; clampToViewport(ctxMenu, clientX, clientY);
         } else {
+          // Tap đơn: nếu đang đứng trên 1 linh kiện, chọn trọn khối đó (kể cả khi to hơn 1 ô do đã resize)
+          const obj = getObjectAt(hoverGx, hoverGy);
+          if (obj) {
+            const w = obj.w || 1, h = obj.h || 1;
+            selectionBox = { minX: obj.gx, maxX: obj.gx + w - 1, minY: obj.gy, maxY: obj.gy + h - 1 };
+          }
+          if (isCanvasTarget) handleTap(clientX, clientY);
+        }
+        return;
+      }
+
+      // Công cụ Chỉnh (wrench): kéo chọn 1 vùng -> chỉnh hàng loạt; tap đơn -> hành vi cũ (mở bảng 1 khối / đổi loại cổng)
+      if (currentTool === 'wrench' && controlState === 'SELECTING') {
+        if (selStart.gx !== selEnd.gx || selStart.gy !== selEnd.gy) {
+          controlState = 'SELECTED';
+          const objsInBox = [];
+          for (let obj of objects.values()) {
+            if (obj.gx >= selectionBox.minX && obj.gx <= selectionBox.maxX && obj.gy >= selectionBox.minY && obj.gy <= selectionBox.maxY) objsInBox.push(obj);
+          }
+          const configurable = objsInBox.filter(o => ['lever', 'button', 'lamp', 'delay'].includes(o.type));
+          if (configurable.length >= 2) openBatchPropPanel(configurable);
+          else if (configurable.length === 1) openPropPanel(configurable[0]);
+          else { controlState = 'IDLE'; selectionBox = null; }
+          draw();
+        } else {
+          // Tap đơn: giữ nguyên hành vi cũ của công cụ Chỉnh
+          controlState = 'IDLE'; selectionBox = null;
           if (isCanvasTarget) handleTap(clientX, clientY);
         }
         return;
@@ -788,6 +1250,13 @@
       isMouseDown = false; isDraggingView = false;
       if (controlState === 'SELECTING') { controlState = 'IDLE'; selectionBox = null; }
       if (controlState === 'DRAGGING') { applyMove(); }
+      if (controlState === 'RESIZING') {
+        const obj = objects.get(resizeObjId);
+        controlState = 'SELECTED';
+        if (obj) { const w = obj.w || 1, h = obj.h || 1; selectionBox = { minX: obj.gx, maxX: obj.gx + w - 1, minY: obj.gy, maxY: obj.gy + h - 1 }; }
+        resizeObjId = null; resizeEdge = null;
+        commitHistory();
+      }
 
       isPinching = true;
       const { dist, midX, midY } = touchDistAndMid(t1, t2);
@@ -863,6 +1332,7 @@
       a.href = url; a.download = `mach-dien-${ts}.json`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      hasUnsavedChanges = false;
     });
 
     // --- TẢI FILE ---
@@ -886,14 +1356,57 @@
           wires = (data.wires || []).map(w => ({ ...w }));
           selectedSourceId = null; selectionBox = null; controlState = 'IDLE';
           ctxMenu.style.display = 'none'; propPanel.style.display = 'none';
+          // Tải file mới -> coi như điểm khởi đầu mới, reset lịch sử Undo/Redo
+          history = [snapshotState()]; historyIndex = 0; hasUnsavedChanges = false;
+          updateUndoRedoButtons();
           draw();
         } catch (err) {
-          alert('File không hợp lệ! Vui lòng chọn đúng file JSON đã lưu từ sandbox này.');
+          alert(I18N[currentLang].invalid_file);
         }
       };
       reader.readAsText(file);
       e.target.value = '';
     });
+
+    document.getElementById('btn-undo').addEventListener('click', undo);
+    document.getElementById('btn-redo').addEventListener('click', redo);
+
+    // Phím tắt Ctrl+Z (hoàn tác) / Ctrl+Y hoặc Ctrl+Shift+Z (làm lại)
+    // Bỏ qua khi người dùng đang gõ trong 1 ô nhập (để không phá hành vi Undo mặc định của trình duyệt trong ô đó)
+    window.addEventListener('keydown', (e) => {
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (!(e.ctrlKey || e.metaKey)) return;
+      if (e.key === 'z' || e.key === 'Z') {
+        e.preventDefault();
+        if (e.shiftKey) redo(); else undo();
+      } else if (e.key === 'y' || e.key === 'Y') {
+        e.preventDefault(); redo();
+      }
+    });
+
+    // Cảnh báo trước khi rời trang nếu còn thay đổi chưa lưu
+    window.addEventListener('beforeunload', (e) => {
+      if (!hasUnsavedChanges) return;
+      e.preventDefault();
+      e.returnValue = ''; // Bắt buộc phải có để trình duyệt hiện hộp thoại xác nhận
+      return '';
+    });
+
+    // --- BẢNG CÀI ĐẶT (GIAO DIỆN / NGÔN NGỮ) ---
+    const settingsPanel = document.getElementById('settings-panel');
+    document.getElementById('btn-settings').addEventListener('click', () => {
+      settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+    });
+    document.getElementById('close-settings').addEventListener('click', () => { settingsPanel.style.display = 'none'; });
+    document.getElementById('theme-dark-btn').addEventListener('click', () => setTheme('dark'));
+    document.getElementById('theme-light-btn').addEventListener('click', () => setTheme('light'));
+    document.getElementById('lang-vi-btn').addEventListener('click', () => setLanguage('vi'));
+    document.getElementById('lang-en-btn').addEventListener('click', () => setLanguage('en'));
+
+    // Khởi tạo điểm mốc đầu tiên trong lịch sử Undo (canvas trống ban đầu)
+    history = [snapshotState()]; historyIndex = 0; updateUndoRedoButtons();
+    applyLanguage();
 
     resize();
   </script>
