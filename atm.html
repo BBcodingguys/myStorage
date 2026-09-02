@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formant "Talking Piano" Converter v4.1</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28/build/Midi.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d0e12;
+      --card: #161820;
+      --accent: #7928ca;
+      --accent-gradient: linear-gradient(135deg, #7928ca 0%, #4383fc 100%);
+      --text: #f1f3f9;
+      --text-dim: #8a8f9e;
+      --border: #262936;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card);
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 620px;
+      border: 1px solid var(--border);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(121, 40, 202, 0.2);
+      border: 1px solid rgba(121, 40, 202, 0.4);
+      color: #b388ff;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin: 0 0 8px 0;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    p.subtitle {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      margin-top: 0;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .explanation-box {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid #4383fc;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.82rem;
+      color: #b0b5c6;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .val-display {
+      color: #4383fc;
+      font-weight: 700;
+    }
+
+    input[type="file"], input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      background: #1e212d;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input[type="file"] {
+      border-style: dashed;
+      cursor: pointer;
+    }
+
+    input[type="file"]:hover, input[type="text"]:focus {
+      border-color: #4383fc;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #7928ca;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent-gradient);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 10px;
+    }
+
+    button:hover:not(:disabled) {
+      opacity: 0.92;
+    }
+
+    button:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    button:disabled {
+      background: #2a2d3d;
+      color: #5a5e73;
+      cursor: not-allowed;
+    }
+
+    .status-box {
+      margin-top: 24px;
+      padding: 16px;
+      background: #111218;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #222533;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-gradient);
+      transition: width 0.1s;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-secondary {
+      background: #222533;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #2e3245;
+    }
+
+    .download-link {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: var(--success);
+      color: white;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 10px;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }
+
+    .download-link:hover {
+      opacity: 0.9;
+    }
+
+    .download-audio-link {
+      background: #4383fc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <span class="badge">Vocal Formant Engine</span>
+    <h1>Formant Talking Piano Converter</h1>
+    <p class="subtitle">Khử hoàn toàn tiếng máy rè bằng thuật toán trích xuất Dải Formant (F0 + F1 + F2 + F3)</p>
+
+    <div class="explanation-box">
+      <strong>Lý do bản cũ bị "máy rè":</strong> Thuật toán cũ bị tràn 20-30 họa âm (harmonics) gây xung đột phím.<br>
+      <strong>Cải tiến mới:</strong> Chỉ trích xuất đúng <strong>4 Formant chuẩn</strong> của thanh quản người (Cao độ gốc + Vùng nguyên âm F1, F2 + Độ nét F3).
+    </div>
+
+    <div class="form-group">
+      <label for="audioFile">Chọn file Audio (.mp3, .wav, .m4a):</label>
+      <input type="file" id="audioFile" accept="audio/*">
+    </div>
+
+    <div class="form-group">
+      <label for="outputFileName">Tên file xuất ra (có thể sửa đổi):</label>
+      <input type="text" id="outputFileName" placeholder="Tự động lấy tên file gốc..." disabled>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Chế độ Formant: <span id="modeVal" class="val-display">Vocal Clear (4 Nốt)</span></label>
+        <input type="range" id="formantMode" min="3" max="5" value="4">
+      </div>
+      <div class="form-group">
+        <label>Lọc nhiễu dải rộng (Consonant Gate): <span id="gateVal" class="val-display">Vừa</span></label>
+        <input type="range" id="noiseGate" min="1" max="3" value="2">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Tốc độ quét (FPS): <span id="fpsVal" class="val-display">40 FPS (25ms)</span></label>
+        <input type="range" id="fpsSlider" min="25" max="50" step="5" value="40">
+      </div>
+      <div class="form-group">
+        <label>Kiểu nốt: <span id="styleVal" class="val-display">Clean Legato</span></label>
+        <input type="range" id="noteStyle" min="1" max="2" value="1">
+      </div>
+    </div>
+
+    <button id="convertBtn" disabled>Chuyển Đổi Sang MIDI Chuẩn Formant</button>
+
+    <div id="statusBox" class="status-box">
+      <div id="statusText" style="font-size: 0.85rem; color: #b0b5c6;">Đang xử lý...</div>
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      
+      <div id="actionArea" style="display: none; margin-top: 15px;">
+        <a id="downloadBtn" class="download-link">Tải File .MID Đã Lọc Sạch</a>
+        <a id="downloadAudioBtn" class="download-link download-audio-link">Tải File Audio Synthesized (.WAV)</a>
+        
+        <div class="btn-group">
+          <button id="previewBtn" class="btn-secondary">🔊 Nghe Thử Trực Tiếp Trên Web</button>
+          <button id="stopBtn" class="btn-secondary" style="display:none; background:#ef4444;">⏹ Dừng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('audioFile');
+    const outputFileNameInput = document.getElementById('outputFileName');
+    const convertBtn = document.getElementById('convertBtn');
+    const formantSlider = document.getElementById('formantMode');
+    const modeVal = document.getElementById('modeVal');
+    const gateSlider = document.getElementById('noiseGate');
+    const gateVal = document.getElementById('gateVal');
+    const fpsSlider = document.getElementById('fpsSlider');
+    const fpsVal = document.getElementById('fpsVal');
+    const styleSlider = document.getElementById('noteStyle');
+    const styleVal = document.getElementById('styleVal');
+    
+    const statusBox = document.getElementById('statusBox');
+    const statusText = document.getElementById('statusText');
+    const progressFill = document.getElementById('progressFill');
+    const actionArea = document.getElementById('actionArea');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadAudioBtn = document.getElementById('downloadAudioBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    let audioBuffer = null;
+    let generatedMidiNotes = [];
+    let isPlaying = false;
+    let synthTimeoutIds = [];
+
+    const modeNames = { 3: "Minimal (3 Nốt)", 4: "Vocal Clear (4 Nốt)", 5: "Rich Formant (5 Nốt)" };
+    const gateNames = { 1: "Nhẹ (Giữ lại tiếng xì)", 2: "Vừa (Khuyên dùng)", 3: "Mạnh (Loại bỏ triệt để nhiễu)" };
+    const styleNames = { 1: "Clean Legato (Nối mượt)", 2: "Sharp Staccato (Ngắt nét)" };
+
+    formantSlider.oninput = () => modeVal.innerText = modeNames[formantSlider.value];
+    gateSlider.oninput = () => gateVal.innerText = gateNames[gateSlider.value];
+    fpsSlider.oninput = () => fpsVal.innerText = `${fpsSlider.value} FPS (${Math.round(1000/fpsSlider.value)}ms)`;
+    styleSlider.oninput = () => styleVal.innerText = styleNames[styleSlider.value];
+
+    // Cập nhật tên download khi người dùng gõ thay đổi tên file
+    outputFileNameInput.addEventListener('input', updateDownloadFilenames);
+
+    function updateDownloadFilenames() {
+      const baseName = outputFileNameInput.value.trim() || "talking_piano";
+      downloadBtn.download = `${baseName}.mid`;
+      downloadAudioBtn.download = `${baseName}_converted.wav`;
+    }
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Trích xuất tên file gốc (bỏ phần mở rộng)
+      const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+      outputFileNameInput.value = `${originalName}_formant`;
+      outputFileNameInput.disabled = false;
+      updateDownloadFilenames();
+
+      convertBtn.disabled = true;
+      statusBox.style.display = 'block';
+      statusText.innerText = "Đang giải mã Audio...";
+      progressFill.style.width = '10%';
+      actionArea.style.display = 'none';
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        
+        statusText.innerText = `File sẵn sàng: ${file.name} (${audioBuffer.duration.toFixed(1)}s)`;
+        progressFill.style.width = '100%';
+        convertBtn.disabled = false;
+      } catch (err) {
+        statusText.innerText = "Lỗi khi nạp file audio!";
+      }
+    });
+
+    convertBtn.addEventListener('click', async () => {
+      if (!audioBuffer) return;
+      convertBtn.disabled = true;
+      statusText.innerText = "Đang tính toán Dải Formant & Triệt tiêu Họa âm...";
+      progressFill.style.width = '0%';
+      actionArea.style.display = 'none';
+
+      setTimeout(processFormantMidi, 50);
+    });
+
+    // FFT Function
+    function fft(re, im) {
+      const n = re.length;
+      for (let i = 0; i < n; i++) {
+        let j = 0;
+        for (let k = 0; k < Math.log2(n); k++) j = (j << 1) | ((i >> k) & 1);
+        if (j > i) {
+          [re[i], re[j]] = [re[j], re[i]];
+          [im[i], im[j]] = [im[j], im[i]];
+        }
+      }
+      for (let len = 2; len <= n; len <<= 1) {
+        let halfLen = len >> 1;
+        let angle = -2 * Math.PI / len;
+        let wstepR = Math.cos(angle), wstepI = Math.sin(angle);
+        for (let i = 0; i < n; i += len) {
+          let wR = 1, wI = 0;
+          for (let j = 0; j < halfLen; j++) {
+            let uR = re[i + j], uI = im[i + j];
+            let vR = re[i + j + halfLen] * wR - im[i + j + halfLen] * wI;
+            let vI = re[i + j + halfLen] * wI + im[i + j + halfLen] * wR;
+            re[i + j] = uR + vR;
+            im[i + j] = uI + vI;
+            re[i + j + halfLen] = uR - vR;
+            im[i + j + halfLen] = uI - vI;
+            let nextWR = wR * wstepR - wI * wstepI;
+            let nextWI = wR * wstepI + wI * wstepR;
+            wR = nextWR; wI = nextWI;
+          }
+        }
+      }
+    }
+
+    async function processFormantMidi() {
+      const pcm = audioBuffer.getChannelData(0);
+      const sampleRate = audioBuffer.sampleRate;
+      const targetFps = parseInt(fpsSlider.value);
+      const frameStepMs = 1000 / targetFps;
+      const frameStepSamples = Math.floor(sampleRate * (frameStepMs / 1000));
+      const fftSize = 2048;
+      const totalFrames = Math.floor((pcm.length - fftSize) / frameStepSamples);
+      const frameSec = frameStepMs / 1000;
+
+      const gateMult = [0.008, 0.018, 0.035][parseInt(gateSlider.value) - 1];
+      const maxNotes = parseInt(formantSlider.value);
+      const isLegato = parseInt(styleSlider.value) === 1;
+
+      const bands = [
+        { min: 80, max: 320 },
+        { min: 320, max: 900 },
+        { min: 900, max: 2400 },
+        { min: 2400, max: 4200 },
+        { min: 4200, max: 7000 }
+      ].slice(0, maxNotes);
+
+      const midi = new Midi();
+      midi.header.setTempo(120);
+      const track = midi.addTrack();
+      track.name = "Formant Piano Voice";
+
+      const hannWindow = new Float32Array(fftSize);
+      for (let i = 0; i < fftSize; i++) {
+        hannWindow[i] = 0.5 * (1 - Math.cos((2 * Math.PI * i) / (fftSize - 1)));
+      }
+
+      generatedMidiNotes = [];
+      let activeNotes = {};
+
+      for (let f = 0; f < totalFrames; f++) {
+        const offset = f * frameStepSamples;
+        const re = new Float32Array(fftSize);
+        const im = new Float32Array(fftSize);
+
+        for (let i = 0; i < fftSize; i++) {
+          re[i] = pcm[offset + i] * hannWindow[i];
+        }
+
+        fft(re, im);
+
+        const mags = new Float32Array(fftSize / 2);
+        let totalEnergy = 0;
+        for (let k = 1; k < fftSize / 2; k++) {
+          mags[k] = Math.sqrt(re[k] * re[k] + im[k] * im[k]);
+          totalEnergy += mags[k];
+        }
+
+        const avgEnergy = totalEnergy / (fftSize / 2);
+        const frameNotes = [];
+
+        bands.forEach((b, bIdx) => {
+          let maxMag = 0;
+          let bestFreq = 0;
+
+          const kMin = Math.max(1, Math.floor((b.min * fftSize) / sampleRate));
+          const kMax = Math.min(fftSize / 2 - 1, Math.ceil((b.max * fftSize) / sampleRate));
+
+          for (let k = kMin; k <= kMax; k++) {
+            if (mags[k] > mags[k - 1] && mags[k] > mags[k + 1]) {
+              if (mags[k] > maxMag) {
+                maxMag = mags[k];
+                bestFreq = (k * sampleRate) / fftSize;
+              }
+            }
+          }
+
+          if (maxMag > gateMult && maxMag > avgEnergy * 1.5) {
+            const midiNote = Math.round(69 + 12 * Math.log2(bestFreq / 440));
+            if (midiNote >= 21 && midiNote <= 108) {
+              frameNotes.push({
+                note: midiNote,
+                mag: maxMag,
+                band: bIdx
+              });
+            }
+          }
+        });
+
+        const filteredFrameNotes = [];
+        const usedMidi = new Set();
+
+        frameNotes.forEach(item => {
+          if (!usedMidi.has(item.note) && !usedMidi.has(item.note - 1) && !usedMidi.has(item.note + 1)) {
+            filteredFrameNotes.push(item);
+            usedMidi.add(item.note);
+          }
+        });
+
+        const time = f * frameSec;
+
+        if (isLegato) {
+          const currentFrameSet = new Set(filteredFrameNotes.map(x => x.note));
+
+          for (const nStr in activeNotes) {
+            const n = parseInt(nStr);
+            if (currentFrameSet.has(n)) {
+              activeNotes[n].duration += frameSec;
+              currentFrameSet.delete(n);
+            } else {
+              delete activeNotes[n];
+            }
+          }
+
+          filteredFrameNotes.forEach(item => {
+            if (currentFrameSet.has(item.note)) {
+              let vel = Math.min(1, item.mag * 3);
+              vel = Math.max(0.2, vel);
+
+              const noteObj = track.addNote({
+                midi: item.note,
+                time: time,
+                duration: frameSec * 1.1,
+                velocity: vel
+              });
+
+              activeNotes[item.note] = noteObj;
+              generatedMidiNotes.push({ midi: item.note, time: time, duration: frameSec, vel: vel });
+            }
+          });
+        } else {
+          filteredFrameNotes.forEach(item => {
+            let vel = Math.min(1, item.mag * 3);
+            vel = Math.max(0.2, vel);
+
+            track.addNote({
+              midi: item.note,
+              time: time,
+              duration: frameSec * 0.75,
+              velocity: vel
+            });
+
+            generatedMidiNotes.push({ midi: item.note, time: time, duration: frameSec * 0.75, vel: vel });
+          });
+        }
+
+        if (f % 50 === 0) {
+          const progress = Math.round((f / totalFrames) * 100);
+          progressFill.style.width = `${progress}%`;
+          statusText.innerText = `Đang trích xuất Formant giọng nói: ${progress}%`;
+          await new Promise(r => setTimeout(r, 0));
+        }
+      }
+
+      // Tạo File MIDI
+      const midiArray = midi.toArray();
+      const blob = new Blob([midiArray], { type: "audio/midi" });
+      const url = URL.createObjectURL(blob);
+      downloadBtn.href = url;
+
+      // Render thành File Audio WAV
+      statusText.innerText = "Đang tổng hợp file Audio (.WAV) từ nốt MIDI...";
+      const wavBlob = await renderMidiToWav(generatedMidiNotes);
+      if (wavBlob) {
+        const audioUrl = URL.createObjectURL(wavBlob);
+        downloadAudioBtn.href = audioUrl;
+      }
+
+      updateDownloadFilenames();
+      actionArea.style.display = "block";
+      statusText.innerText = "Hoàn tất! Cả file MIDI và file Audio đã sẵn sàng để tải về.";
+      progressFill.style.width = "100%";
+      convertBtn.disabled = false;
+    }
+
+    // Render MIDI thành WAV Offline Audio
+    async function renderMidiToWav(notes) {
+      if (!notes || notes.length === 0) return null;
+
+      const maxTime = Math.max(...notes.map(n => n.time + n.duration), 1) + 0.5;
+      const sr = 44100;
+      const offlineCtx = new OfflineAudioContext(1, Math.ceil(sr * maxTime), sr);
+
+      notes.forEach(n => {
+        const osc = offlineCtx.createOscillator();
+        const gain = offlineCtx.createGain();
+
+        osc.type = 'triangle';
+        const freq = 440 * Math.pow(2, (n.midi - 69) / 12);
+        osc.frequency.setValueAtTime(freq, n.time);
+
+        const startTime = n.time;
+        const stopTime = startTime + n.duration;
+
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.linearRampToValueAtTime(n.vel * 0.15, startTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, stopTime);
+
+        osc.connect(gain);
+        gain.connect(offlineCtx.destination);
+
+        osc.start(startTime);
+        osc.stop(stopTime);
+      });
+
+      const renderedBuffer = await offlineCtx.startRendering();
+      return bufferToWave(renderedBuffer, renderedBuffer.length);
+    }
+
+    // Chuyển đổi AudioBuffer sang Blob WAV
+    function bufferToWave(abuffer, len) {
+      let numOfChan = abuffer.numberOfChannels,
+          length = len * numOfChan * 2 + 44,
+          buffer = new ArrayBuffer(length),
+          view = new DataView(buffer),
+          channels = [], i, sample,
+          offset = 0, pos = 0;
+
+      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+
+      setUint32(0x46464952); // "RIFF"
+      setUint32(length - 8);
+      setUint32(0x45564157); // "WAVE"
+      setUint32(0x20746d66); // "fmt " chunk
+      setUint32(16);
+      setUint16(1); // PCM
+      setUint16(numOfChan);
+      setUint32(abuffer.sampleRate);
+      setUint32(abuffer.sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2);
+      setUint16(16);
+      setUint32(0x61746164); // "data" chunk
+      setUint32(length - pos - 4);
+
+      for (i = 0; i < abuffer.numberOfChannels; i++)
+        channels.push(abuffer.getChannelData(i));
+
+      while (pos < length) {
+        for (i = 0; i < numOfChan; i++) {
+          sample = Math.max(-1, Math.min(1, channels[i][offset]));
+          sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+          view.setInt16(pos, sample, true);
+          pos += 2;
+        }
+        offset++;
+      }
+      return new Blob([buffer], { type: "audio/wav" });
+    }
+
+    // Preview
+    previewBtn.addEventListener('click', () => {
+      if (isPlaying) return;
+      isPlaying = true;
+      previewBtn.style.display = 'none';
+      stopBtn.style.display = 'inline-block';
+
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      synthTimeoutIds = [];
+
+      generatedMidiNotes.forEach(n => {
+        const tid = setTimeout(() => {
+          if (!isPlaying) return;
+
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = 'triangle';
+          const freq = 440 * Math.pow(2, (n.midi - 69) / 12);
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+          const now = audioCtx.currentTime;
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(n.vel * 0.15, now + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + n.duration);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(now);
+          osc.stop(now + n.duration);
+        }, n.time * 1000);
+
+        synthTimeoutIds.push(tid);
+      });
+    });
+
+    stopBtn.addEventListener('click', stopAudioPreview);
+
+    function stopAudioPreview() {
+      isPlaying = false;
+      synthTimeoutIds.forEach(id => clearTimeout(id));
+      synthTimeoutIds = [];
+      previewBtn.style.display = 'inline-block';
+      stopBtn.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
