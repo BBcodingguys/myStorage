@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formant "Talking Piano" Converter v4.1</title>
+  <title>Formant "Talking Piano" Converter v4.2</title>
   <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28/build/Midi.min.js"></script>
   <style>
     :root {
@@ -215,10 +215,6 @@
     .download-link:hover {
       opacity: 0.9;
     }
-
-    .download-audio-link {
-      background: #4383fc;
-    }
   </style>
 </head>
 <body>
@@ -234,12 +230,13 @@
     </div>
 
     <div class="form-group">
-      <label for="audioFile">Chọn file Audio (.mp3, .wav, .m4a):</label>
-      <input type="file" id="audioFile" accept="audio/*">
+      <label for="audioFile">Chọn file Audio hoặc Video (.mp3, .wav, .m4a, .mp4, .mov...):</label>
+      <!-- Hỗ trợ cả file audio và video trên iOS Files / Photos -->
+      <input type="file" id="audioFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov">
     </div>
 
     <div class="form-group">
-      <label for="outputFileName">Tên file xuất ra (có thể sửa đổi):</label>
+      <label for="outputFileName">Tên file MIDI xuất ra (có thể sửa đổi):</label>
       <input type="text" id="outputFileName" placeholder="Tự động lấy tên file gốc..." disabled>
     </div>
 
@@ -275,7 +272,6 @@
       
       <div id="actionArea" style="display: none; margin-top: 15px;">
         <a id="downloadBtn" class="download-link">Tải File .MID Đã Lọc Sạch</a>
-        <a id="downloadAudioBtn" class="download-link download-audio-link">Tải File Audio Synthesized (.WAV)</a>
         
         <div class="btn-group">
           <button id="previewBtn" class="btn-secondary">🔊 Nghe Thử Trực Tiếp Trên Web</button>
@@ -303,7 +299,6 @@
     const progressFill = document.getElementById('progressFill');
     const actionArea = document.getElementById('actionArea');
     const downloadBtn = document.getElementById('downloadBtn');
-    const downloadAudioBtn = document.getElementById('downloadAudioBtn');
     const previewBtn = document.getElementById('previewBtn');
     const stopBtn = document.getElementById('stopBtn');
 
@@ -321,13 +316,12 @@
     fpsSlider.oninput = () => fpsVal.innerText = `${fpsSlider.value} FPS (${Math.round(1000/fpsSlider.value)}ms)`;
     styleSlider.oninput = () => styleVal.innerText = styleNames[styleSlider.value];
 
-    // Cập nhật tên download khi người dùng gõ thay đổi tên file
-    outputFileNameInput.addEventListener('input', updateDownloadFilenames);
+    // Cập nhật tên file MIDI khi người dùng thay đổi ô input
+    outputFileNameInput.addEventListener('input', updateDownloadFilename);
 
-    function updateDownloadFilenames() {
+    function updateDownloadFilename() {
       const baseName = outputFileNameInput.value.trim() || "talking_piano";
       downloadBtn.download = `${baseName}.mid`;
-      downloadAudioBtn.download = `${baseName}_converted.wav`;
     }
 
     fileInput.addEventListener('change', async (e) => {
@@ -335,14 +329,15 @@
       if (!file) return;
 
       // Trích xuất tên file gốc (bỏ phần mở rộng)
-      const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+      const lastDotIndex = file.name.lastIndexOf('.');
+      const originalName = lastDotIndex !== -1 ? file.name.substring(0, lastDotIndex) : file.name;
       outputFileNameInput.value = `${originalName}_formant`;
       outputFileNameInput.disabled = false;
-      updateDownloadFilenames();
+      updateDownloadFilename();
 
       convertBtn.disabled = true;
       statusBox.style.display = 'block';
-      statusText.innerText = "Đang giải mã Audio...";
+      statusText.innerText = "Đang giải mã Audio/Video...";
       progressFill.style.width = '10%';
       actionArea.style.display = 'none';
 
@@ -355,7 +350,7 @@
         progressFill.style.width = '100%';
         convertBtn.disabled = false;
       } catch (err) {
-        statusText.innerText = "Lỗi khi nạp file audio!";
+        statusText.innerText = "Lỗi khi nạp file audio/video! Hãy thử file khác.";
       }
     });
 
@@ -557,94 +552,11 @@
       const url = URL.createObjectURL(blob);
       downloadBtn.href = url;
 
-      // Render thành File Audio WAV
-      statusText.innerText = "Đang tổng hợp file Audio (.WAV) từ nốt MIDI...";
-      const wavBlob = await renderMidiToWav(generatedMidiNotes);
-      if (wavBlob) {
-        const audioUrl = URL.createObjectURL(wavBlob);
-        downloadAudioBtn.href = audioUrl;
-      }
-
-      updateDownloadFilenames();
+      updateDownloadFilename();
       actionArea.style.display = "block";
-      statusText.innerText = "Hoàn tất! Cả file MIDI và file Audio đã sẵn sàng để tải về.";
+      statusText.innerText = "Hoàn tất! File MIDI đã lọc sạch tiếng máy rè.";
       progressFill.style.width = "100%";
       convertBtn.disabled = false;
-    }
-
-    // Render MIDI thành WAV Offline Audio
-    async function renderMidiToWav(notes) {
-      if (!notes || notes.length === 0) return null;
-
-      const maxTime = Math.max(...notes.map(n => n.time + n.duration), 1) + 0.5;
-      const sr = 44100;
-      const offlineCtx = new OfflineAudioContext(1, Math.ceil(sr * maxTime), sr);
-
-      notes.forEach(n => {
-        const osc = offlineCtx.createOscillator();
-        const gain = offlineCtx.createGain();
-
-        osc.type = 'triangle';
-        const freq = 440 * Math.pow(2, (n.midi - 69) / 12);
-        osc.frequency.setValueAtTime(freq, n.time);
-
-        const startTime = n.time;
-        const stopTime = startTime + n.duration;
-
-        gain.gain.setValueAtTime(0.001, startTime);
-        gain.gain.linearRampToValueAtTime(n.vel * 0.15, startTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, stopTime);
-
-        osc.connect(gain);
-        gain.connect(offlineCtx.destination);
-
-        osc.start(startTime);
-        osc.stop(stopTime);
-      });
-
-      const renderedBuffer = await offlineCtx.startRendering();
-      return bufferToWave(renderedBuffer, renderedBuffer.length);
-    }
-
-    // Chuyển đổi AudioBuffer sang Blob WAV
-    function bufferToWave(abuffer, len) {
-      let numOfChan = abuffer.numberOfChannels,
-          length = len * numOfChan * 2 + 44,
-          buffer = new ArrayBuffer(length),
-          view = new DataView(buffer),
-          channels = [], i, sample,
-          offset = 0, pos = 0;
-
-      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
-      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
-
-      setUint32(0x46464952); // "RIFF"
-      setUint32(length - 8);
-      setUint32(0x45564157); // "WAVE"
-      setUint32(0x20746d66); // "fmt " chunk
-      setUint32(16);
-      setUint16(1); // PCM
-      setUint16(numOfChan);
-      setUint32(abuffer.sampleRate);
-      setUint32(abuffer.sampleRate * 2 * numOfChan);
-      setUint16(numOfChan * 2);
-      setUint16(16);
-      setUint32(0x61746164); // "data" chunk
-      setUint32(length - pos - 4);
-
-      for (i = 0; i < abuffer.numberOfChannels; i++)
-        channels.push(abuffer.getChannelData(i));
-
-      while (pos < length) {
-        for (i = 0; i < numOfChan; i++) {
-          sample = Math.max(-1, Math.min(1, channels[i][offset]));
-          sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
-          view.setInt16(pos, sample, true);
-          pos += 2;
-        }
-        offset++;
-      }
-      return new Blob([buffer], { type: "audio/wav" });
     }
 
     // Preview
