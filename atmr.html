@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Audio → MIDI (Tách nguồn: Lời / Nhạc / Trống)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1a1e; --ivory:#f6f1e7; --key-black:#141216;
+    --wine:#7a2e2e; --gold:#c9a24b;
+    --line:rgba(246,241,231,0.14); --muted:rgba(246,241,231,0.58);
+    --ok:#8fc9a0; --warn:#e0b96a; --err:#e08a8a;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: radial-gradient(ellipse 900px 500px at 15% -10%, rgba(122,46,46,0.35), transparent 60%), var(--key-black);
+    color:var(--ivory); font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh; padding:48px 20px 80px;
+  }
+  .wrap{ max-width:760px; margin:0 auto; }
+  header{ margin-bottom:32px; }
+  .eyebrow{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--gold); margin-bottom:14px; }
+  .keys{ display:inline-flex; gap:2px; }
+  .keys span{ width:4px; height:14px; background:var(--ivory); opacity:.85; border-radius:1px; }
+  .keys span:nth-child(2n){ background:var(--gold); opacity:.9; }
+  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(28px,4.6vw,40px); line-height:1.1; margin:0 0 14px; }
+  header p{ color:var(--muted); font-size:15px; line-height:1.65; max-width:60ch; margin:0 0 8px; }
+
+  .banner{
+    border-radius:10px; padding:14px 16px; font-size:13.5px; line-height:1.6;
+    border:1px solid var(--line); margin-bottom:22px;
+  }
+  .banner.ok{ background:rgba(143,201,160,0.08); border-color:rgba(143,201,160,0.35); color:#cdeed6; }
+  .banner.warn{ background:rgba(224,185,106,0.08); border-color:rgba(224,185,106,0.35); color:#f0dcae; }
+  .banner code{ background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px; }
+
+  .card{ background:rgba(246,241,231,0.04); border:1px solid var(--line); border-radius:14px; padding:26px; margin-bottom:18px; }
+  .card h2{ font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold); margin:0 0 16px; font-weight:600; }
+  .step-num{ display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:var(--wine); color:var(--ivory); font-size:11px; margin-right:8px; }
+
+  .field{ margin-bottom:16px; } .field:last-child{ margin-bottom:0; }
+  .field label{ display:block; font-size:13.5px; color:var(--muted); margin-bottom:7px; }
+  select{
+    width:100%; background:rgba(0,0,0,0.25); border:1px solid var(--line); color:var(--ivory);
+    padding:10px 12px; border-radius:7px; font-size:14px; font-family:inherit;
+  }
+  select:focus{ outline:1.5px solid var(--gold); }
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:560px){ .two-col{ grid-template-columns:1fr; } }
+
+  .checkbox-row{ display:flex; align-items:flex-start; gap:10px; padding:4px 0; }
+  .checkbox-row input{ margin-top:3px; width:16px; height:16px; accent-color:var(--gold); }
+  .checkbox-row .cb-text strong{ display:block; font-size:14px; margin-bottom:2px; }
+  .checkbox-row .cb-text span{ font-size:13px; color:var(--muted); line-height:1.5; }
+
+  .drop{
+    border:1.5px dashed rgba(201,162,75,0.45); border-radius:10px; padding:34px 20px;
+    text-align:center; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .drop:hover, .drop.drag{ border-color:var(--gold); background:rgba(201,162,75,0.06); }
+  .drop strong{ display:block; font-size:16px; margin-bottom:6px; }
+  .drop span{ color:var(--muted); font-size:14px; }
+  input[type=file]{ display:none; }
+
+  .mode-select{ display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+  .mode-option{
+    display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border:1px solid var(--line);
+    border-radius:9px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .mode-option:hover{ border-color:rgba(201,162,75,0.4); }
+  .mode-option input{ margin-top:3px; width:16px; height:16px; accent-color:var(--gold); flex-shrink:0; }
+  .mode-option.checked{ border-color:var(--gold); background:rgba(201,162,75,0.06); }
+  .mode-option .cb-text strong{ display:block; font-size:14px; margin-bottom:2px; }
+  .mode-option .cb-text span{ font-size:13px; color:var(--muted); line-height:1.5; }
+
+  .sep-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:560px){ .sep-grid{ grid-template-columns:1fr; } }
+  .sep-slot label{ display:block; font-size:13.5px; color:var(--muted); margin-bottom:7px; }
+  .drop-sm{ padding:18px 14px; }
+  .drop-sm strong{ font-size:14px; margin-bottom:4px; }
+  .drop-sm span{ font-size:12.5px; word-break:break-all; }
+  .sep-slot.filled .drop-sm{ border-color:var(--ok); background:rgba(143,201,160,0.06); }
+  .sep-slot.filled .drop-sm span{ color:#cdeed6; }
+
+  .filelist{ margin-top:16px; display:flex; flex-direction:column; gap:12px; }
+  .file-card{ padding:14px 16px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:8px; }
+  .file-top{ display:flex; align-items:center; gap:12px; }
+  .file-name{ flex:1; min-width:0; font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .remove-btn{ flex-shrink:0; background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; padding:2px 4px; }
+  .remove-btn:hover{ color:var(--ivory); }
+
+  .stage-list{ margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+  .stage{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); }
+  .stage .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); flex-shrink:0; }
+  .stage.active .dot{ background:var(--gold); }
+  .stage.done .dot{ background:var(--ok); }
+  .stage.error .dot{ background:var(--err); }
+  .stage.done{ color:#cdeed6; }
+  .stage.error{ color:var(--err); }
+  .bar{ height:4px; background:rgba(246,241,231,0.1); border-radius:2px; overflow:hidden; margin-top:4px; flex:1; }
+  .bar-fill{ height:100%; width:0%; background:var(--gold); transition:width .2s ease; }
+
+  .dl-btn{
+    flex-shrink:0; background:var(--gold); color:var(--key-black); border:none; border-radius:7px;
+    padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; text-decoration:none; white-space:nowrap;
+  }
+  .dl-btn:hover{ filter:brightness(1.08); }
+
+  .actions{ display:flex; align-items:center; gap:14px; margin-top:22px; flex-wrap:wrap; }
+  .convert-btn{
+    background:var(--wine); color:var(--ivory); border:none; border-radius:9px; padding:13px 24px;
+    font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .convert-btn:hover:not(:disabled){ filter:brightness(1.12); }
+  .convert-btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .model-status{ font-size:13px; color:var(--muted); }
+
+  .note-box{
+    font-size:13px; color:var(--muted); line-height:1.65; background:rgba(0,0,0,0.18);
+    border-left:2px solid var(--gold); padding:12px 14px; border-radius:4px;
+  }
+  footer{ margin-top:8px; color:var(--muted); font-size:13px; line-height:1.7; }
+  footer a{ color:var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">
+      <span class="keys"><span></span><span></span><span></span><span></span><span></span></span>
+      Tách nguồn rồi chuyển từng phần sang MIDI
+    </div>
+    <h1>Lời · Nhạc nền · Trống<br>— tách riêng, ghép lại MIDI</h1>
+    <p>Dùng AI Demucs (Meta) tách bài hát thành các lớp âm thanh riêng biệt, rồi nhận diện cao độ từng lớp và gộp thành 1 file MIDI nhiều track.</p>
+  </header>
+
+  <div class="banner" id="envBanner">Đang kiểm tra khả năng của trình duyệt...</div>
+
+  <div class="card">
+    <h2><span class="step-num">1</span>Tuỳ chọn nhạc cụ đầu ra</h2>
+    <p style="color:var(--muted); font-size:13.5px; margin:-4px 0 16px;">
+      Mục tiêu là <strong>nghe giống bản gốc</strong> khi phát lại — không cần đúng 100% tên nhạc cụ thật, nên cứ chọn nhạc cụ nào bạn thấy hợp/nghe hay là được.
+    </p>
+    <div class="two-col">
+      <div class="field">
+        <label for="vocalInstrument">Nhạc cụ cho track "Lời"</label>
+        <select id="vocalInstrument"></select>
+      </div>
+      <div class="field">
+        <label for="bassInstrument">Nhạc cụ cho track "Bass"</label>
+        <select id="bassInstrument"></select>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:16px;">
+      <div class="field">
+        <label for="instrumentalInstrument">Nhạc cụ cho track "Nhạc nền" (còn lại)</label>
+        <select id="instrumentalInstrument"></select>
+      </div>
+      <div></div>
+    </div>
+    <div class="checkbox-row" style="margin-top:14px;">
+      <input type="checkbox" id="drumToggle" checked />
+      <div class="cb-text">
+        <label for="drumToggle" style="cursor:pointer; margin:0;">
+          <strong>Thêm track trống</strong>
+          <span>Chạy trên lớp trống đã được Demucs tách riêng (không lẫn tiếng nhạc cụ khác), nên chính xác hơn hẳn so với dò trực tiếp trên bản mix gốc. Vẫn là thuật toán DSP tự viết (không phải model AI chuyên trống), nên chỉ tương đối, không tuyệt đối chính xác.</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:18px;">
+      <label for="strictnessSlider">
+        Lọc nốt nhạc/lời bị lẫn từ track khác — hiện tại: <span id="strictnessValue">Vừa phải</span>
+      </label>
+      <input type="range" id="strictnessSlider" min="0" max="4" step="1" value="2" style="width:100%; accent-color:var(--gold);" />
+      <div style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-top:4px;">
+        <span>Giữ nhiều nốt hơn<br>(dễ lẫn hơn)</span>
+        <span style="text-align:right;">Lọc gắt hơn<br>(dễ mất nốt nhẹ thật)</span>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:16px;">
+      <label for="drumSensitivitySlider">
+        Độ nhạy dò trống — hiện tại: <span id="drumSensitivityValue">Vừa phải</span>
+      </label>
+      <input type="range" id="drumSensitivitySlider" min="0" max="4" step="1" value="2" style="width:100%; accent-color:var(--gold);" />
+      <div style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-top:4px;">
+        <span>Nhạy hơn<br>(dễ bắt nhầm tiếng vụn)</span>
+        <span style="text-align:right;">Chặt hơn<br>(dễ bỏ sót tiếng nhẹ)</span>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:16px;">
+      <label for="durationLimit">Giới hạn thời lượng xử lý (để test nhanh hơn, bỏ qua phần còn lại của bài)</label>
+      <select id="durationLimit">
+        <option value="0">Toàn bộ bài (chậm nhất, đầy đủ nhất)</option>
+        <option value="30">Chỉ 30 giây đầu</option>
+        <option value="60">Chỉ 60 giây đầu</option>
+        <option value="90">Chỉ 90 giây đầu</option>
+      </select>
+    </div>
+    <div class="note-box" style="margin-top:14px;">
+      Demucs tách được 4 lớp: lời, trống, bass, và "nhạc cụ còn lại" (Demucs gộp mọi nhạc cụ khác — guitar,
+      piano, kèn... — vào chung 1 lớp, không phân biệt được từng loại). Bass được tách riêng vì đây thường là
+      lớp sạch nhất và là "xương sống" giúp bản MIDI nghe gần với bản gốc hơn nhiều.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="step-num">2</span>File audio</h2>
+
+    <div class="mode-select">
+      <label class="mode-option checked" id="modeOptionMixed">
+        <input type="radio" name="inputMode" id="modeMixed" value="mixed" checked />
+        <div class="cb-text">
+          <strong>Bài hát gốc (chưa tách)</strong>
+          <span>Tải lên file nhạc đã mix — công cụ tự tách bằng Demucs (tải model ~170MB lần đầu) rồi chuyển MIDI.</span>
+        </div>
+      </label>
+      <label class="mode-option" id="modeOptionSeparated">
+        <input type="radio" name="inputMode" id="modeSeparated" value="separated" />
+        <div class="cb-text">
+          <strong>Đã có sẵn 4 file tách riêng (lời / bass / trống / nhạc nền)</strong>
+          <span>Bỏ qua bước tách nguồn, không cần tải model Demucs — chỉ nhận diện cao độ từng file rồi ghép lại thành 1 file MIDI.</span>
+        </div>
+      </label>
+    </div>
+
+    <div id="mixedSection">
+      <div class="drop" id="drop">
+        <strong>Kéo thả file vào đây, hoặc bấm để chọn</strong>
+        <span>Hỗ trợ .mp3, .wav, .ogg, .flac, .m4a — nên dùng bài có đủ lời/nhạc/trống để thấy rõ hiệu quả tách nguồn</span>
+      </div>
+      <input type="file" id="fileInput" accept=".mp3,.wav,.ogg,.flac,.m4a,audio/*" multiple />
+      <div class="filelist" id="fileList"></div>
+    </div>
+
+    <div id="separatedSection" style="display:none;">
+      <div class="sep-grid">
+        <div class="sep-slot" id="sepSlot-vocals">
+          <label>Lời (vocals)</label>
+          <div class="drop drop-sm" data-stem="vocals"><strong>Chọn file</strong><span id="sepName-vocals">Chưa chọn</span></div>
+          <input type="file" class="sepInput" id="sepInput-vocals" accept=".mp3,.wav,.ogg,.flac,.m4a,audio/*" />
+        </div>
+        <div class="sep-slot" id="sepSlot-bass">
+          <label>Bass</label>
+          <div class="drop drop-sm" data-stem="bass"><strong>Chọn file</strong><span id="sepName-bass">Chưa chọn</span></div>
+          <input type="file" class="sepInput" id="sepInput-bass" accept=".mp3,.wav,.ogg,.flac,.m4a,audio/*" />
+        </div>
+        <div class="sep-slot" id="sepSlot-drums">
+          <label>Trống</label>
+          <div class="drop drop-sm" data-stem="drums"><strong>Chọn file</strong><span id="sepName-drums">Chưa chọn</span></div>
+          <input type="file" class="sepInput" id="sepInput-drums" accept=".mp3,.wav,.ogg,.flac,.m4a,audio/*" />
+        </div>
+        <div class="sep-slot" id="sepSlot-instrumental">
+          <label>Nhạc nền (còn lại)</label>
+          <div class="drop drop-sm" data-stem="instrumental"><strong>Chọn file</strong><span id="sepName-instrumental">Chưa chọn</span></div>
+          <input type="file" class="sepInput" id="sepInput-instrumental" accept=".mp3,.wav,.ogg,.flac,.m4a,audio/*" />
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:14px;">
+        Không bắt buộc phải có đủ cả 4 file — thiếu file nào (ví dụ bài không có trống) thì cứ để trống ô đó, MIDI sẽ chỉ gồm những track có file.
+      </div>
+      <div class="filelist" id="sepFileList"></div>
+    </div>
+
+    <div class="actions">
+      <button class="convert-btn" id="convertBtn" disabled>Tách & Chuyển sang MIDI</button>
+      <span class="model-status" id="modelStatus"></span>
+    </div>
+  </div>
+
+  <footer>
+    Tách nguồn bằng <a href="https://github.com/timcsy/demucs-web" target="_blank" rel="noopener">demucs-web</a> (ONNX export của HTDemucs — Meta, giấy phép MIT), chạy qua <a href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noopener">ONNX Runtime Web</a>. Nhận diện cao độ bằng <a href="https://github.com/spotify/basic-pitch" target="_blank" rel="noopener">Basic Pitch</a> (Spotify, Apache-2.0). Phần trống dùng DSP tự viết. Toàn bộ xử lý diễn ra cục bộ trên máy bạn — không tải audio lên máy chủ nào. Model Demucs khá nặng (~170MB), lần đầu tải sẽ mất một lúc.
+    <br><br>
+    Lưu ý: không có công cụ tách nguồn miễn phí nào (kể cả bản Demucs gốc PyTorch) tách 100% sạch — luôn có ít nhiều tiếng lẫn giữa các lớp. Mục tiêu ở đây là bản MIDI <em>nghe gần giống</em> bài gốc để dùng như bản phối lại, không phải bản chép nhạc chính xác tuyệt đối từng nốt/nhạc cụ.
+  </footer>
+
+</div>
+
+<script type="module">
+import * as ort from "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/ort.all.bundle.min.mjs";
+import { DemucsProcessor, CONSTANTS as DEMUCS_CONSTANTS } from "https://cdn.jsdelivr.net/npm/demucs-web@1.0.2/+esm";
+import {
+  BasicPitch,
+  outputToNotesPoly,
+  addPitchBendsToNoteEvents,
+  noteFramesToTime,
+} from "https://cdn.jsdelivr.net/npm/@spotify/basic-pitch@1.0.1/+esm";
+
+const BASIC_PITCH_MODEL_URL = "https://cdn.jsdelivr.net/npm/@spotify/basic-pitch@1.0.1/model/model.json";
+
+// ============================================================
+// Kiểm tra môi trường trình duyệt (WebGPU / Cross-Origin Isolation)
+// ============================================================
+const envBanner = document.getElementById("envBanner");
+(async () => {
+  const hasWebGPU = "gpu" in navigator;
+  let webgpuOk = false;
+  if (hasWebGPU) {
+    try { webgpuOk = !!(await navigator.gpu.requestAdapter()); } catch (e) { webgpuOk = false; }
+  }
+  const isolated = window.crossOriginIsolated === true;
+
+  if (webgpuOk) {
+    envBanner.className = "banner ok";
+    envBanner.innerHTML = "✓ Trình duyệt hỗ trợ WebGPU — tách nguồn sẽ chạy bằng GPU, không bắt buộc phải chạy qua local server (dù vẫn nên dùng để dự phòng).";
+  } else if (isolated) {
+    envBanner.className = "banner ok";
+    envBanner.innerHTML = "✓ Đang chạy qua server có Cross-Origin Isolation — sẽ dùng WASM đa luồng (CPU), chậm hơn GPU nhưng vẫn ổn.";
+  } else {
+    envBanner.className = "banner warn";
+    envBanner.innerHTML =
+      "⚠ Trình duyệt không có WebGPU, và trang chưa chạy qua server có header đặc biệt — sẽ chỉ dùng được WASM 1 luồng (CPU), " +
+      "<strong>rất chậm</strong> với model nặng như Demucs. Khuyên dùng: mở bằng Chrome/Edge bản mới, hoặc chạy <code>python serve.py</code> " +
+      "rồi mở qua <code>http://localhost:8000/</code> để được tăng tốc.";
+  }
+
+  ort.env.wasm.numThreads = isolated ? (navigator.hardwareConcurrency || 4) : 1;
+})();
+
+// ============================================================
+// Danh sách nhạc cụ GM
+// ============================================================
+const INSTRUMENTS = [
+  ["Piano (Acoustic Grand)", 0], ["Bright Piano", 1], ["Electric Piano", 4], ["Harpsichord", 6],
+  ["Church Organ", 19], ["Accordion", 21],
+  ["Acoustic Guitar (nylon)", 24], ["Acoustic Guitar (steel)", 25], ["Electric Guitar (clean)", 27],
+  ["Overdriven Guitar", 29], ["Distortion Guitar", 30],
+  ["Acoustic Bass", 32], ["Electric Bass (finger)", 33],
+  ["Violin", 40], ["Viola", 41], ["Cello", 42], ["Contrabass", 43], ["String Ensemble", 48],
+  ["Choir Aahs", 52], ["Voice Oohs", 53], ["Synth Voice", 54],
+  ["Trumpet", 56], ["Trombone", 57], ["Tuba", 58], ["French Horn", 60], ["Brass Section", 61],
+  ["Alto Sax", 65], ["Tenor Sax", 66], ["Oboe", 68], ["Clarinet", 71], ["Flute", 73], ["Pan Flute", 75],
+  ["Synth Lead (square)", 80], ["Synth Pad (new age)", 88],
+];
+function fillInstrumentSelect(sel, defaultProgram) {
+  INSTRUMENTS.forEach(([name, program]) => {
+    const opt = document.createElement("option");
+    opt.value = program; opt.textContent = name;
+    if (program === defaultProgram) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+const vocalSelect = document.getElementById("vocalInstrument");
+const bassSelect = document.getElementById("bassInstrument");
+const instrumentalSelect = document.getElementById("instrumentalInstrument");
+fillInstrumentSelect(vocalSelect, 54);       // Synth Voice mặc định cho lời — ngân mượt hơn Choir khi chuyển MIDI
+fillInstrumentSelect(bassSelect, 33);        // Electric Bass (finger) mặc định cho bass
+fillInstrumentSelect(instrumentalSelect, 0); // Piano mặc định cho nhạc nền
+
+// ============================================================
+// Thanh trượt: độ nghiêm ngặt lọc nốt (Basic Pitch) & độ nhạy dò trống
+// ============================================================
+// Mức 0 (lỏng nhất, giữ nhiều nốt — hợp khi ưu tiên nghe "đầy" giống bản gốc)
+// tới mức 4 (chặt nhất, ít nốt lẫn — hợp khi ưu tiên "sạch" dù có thể mất vài nốt nhẹ thật).
+const STRICTNESS_LEVELS = [
+  { label: "Rất lỏng (giữ gần hết)", onsetThresh: 0.35, frameThresh: 0.2 },
+  { label: "Lỏng", onsetThresh: 0.45, frameThresh: 0.25 },
+  { label: "Vừa phải", onsetThresh: 0.55, frameThresh: 0.32 },
+  { label: "Chặt", onsetThresh: 0.65, frameThresh: 0.4 },
+  { label: "Rất chặt (lọc mạnh)", onsetThresh: 0.75, frameThresh: 0.5 },
+];
+const DRUM_SENSITIVITY_LEVELS = [
+  { label: "Rất nhạy", thresholdRatio: 1.15, minAbsEnergy: 0.0025 },
+  { label: "Nhạy", thresholdRatio: 1.3, minAbsEnergy: 0.004 },
+  { label: "Vừa phải", thresholdRatio: 1.5, minAbsEnergy: 0.006 },
+  { label: "Chặt", thresholdRatio: 1.8, minAbsEnergy: 0.009 },
+  { label: "Rất chặt", thresholdRatio: 2.2, minAbsEnergy: 0.013 },
+];
+const strictnessSlider = document.getElementById("strictnessSlider");
+const strictnessValueEl = document.getElementById("strictnessValue");
+const drumSensitivitySlider = document.getElementById("drumSensitivitySlider");
+const drumSensitivityValueEl = document.getElementById("drumSensitivityValue");
+const durationLimitSelect = document.getElementById("durationLimit");
+
+function updateSliderLabels(){
+  strictnessValueEl.textContent = STRICTNESS_LEVELS[strictnessSlider.value].label;
+  drumSensitivityValueEl.textContent = DRUM_SENSITIVITY_LEVELS[drumSensitivitySlider.value].label;
+}
+strictnessSlider.addEventListener("input", updateSliderLabels);
+drumSensitivitySlider.addEventListener("input", updateSliderLabels);
+updateSliderLabels();
+
+// ============================================================
+// Ghi file MIDI đa track
+// ============================================================
+function writeVarLen(value){
+  let buffer = value & 0x7f; const bytes = [];
+  while ((value >>= 7) > 0){ buffer <<= 8; buffer |= 0x80 | (value & 0x7f); }
+  while (true){ bytes.push(buffer & 0xff); if (buffer & 0x80) buffer >>= 8; else break; }
+  return bytes;
+}
+function u32(n){ return [(n>>24)&0xff,(n>>16)&0xff,(n>>8)&0xff,n&0xff]; }
+function u16(n){ return [(n>>8)&0xff, n&0xff]; }
+function textMetaBytes(str){ const codes = Array.from(new TextEncoder().encode(str)); return [...writeVarLen(codes.length), ...codes]; }
+function buildTrackChunk(trackBytes){ return [0x4d,0x54,0x72,0x6b, ...u32(trackBytes.length), ...trackBytes]; }
+function eventsToTrackBytes(events){
+  const sorted = [...events].sort((a,b) => a.tick - b.tick || a.order - b.order);
+  const bytes = []; let lastTick = 0;
+  sorted.forEach(ev => {
+    bytes.push(...writeVarLen(Math.max(0, ev.tick - lastTick)));
+    bytes.push(...ev.bytes);
+    lastTick = ev.tick;
+  });
+  bytes.push(...writeVarLen(0), 0xff, 0x2f, 0x00);
+  return bytes;
+}
+function buildMultiTrackMidi(opts){
+  const ticksPerQuarter = opts.ticksPerQuarter || 480;
+  const bpm = opts.bpm || 120;
+  const microsecondsPerQuarter = Math.round(60000000 / bpm);
+  const ticksPerSecond = ticksPerQuarter * (1000000 / microsecondsPerQuarter);
+  const hasDrums = opts.drumEvents && opts.drumEvents.length > 0;
+  const melodicTracks = opts.melodicTracks || [];
+
+  const tempoTrackBytes = eventsToTrackBytes([{
+    tick:0, order:-1,
+    bytes:[0xff,0x51,0x03,(microsecondsPerQuarter>>16)&0xff,(microsecondsPerQuarter>>8)&0xff,microsecondsPerQuarter&0xff],
+  }]);
+  const trackNameBytes = (name) => [0xff, 0x03, ...textMetaBytes(name)];
+  const chunks = [buildTrackChunk(tempoTrackBytes)];
+
+  melodicTracks.forEach((mt, idx) => {
+    const channel = mt.channel != null ? mt.channel : idx;
+    const events = [];
+    events.push({ tick:0, order:-3, bytes: trackNameBytes(mt.name || `Instrument ${idx+1}`) });
+    events.push({ tick:0, order:-2, bytes: [0xc0 | channel, Math.max(0, Math.min(127, mt.program || 0))] });
+    (mt.notes || []).forEach(note => {
+      const pitch = Math.max(0, Math.min(127, Math.round(note.pitchMidi)));
+      const velocity = Math.max(1, Math.min(127, Math.round((note.amplitude || 0.75) * 127)));
+      const startTick = Math.max(0, Math.round(note.startTimeSeconds * ticksPerSecond));
+      let endTick = Math.round((note.startTimeSeconds + Math.max(note.durationSeconds, 0.02)) * ticksPerSecond);
+      if (endTick <= startTick) endTick = startTick + 1;
+      events.push({ tick:startTick, order:0, bytes:[0x90 | channel, pitch, velocity] });
+      events.push({ tick:endTick, order:1, bytes:[0x80 | channel, pitch, 0x00] });
+    });
+    chunks.push(buildTrackChunk(eventsToTrackBytes(events)));
+  });
+
+  if (hasDrums){
+    const drumEvents = [];
+    drumEvents.push({ tick:0, order:-3, bytes: trackNameBytes("Drums") });
+    (opts.drumEvents || []).forEach(hit => {
+      const pitch = Math.max(0, Math.min(127, Math.round(hit.pitch)));
+      const velocity = Math.max(1, Math.min(127, Math.round((hit.velocity || 0.8) * 127)));
+      const startTick = Math.max(0, Math.round(hit.timeSec * ticksPerSecond));
+      const endTick = startTick + Math.max(1, Math.round(0.05 * ticksPerSecond));
+      drumEvents.push({ tick:startTick, order:0, bytes:[0x99, pitch, velocity] });
+      drumEvents.push({ tick:endTick, order:1, bytes:[0x89, pitch, 0x00] });
+    });
+    chunks.push(buildTrackChunk(eventsToTrackBytes(drumEvents)));
+  }
+
+  const ntrks = chunks.length;
+  const header = [0x4d,0x54,0x68,0x64, ...u32(6), ...u16(1), ...u16(ntrks), ...u16(ticksPerQuarter)];
+  const allBytes = [...header];
+  chunks.forEach(c => allBytes.push(...c));
+  return new Uint8Array(allBytes);
+}
+
+// ============================================================
+// DSP: dò & phân loại trống (5 loại)
+// ============================================================
+function rms(arr){ let s=0; for(let i=0;i<arr.length;i++) s+=arr[i]*arr[i]; return Math.sqrt(s/arr.length); }
+function lowPass(samples, sampleRate, cutoffHz){
+  const dt=1/sampleRate, rc=1/(2*Math.PI*cutoffHz), alpha=dt/(rc+dt);
+  const out=new Float32Array(samples.length); out[0]=samples[0];
+  for(let i=1;i<samples.length;i++) out[i]=out[i-1]+alpha*(samples[i]-out[i-1]);
+  return out;
+}
+function highPass(samples, sampleRate, cutoffHz){
+  const dt=1/sampleRate, rc=1/(2*Math.PI*cutoffHz), alpha=rc/(rc+dt);
+  const out=new Float32Array(samples.length); out[0]=samples[0];
+  for(let i=1;i<samples.length;i++) out[i]=alpha*(out[i-1]+samples[i]-samples[i-1]);
+  return out;
+}
+function lowPass2(s,sr,c){ return lowPass(lowPass(s,sr,c),sr,c); }
+function highPass2(s,sr,c){ return highPass(highPass(s,sr,c),sr,c); }
+function computeEnvelope(samples, frameSize, hopSize){
+  const frames=[];
+  for(let start=0; start+frameSize<=samples.length; start+=hopSize) frames.push(rms(samples.subarray(start,start+frameSize)));
+  return frames;
+}
+function detectOnsets(samples, sampleRate, opts={}){
+  const frameSize = Math.round((opts.frameSec || 0.046) * sampleRate);
+  const hopSize = Math.round((opts.hopSec || 0.02) * sampleRate);
+  const envelope = computeEnvelope(samples, frameSize, hopSize);
+  const minGapFrames = Math.round((opts.minGapSec || 0.09) * sampleRate / hopSize);
+  const historyLen = Math.round(0.3 * sampleRate / hopSize);
+  const thresholdRatio = opts.thresholdRatio || 1.5;
+  const minAbsEnergy = opts.minAbsEnergy ?? 0.006;
+  const onsetsFrame=[]; let lastOnsetFrame=-Infinity;
+  for(let i=0;i<envelope.length;i++){
+    const from=Math.max(0,i-historyLen);
+    let baseline=0,count=0;
+    for(let j=from;j<i;j++){ baseline+=envelope[j]; count++; }
+    baseline = count>0 ? baseline/count : 0;
+    const isPeak = envelope[i]>minAbsEnergy && envelope[i]>baseline*thresholdRatio &&
+      (i===0 || envelope[i]>=envelope[i-1]) && (i-lastOnsetFrame)>minGapFrames;
+    if (isPeak){ onsetsFrame.push(i); lastOnsetFrame=i; }
+  }
+  return onsetsFrame.map(f => (f*hopSize)/sampleRate);
+}
+function decayTimeSec(samples, sampleRate, startIdx, maxWindowSec, dropRatio=0.3){
+  const maxLen = Math.min(samples.length-startIdx, Math.round(maxWindowSec*sampleRate));
+  if (maxLen<=0) return 0;
+  const frameSize=256, hop=128; const frames=[];
+  for(let start=0; start+frameSize<=maxLen; start+=hop) frames.push(rms(samples.subarray(startIdx+start, startIdx+start+frameSize)));
+  if (frames.length===0) return 0;
+  let peakIdx=0, peak=frames[0];
+  for(let i=1;i<frames.length;i++){ if(frames[i]>peak){ peak=frames[i]; peakIdx=i; } }
+  if (peak===0) return 0;
+  for(let i=peakIdx;i<frames.length;i++) if(frames[i]<peak*dropRatio) return ((i-peakIdx)*hop)/sampleRate;
+  return ((frames.length-peakIdx)*hop)/sampleRate;
+}
+function classifyOnset(samples, sampleRate, onsetTimeSec, opts={}){
+  const windowSec = opts.windowSec || 0.06;
+  const startIdx = Math.max(0, Math.round(onsetTimeSec*sampleRate));
+  const endIdx = Math.min(samples.length, startIdx + Math.round(windowSec*sampleRate));
+  if (endIdx-startIdx<8) return { type:"snare", subLow:0, lowMid:0, midEnergy:0, highEnergy:0, decay:0 };
+  const windowSamples = samples.subarray(startIdx, endIdx);
+  const subLow = rms(lowPass2(windowSamples, sampleRate, 100));
+  const lowMid = rms(highPass2(lowPass2(windowSamples, sampleRate, 250), sampleRate, 100));
+  const midEnergy = rms(highPass2(lowPass2(windowSamples, sampleRate, 3000), sampleRate, 250));
+  const highEnergy = rms(highPass2(windowSamples, sampleRate, 3000));
+  const bands = { kick:subLow, tom:lowMid, snare:midEnergy, high:highEnergy };
+  let type = Object.keys(bands).reduce((a,b) => (bands[b]>bands[a] ? b : a));
+  let decay = 0;
+  if (type==="high"){ decay = decayTimeSec(samples, sampleRate, startIdx, 0.5, 0.3); type = decay>0.12 ? "crash_openhat" : "hihat"; }
+  return { type, subLow, lowMid, midEnergy, highEnergy, decay };
+}
+const DRUM_MIDI = { kick:36, snare:38, tom:45, hihat:42, crash_openhat:49 };
+function detectDrumEvents(samples, sampleRate, opts={}){
+  const onsets = detectOnsets(samples, sampleRate, opts);
+  return onsets.map(t => {
+    const r = classifyOnset(samples, sampleRate, t);
+    const peak = Math.max(r.subLow||0, r.lowMid||0, r.midEnergy||0, r.highEnergy||0);
+    const velocity = Math.max(0.35, Math.min(1, peak*6));
+    return { timeSec:t, pitch: DRUM_MIDI[r.type], velocity, type:r.type };
+  });
+}
+
+// ============================================================
+// Tiện ích audio: resample, downmix
+// ============================================================
+async function decodeAndResample(file, targetRate, numChannels){
+  const arrayBuffer = await file.arrayBuffer();
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const decoded = await audioCtx.decodeAudioData(arrayBuffer);
+  const length = Math.ceil(decoded.duration * targetRate);
+  const offlineCtx = new OfflineAudioContext(numChannels, length, targetRate);
+  const source = offlineCtx.createBufferSource();
+  source.buffer = decoded;
+  source.connect(offlineCtx.destination);
+  source.start(0);
+  return await offlineCtx.startRendering();
+}
+
+async function floatArraysToResampledMono(leftArr, rightArr, srcRate, targetRate){
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const srcBuffer = audioCtx.createBuffer(2, leftArr.length, srcRate);
+  srcBuffer.copyToChannel(leftArr, 0);
+  srcBuffer.copyToChannel(rightArr, 1);
+  const length = Math.ceil((leftArr.length / srcRate) * targetRate);
+  const offlineCtx = new OfflineAudioContext(1, length, targetRate);
+  const source = offlineCtx.createBufferSource();
+  source.buffer = srcBuffer;
+  source.connect(offlineCtx.destination);
+  source.start(0);
+  return await offlineCtx.startRendering();
+}
+
+// ============================================================
+// State & UI
+// ============================================================
+const files = new Map();
+let nextId = 1;
+let basicPitch = null;
+let demucsProcessor = null;
+
+const dropEl = document.getElementById("drop");
+const inputEl = document.getElementById("fileInput");
+const listEl = document.getElementById("fileList");
+const convertBtn = document.getElementById("convertBtn");
+const modelStatusEl = document.getElementById("modelStatus");
+const drumToggle = document.getElementById("drumToggle");
+
+dropEl.addEventListener("click", () => inputEl.click());
+["dragenter","dragover"].forEach(evt => dropEl.addEventListener(evt, e => { e.preventDefault(); dropEl.classList.add("drag"); }));
+["dragleave","drop"].forEach(evt => dropEl.addEventListener(evt, e => { e.preventDefault(); dropEl.classList.remove("drag"); }));
+dropEl.addEventListener("drop", e => addFiles(e.dataTransfer.files));
+inputEl.addEventListener("change", e => addFiles(e.target.files));
+
+// ============================================================
+// Chế độ nhập liệu: bài gốc (tự tách) vs. 4 file đã tách sẵn
+// ============================================================
+const modeMixedRadio = document.getElementById("modeMixed");
+const modeSeparatedRadio = document.getElementById("modeSeparated");
+const modeOptionMixed = document.getElementById("modeOptionMixed");
+const modeOptionSeparated = document.getElementById("modeOptionSeparated");
+const mixedSection = document.getElementById("mixedSection");
+const separatedSection = document.getElementById("separatedSection");
+const sepFileListEl = document.getElementById("sepFileList");
+
+const STEMS = ["vocals", "bass", "drums", "instrumental"];
+const sepFiles = { vocals: null, bass: null, drums: null, instrumental: null };
+let sepResult = null; // { url, error, stages, resultSummary }
+
+function currentMode(){ return modeSeparatedRadio.checked ? "separated" : "mixed"; }
+
+function updateModeUI(){
+  const mode = currentMode();
+  mixedSection.style.display = mode === "mixed" ? "" : "none";
+  separatedSection.style.display = mode === "separated" ? "" : "none";
+  modeOptionMixed.classList.toggle("checked", mode === "mixed");
+  modeOptionSeparated.classList.toggle("checked", mode === "separated");
+  convertBtn.textContent = mode === "mixed" ? "Tách & Chuyển sang MIDI" : "Ghép & Chuyển sang MIDI";
+  updateConvertBtnState();
+}
+modeMixedRadio.addEventListener("change", updateModeUI);
+modeSeparatedRadio.addEventListener("change", updateModeUI);
+
+function updateConvertBtnState(){
+  const mode = currentMode();
+  if (mode === "mixed"){
+    convertBtn.disabled = files.size === 0;
+  } else {
+    const hasAny = STEMS.some(s => sepFiles[s]);
+    convertBtn.disabled = !hasAny;
+  }
+}
+
+STEMS.forEach(stem => {
+  const dropSm = document.querySelector(`.drop-sm[data-stem="${stem}"]`);
+  const input = document.getElementById(`sepInput-${stem}`);
+  const nameEl = document.getElementById(`sepName-${stem}`);
+  const slotEl = document.getElementById(`sepSlot-${stem}`);
+  dropSm.addEventListener("click", () => input.click());
+  ["dragenter","dragover"].forEach(evt => dropSm.addEventListener(evt, e => { e.preventDefault(); dropSm.classList.add("drag"); }));
+  ["dragleave","drop"].forEach(evt => dropSm.addEventListener(evt, e => { e.preventDefault(); dropSm.classList.remove("drag"); }));
+  dropSm.addEventListener("drop", e => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) setSepFile(stem, file);
+  });
+  input.addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0];
+    if (file) setSepFile(stem, file);
+  });
+  function setSepFile(stem, file){
+    sepFiles[stem] = file;
+    nameEl.textContent = file.name;
+    slotEl.classList.add("filled");
+    sepResult = null;
+    renderSepResult();
+    updateConvertBtnState();
+  }
+});
+updateModeUI();
+
+const STAGE_LABELS = [
+  ["download", "Tải model Demucs (chỉ lần đầu)"],
+  ["separate", "Tách lời / bass / nhạc nền / trống"],
+  ["vocals", "Nhận diện cao độ — Lời"],
+  ["bass", "Nhận diện cao độ — Bass"],
+  ["instrumental", "Nhận diện cao độ — Nhạc nền"],
+  ["drums", "Dò tiếng trống"],
+  ["merge", "Gộp file MIDI"],
+];
+
+function addFiles(fileListObj){
+  Array.from(fileListObj).forEach(file => {
+    const id = nextId++;
+    files.set(id, {
+      file, url:null, error:null,
+      stages: Object.fromEntries(STAGE_LABELS.map(([k]) => [k, { status:"pending", progress:0 }])),
+      resultSummary: "",
+    });
+  });
+  inputEl.value = "";
+  renderList();
+}
+function removeFile(id){ files.delete(id); renderList(); }
+
+function renderList(){
+  listEl.innerHTML = "";
+  files.forEach((f, id) => {
+    const card = document.createElement("div");
+    card.className = "file-card";
+
+    const top = document.createElement("div");
+    top.className = "file-top";
+    const name = document.createElement("div");
+    name.className = "file-name";
+    name.textContent = f.file.name;
+    top.appendChild(name);
+
+    if (f.url){
+      const a = document.createElement("a");
+      a.className = "dl-btn"; a.href = f.url;
+      a.download = f.file.name.replace(/\.[^.]+$/, "") + ".mid";
+      a.textContent = "Tải MIDI";
+      top.appendChild(a);
+    } else {
+      const rm = document.createElement("button");
+      rm.className = "remove-btn"; rm.textContent = "✕";
+      rm.onclick = () => removeFile(id);
+      top.appendChild(rm);
+    }
+    card.appendChild(top);
+
+    const stageList = document.createElement("div");
+    stageList.className = "stage-list";
+    STAGE_LABELS.forEach(([key, label]) => {
+      const st = f.stages[key];
+      const row = document.createElement("div");
+      row.className = "stage " + (st.status === "active" ? "active" : st.status === "done" ? "done" : st.status === "error" ? "error" : "");
+      const dot = document.createElement("span"); dot.className = "dot";
+      const text = document.createElement("span"); text.textContent = label + (st.status === "active" && st.progress ? ` — ${Math.round(st.progress*100)}%` : "");
+      row.appendChild(dot); row.appendChild(text);
+      stageList.appendChild(row);
+    });
+    card.appendChild(stageList);
+
+    if (f.error){
+      const errBox = document.createElement("div");
+      errBox.style.cssText = "margin-top:8px; font-size:12.5px; color:var(--err);";
+      errBox.textContent = f.error;
+      card.appendChild(errBox);
+    }
+    if (f.resultSummary){
+      const sumBox = document.createElement("div");
+      sumBox.style.cssText = "margin-top:8px; font-size:12.5px; color:var(--ok);";
+      sumBox.textContent = f.resultSummary;
+      card.appendChild(sumBox);
+    }
+
+    listEl.appendChild(card);
+  });
+  updateConvertBtnState();
+}
+
+function setStage(f, key, status, progress = 0){
+  f.stages[key].status = status;
+  f.stages[key].progress = progress;
+  renderList();
+}
+
+async function ensureBasicPitch(){
+  if (!basicPitch){
+    basicPitch = new BasicPitch(BASIC_PITCH_MODEL_URL);
+    await basicPitch.model;
+  }
+  return basicPitch;
+}
+
+async function ensureDemucs(f){
+  if (!demucsProcessor){
+    demucsProcessor = new DemucsProcessor({
+      ort,
+      onDownloadProgress: (loaded, total) => {
+        if (total) setStage(f, "download", "active", loaded/total);
+      },
+    });
+    setStage(f, "download", "active", 0);
+    await demucsProcessor.loadModel(DEMUCS_CONSTANTS.DEFAULT_MODEL_URL);
+    setStage(f, "download", "done", 1);
+  } else {
+    setStage(f, "download", "done", 1);
+  }
+  return demucsProcessor;
+}
+
+async function runBasicPitchOnMono(monoAudioBuffer, thresholds){
+  const bp = await ensureBasicPitch();
+  const frames = [], onsets = [], contours = [];
+  await bp.evaluateModel(monoAudioBuffer, (f_,o_,c_) => { frames.push(...f_); onsets.push(...o_); contours.push(...c_); }, () => {});
+  const rawNotes = outputToNotesPoly(frames, onsets, thresholds.onsetThresh, thresholds.frameThresh);
+  const withBends = addPitchBendsToNoteEvents(contours, rawNotes);
+  return noteFramesToTime(withBends);
+}
+
+async function convertOne(id){
+  const f = files.get(id);
+  if (!f || f.url) return;
+  f.error = null;
+
+  const strictness = STRICTNESS_LEVELS[strictnessSlider.value];
+  const drumSensitivity = DRUM_SENSITIVITY_LEVELS[drumSensitivitySlider.value];
+  const durationLimitSec = parseInt(durationLimitSelect.value, 10) || 0;
+
+  try {
+    // 1) Demucs cần audio 44100Hz stereo (có thể cắt bớt thời lượng để xử lý nhanh hơn)
+    let stereo44k = await decodeAndResample(f.file, DEMUCS_CONSTANTS.SAMPLE_RATE, 2);
+    if (durationLimitSec > 0 && stereo44k.duration > durationLimitSec) {
+      const trimmedLen = Math.round(durationLimitSec * DEMUCS_CONSTANTS.SAMPLE_RATE);
+      const trimCtx = new OfflineAudioContext(2, trimmedLen, DEMUCS_CONSTANTS.SAMPLE_RATE);
+      const src = trimCtx.createBufferSource();
+      src.buffer = stereo44k;
+      src.connect(trimCtx.destination);
+      src.start(0);
+      stereo44k = await trimCtx.startRendering();
+    }
+    const left = stereo44k.getChannelData(0);
+    const right = stereo44k.numberOfChannels > 1 ? stereo44k.getChannelData(1) : left;
+
+    const processor = await ensureDemucs(f);
+
+    setStage(f, "separate", "active", 0);
+    processor.onProgress = ({ progress }) => setStage(f, "separate", "active", progress);
+    const stems = await processor.separate(left, right);
+    setStage(f, "separate", "done", 1);
+
+    // 2) Lời, Bass, Nhạc nền (other) — mỗi lớp chuyển MIDI riêng để giữ đúng vai trò trong bản phối
+    setStage(f, "vocals", "active", 0);
+    const vocalMono = await floatArraysToResampledMono(stems.vocals.left, stems.vocals.right, DEMUCS_CONSTANTS.SAMPLE_RATE, 22050);
+    const vocalNotes = await runBasicPitchOnMono(vocalMono, strictness);
+    setStage(f, "vocals", "done", 1);
+
+    setStage(f, "bass", "active", 0);
+    const bassMono = await floatArraysToResampledMono(stems.bass.left, stems.bass.right, DEMUCS_CONSTANTS.SAMPLE_RATE, 22050);
+    const bassNotes = await runBasicPitchOnMono(bassMono, strictness);
+    setStage(f, "bass", "done", 1);
+
+    setStage(f, "instrumental", "active", 0);
+    const instrMono = await floatArraysToResampledMono(stems.other.left, stems.other.right, DEMUCS_CONSTANTS.SAMPLE_RATE, 22050);
+    const instrNotes = await runBasicPitchOnMono(instrMono, strictness);
+    setStage(f, "instrumental", "done", 1);
+
+    let drumEvents = [];
+    if (drumToggle.checked){
+      setStage(f, "drums", "active", 0);
+      const drumsLeft = stems.drums.left, drumsRight = stems.drums.right;
+      const drumsMono = new Float32Array(drumsLeft.length);
+      for (let i=0;i<drumsMono.length;i++) drumsMono[i] = (drumsLeft[i] + drumsRight[i]) / 2;
+      drumEvents = detectDrumEvents(drumsMono, DEMUCS_CONSTANTS.SAMPLE_RATE, drumSensitivity);
+      setStage(f, "drums", "done", 1);
+    } else {
+      setStage(f, "drums", "done", 1);
+    }
+
+    setStage(f, "merge", "active", 0.5);
+    const vocalProgram = parseInt(vocalSelect.value, 10);
+    const vocalName = "Lời — " + vocalSelect.options[vocalSelect.selectedIndex].textContent;
+    const bassProgram = parseInt(bassSelect.value, 10);
+    const bassName = "Bass — " + bassSelect.options[bassSelect.selectedIndex].textContent;
+    const instrProgram = parseInt(instrumentalSelect.value, 10);
+    const instrName = "Nhạc nền — " + instrumentalSelect.options[instrumentalSelect.selectedIndex].textContent;
+
+    const midiBytes = buildMultiTrackMidi({
+      melodicTracks: [
+        { name: vocalName, program: vocalProgram, channel: 0, notes: vocalNotes },
+        { name: bassName, program: bassProgram, channel: 1, notes: bassNotes },
+        { name: instrName, program: instrProgram, channel: 2, notes: instrNotes },
+      ],
+      drumEvents,
+    });
+    const blob = new Blob([midiBytes], { type: "audio/midi" });
+    f.url = URL.createObjectURL(blob);
+    setStage(f, "merge", "done", 1);
+
+    f.resultSummary = `Xong — Lời: ${vocalNotes.length} nốt · Bass: ${bassNotes.length} nốt · Nhạc nền: ${instrNotes.length} nốt` +
+      (drumToggle.checked ? ` · Trống: ${drumEvents.length} tiếng${drumEvents.length===0 ? " (không phát hiện được, có thể bài không có trống)" : ""}` : "") +
+      (durationLimitSec > 0 ? ` · (chỉ xử lý ${durationLimitSec}s đầu)` : "");
+  } catch (err) {
+    console.error(err);
+    f.error = "Lỗi: " + (err && err.message ? err.message : String(err));
+    STAGE_LABELS.forEach(([key]) => { if (f.stages[key].status === "active") f.stages[key].status = "error"; });
+  }
+  renderList();
+}
+
+// ============================================================
+// Chế độ "đã có sẵn 4 file tách riêng" — bỏ qua Demucs, chỉ nhận diện
+// cao độ từng file rồi ghép chung thành 1 MIDI
+// ============================================================
+const STAGE_LABELS_SEP = [
+  ["vocals", "Nhận diện cao độ — Lời"],
+  ["bass", "Nhận diện cao độ — Bass"],
+  ["instrumental", "Nhận diện cao độ — Nhạc nền"],
+  ["drums", "Dò tiếng trống"],
+  ["merge", "Gộp file MIDI"],
+];
+const STEM_LABEL_VI = { vocals:"Lời", bass:"Bass", drums:"Trống", instrumental:"Nhạc nền" };
+
+function newSepResult(){
+  return {
+    url: null, error: null, resultSummary: "",
+    stages: Object.fromEntries(STAGE_LABELS_SEP.map(([k]) => [k, { status:"pending", progress:0 }])),
+  };
+}
+
+function setSepStage(key, status, progress = 0){
+  sepResult.stages[key].status = status;
+  sepResult.stages[key].progress = progress;
+  renderSepResult();
+}
+
+function renderSepResult(){
+  sepFileListEl.innerHTML = "";
+  if (!sepResult) return;
+  const card = document.createElement("div");
+  card.className = "file-card";
+
+  const top = document.createElement("div");
+  top.className = "file-top";
+  const name = document.createElement("div");
+  name.className = "file-name";
+  const chosenNames = STEMS.filter(s => sepFiles[s]).map(s => STEM_LABEL_VI[s]).join(" + ");
+  name.textContent = chosenNames || "Chưa chọn file";
+  top.appendChild(name);
+
+  if (sepResult.url){
+    const a = document.createElement("a");
+    a.className = "dl-btn"; a.href = sepResult.url;
+    const baseFile = sepFiles.vocals || sepFiles.bass || sepFiles.instrumental || sepFiles.drums;
+    const baseName = baseFile ? baseFile.name : "ghep";
+    a.download = baseName.replace(/\.[^.]+$/, "") + "-ghep.mid";
+    a.textContent = "Tải MIDI";
+    top.appendChild(a);
+  }
+  card.appendChild(top);
+
+  const stageList = document.createElement("div");
+  stageList.className = "stage-list";
+  STAGE_LABELS_SEP.forEach(([key, label]) => {
+    const st = sepResult.stages[key];
+    const row = document.createElement("div");
+    row.className = "stage " + (st.status === "active" ? "active" : st.status === "done" ? "done" : st.status === "error" ? "error" : "");
+    const dot = document.createElement("span"); dot.className = "dot";
+    const text = document.createElement("span"); text.textContent = label + (st.status === "active" && st.progress ? ` — ${Math.round(st.progress*100)}%` : "");
+    row.appendChild(dot); row.appendChild(text);
+    stageList.appendChild(row);
+  });
+  card.appendChild(stageList);
+
+  if (sepResult.error){
+    const errBox = document.createElement("div");
+    errBox.style.cssText = "margin-top:8px; font-size:12.5px; color:var(--err);";
+    errBox.textContent = sepResult.error;
+    card.appendChild(errBox);
+  }
+  if (sepResult.resultSummary){
+    const sumBox = document.createElement("div");
+    sumBox.style.cssText = "margin-top:8px; font-size:12.5px; color:var(--ok);";
+    sumBox.textContent = sepResult.resultSummary;
+    card.appendChild(sumBox);
+  }
+
+  sepFileListEl.appendChild(card);
+}
+
+async function decodeResampleTrim(file, targetRate, numChannels, durationLimitSec){
+  let buf = await decodeAndResample(file, targetRate, numChannels);
+  if (durationLimitSec > 0 && buf.duration > durationLimitSec){
+    const trimmedLen = Math.round(durationLimitSec * targetRate);
+    const trimCtx = new OfflineAudioContext(numChannels, trimmedLen, targetRate);
+    const src = trimCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(trimCtx.destination);
+    src.start(0);
+    buf = await trimCtx.startRendering();
+  }
+  return buf;
+}
+
+async function convertSeparated(){
+  if (!STEMS.some(s => sepFiles[s])) return;
+  sepResult = newSepResult();
+  renderSepResult();
+
+  const strictness = STRICTNESS_LEVELS[strictnessSlider.value];
+  const drumSensitivity = DRUM_SENSITIVITY_LEVELS[drumSensitivitySlider.value];
+  const durationLimitSec = parseInt(durationLimitSelect.value, 10) || 0;
+
+  try {
+    const melodicTracks = [];
+    let vocalNotes = [], bassNotes = [], instrNotes = [];
+
+    if (sepFiles.vocals){
+      setSepStage("vocals", "active", 0);
+      const mono = await decodeResampleTrim(sepFiles.vocals, 22050, 1, durationLimitSec);
+      vocalNotes = await runBasicPitchOnMono(mono, strictness);
+      const vocalProgram = parseInt(vocalSelect.value, 10);
+      const vocalName = "Lời — " + vocalSelect.options[vocalSelect.selectedIndex].textContent;
+      melodicTracks.push({ name: vocalName, program: vocalProgram, channel: 0, notes: vocalNotes });
+      setSepStage("vocals", "done", 1);
+    } else {
+      setSepStage("vocals", "done", 1);
+    }
+
+    if (sepFiles.bass){
+      setSepStage("bass", "active", 0);
+      const mono = await decodeResampleTrim(sepFiles.bass, 22050, 1, durationLimitSec);
+      bassNotes = await runBasicPitchOnMono(mono, strictness);
+      const bassProgram = parseInt(bassSelect.value, 10);
+      const bassName = "Bass — " + bassSelect.options[bassSelect.selectedIndex].textContent;
+      melodicTracks.push({ name: bassName, program: bassProgram, channel: 1, notes: bassNotes });
+      setSepStage("bass", "done", 1);
+    } else {
+      setSepStage("bass", "done", 1);
+    }
+
+    if (sepFiles.instrumental){
+      setSepStage("instrumental", "active", 0);
+      const mono = await decodeResampleTrim(sepFiles.instrumental, 22050, 1, durationLimitSec);
+      instrNotes = await runBasicPitchOnMono(mono, strictness);
+      const instrProgram = parseInt(instrumentalSelect.value, 10);
+      const instrName = "Nhạc nền — " + instrumentalSelect.options[instrumentalSelect.selectedIndex].textContent;
+      melodicTracks.push({ name: instrName, program: instrProgram, channel: 2, notes: instrNotes });
+      setSepStage("instrumental", "done", 1);
+    } else {
+      setSepStage("instrumental", "done", 1);
+    }
+
+    let drumEvents = [];
+    if (sepFiles.drums && drumToggle.checked){
+      setSepStage("drums", "active", 0);
+      const drumBuf = await decodeResampleTrim(sepFiles.drums, DEMUCS_CONSTANTS.SAMPLE_RATE, 1, durationLimitSec);
+      drumEvents = detectDrumEvents(drumBuf.getChannelData(0), DEMUCS_CONSTANTS.SAMPLE_RATE, drumSensitivity);
+      setSepStage("drums", "done", 1);
+    } else {
+      setSepStage("drums", "done", 1);
+    }
+
+    if (melodicTracks.length === 0 && drumEvents.length === 0){
+      throw new Error("Không có nốt nào được nhận diện — kiểm tra lại file đã chọn.");
+    }
+
+    setSepStage("merge", "active", 0.5);
+    const midiBytes = buildMultiTrackMidi({ melodicTracks, drumEvents });
+    const blob = new Blob([midiBytes], { type: "audio/midi" });
+    sepResult.url = URL.createObjectURL(blob);
+    setSepStage("merge", "done", 1);
+
+    const parts = [];
+    if (sepFiles.vocals) parts.push(`Lời: ${vocalNotes.length} nốt`);
+    if (sepFiles.bass) parts.push(`Bass: ${bassNotes.length} nốt`);
+    if (sepFiles.instrumental) parts.push(`Nhạc nền: ${instrNotes.length} nốt`);
+    if (sepFiles.drums) parts.push(`Trống: ${drumEvents.length} tiếng`);
+    sepResult.resultSummary = "Xong — " + parts.join(" · ") +
+      (durationLimitSec > 0 ? ` · (chỉ xử lý ${durationLimitSec}s đầu)` : "");
+  } catch (err) {
+    console.error(err);
+    sepResult.error = "Lỗi: " + (err && err.message ? err.message : String(err));
+    STAGE_LABELS_SEP.forEach(([key]) => { if (sepResult.stages[key].status === "active") sepResult.stages[key].status = "error"; });
+  }
+  renderSepResult();
+}
+
+convertBtn.addEventListener("click", async () => {
+  convertBtn.disabled = true;
+  if (currentMode() === "mixed"){
+    const ids = Array.from(files.keys()).filter(id => !files.get(id).url);
+    for (const id of ids) await convertOne(id);
+  } else {
+    await convertSeparated();
+  }
+  updateConvertBtnState();
+});
+</script>
+</body>
+</html>
