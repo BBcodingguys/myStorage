@@ -1042,6 +1042,78 @@ h2.section-title{
 .chat-jp .jp-main{font-size:15px;}
 .jp-display{display:block;padding:2px 0;}
 
+
+/* ================================================================
+   MỞ RỘNG V2 — lộ trình, listening, shadowing, đọc hiểu, game,
+   quest, nhật ký lỗi, furigana đúng kiểu ruby và hỗ trợ JP dần
+================================================================ */
+ruby{ruby-position:over;ruby-align:center;}
+.jp-main ruby{font-family:'Noto Sans JP',sans-serif;}
+.jp-main rt{font-family:'Noto Sans JP',sans-serif;font-size:.48em;line-height:1;color:var(--indigo);font-weight:500;padding:0 .06em;}
+.jp-ruby{display:block;}
+.ja-assist{background:var(--gold-soft);border:1px solid var(--gold);border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.55;color:var(--ink);}
+.ja-hidden{filter:blur(0);}
+.reveal-meaning{background:none;border:none;color:var(--indigo);text-decoration:underline;cursor:pointer;font:inherit;padding:0;}
+.progress-stack{display:flex;flex-direction:column;gap:11px;margin:10px 0 16px;}
+.progress-item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 13px;}
+.progress-item .pi-top{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;}
+.progress-item .pi-sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+.progress-mini{height:7px;background:var(--paper-2);border:1px solid var(--line);border-radius:5px;overflow:hidden;margin-top:7px;}
+.progress-mini>span{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--gold));}
+.course-grid{display:flex;flex-direction:column;gap:10px;}
+.course-card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 14px;box-shadow:var(--shadow);}
+.course-card.locked{opacity:.65;}
+.course-top{display:flex;align-items:center;gap:10px;}
+.course-icon{font-size:27px;line-height:1;flex:none;}
+.course-name{font-weight:800;font-size:15px;}
+.course-desc{font-size:11.5px;color:var(--ink-soft);line-height:1.45;margin-top:2px;}
+.course-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.unit-list{display:flex;flex-direction:column;gap:8px;margin-top:11px;}
+.unit-row{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;display:flex;align-items:center;gap:10px;}
+.unit-row.done{border-color:var(--ok);background:var(--ok-soft);}
+.unit-check{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);background:transparent;color:var(--ink);font-weight:800;cursor:pointer;flex:none;}
+.unit-row.done .unit-check{border-color:var(--ok);color:var(--ok);}
+.unit-main{flex:1;min-width:0;}
+.unit-title{font-size:13.5px;font-weight:700;}
+.unit-desc{font-size:11.5px;color:var(--ink-soft);line-height:1.45;margin-top:2px;}
+.unit-buttons{display:flex;gap:6px;flex:none;}
+.icon-btn.small{width:34px;height:34px;border-radius:8px;font-size:14px;}
+.selector-list{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
+.selector-row{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:9px;}
+.selector-row input{width:18px;height:18px;accent-color:var(--indigo);}
+.selector-row label{flex:1;cursor:pointer;font-size:12.5px;line-height:1.35;}
+.selector-badge{font-size:10px;color:var(--ok);font-weight:700;}
+.selector-tools{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0;}
+.error-item{background:var(--bad-soft);border:1px solid var(--bad);border-radius:10px;padding:10px 12px;}
+.error-head{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--bad);font-weight:700;margin-bottom:4px;}
+.error-prompt{font-size:13px;line-height:1.5;}
+.error-detail{font-size:11.5px;color:var(--ink-soft);margin-top:4px;line-height:1.45;}
+.error-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.reading-passage{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 15px;line-height:2;font-family:'Noto Sans JP',sans-serif;font-size:18px;}
+.reading-vocab{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0;}
+.reading-word{background:var(--indigo-soft);border:1px solid var(--indigo);border-radius:8px;padding:6px 9px;font-size:11.5px;color:var(--ink);}
+.listening-stage{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:16px;text-align:center;}
+.listen-big{font-size:42px;font-weight:900;font-family:'Noto Sans JP',sans-serif;color:var(--indigo-deep);margin:4px 0 10px;}
+.speed-chip{font-size:11px;color:var(--ink-soft);margin-top:7px;}
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.game-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;cursor:pointer;}
+.game-card:hover{border-color:var(--indigo);}
+.game-card .gi{font-size:25px;}
+.game-card .gt{font-size:12.5px;font-weight:700;margin-top:4px;}
+.game-card .gd{font-size:10.5px;color:var(--ink-soft);margin-top:2px;line-height:1.35;}
+.timer-badge{font-weight:800;color:var(--hanko);}
+.quest-list{display:flex;flex-direction:column;gap:9px;margin:10px 0 14px;}
+.quest-row{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;}
+.quest-row.done{border-color:var(--ok);background:var(--ok-soft);}
+.quest-top{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;}
+.quest-desc{font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.4;}
+.quest-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.choice-btn.jp-choice{font-family:'Noto Sans JP',sans-serif;font-size:15px;}
+.course-lesson-box{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px;line-height:1.65;}
+.course-lesson-box h3{margin:0 0 6px;font-size:15px;}
+.course-lesson-example{border-top:1px solid var(--line);margin-top:10px;padding-top:10px;}
+.reading-q{font-size:17px;font-weight:700;line-height:1.55;margin:8px 0 12px;}
+
 </style>
 </head>
 <body>
@@ -1934,7 +2006,7 @@ const ROMAJI_HIRA=[
 function romanjiToHira(input){
   let s=(input||'').toString().trim().toLowerCase(),o='',i=0;
   while(i<s.length){const ch=s[i];
-    if(/[\\s]/.test(ch)){o+=ch;i++;continue;}
+    if(/[\s]/.test(ch)){o+=ch;i++;continue;}
     if(/[,.!?;:、。！？「」『』()（）"'’”“\-]/.test(ch)){o+=ch;i++;continue;}
     if(i+1<s.length && s[i]===s[i+1] && /[bcdfghjklmpqrstvwxyz]/.test(s[i]) && s[i]!=='n'){o+='っ';i++;continue;}
     if(s.slice(i,i+2)==='nn'){o+='ん';i+=2;continue;}
@@ -4359,6 +4431,710 @@ function renderRoleplay(){
 /* =====================================================================
    INIT
 ===================================================================== */
+
+/* =====================================================================
+   V2 — HIỂN THỊ FURIGANA ĐÚNG: chỉ đặt hiragana lên KANJI trong mode ②
+===================================================================== */
+function isKanjiCharV2(ch){ return /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/.test(ch||''); }
+function isKanaV2(ch){ return /[\u3040-\u30FF\uFF66-\uFF9D]/.test(ch||''); }
+function cleanReadingV2(s){
+  return kataTextToHira(romanjiToHira(s||'')).replace(/[\s,.!?;:、。！？「」『』()（）"'’”“・〜~\-]/g,'');
+}
+function kanaExpectedV2(ch){
+  if(ch==='は') return ['は','わ'];
+  if(ch==='へ') return ['へ','え'];
+  if(ch==='を') return ['を','お'];
+  return [kataTextToHira(ch)];
+}
+function findReadingAnchorV2(read,pos,ch){
+  if(!ch) return null;
+  const exact = kataTextToHira(ch||'');
+  if(exact){ const i=read.indexOf(exact,pos); if(i>=pos) return {i,len:exact.length}; }
+  const alts=kanaExpectedV2(ch).filter(x=>x!==exact);
+  for(const x of alts){ const i=read.indexOf(x,pos); if(i>=pos) return {i,len:x.length}; }
+  return null;
+}
+function findMappedReadingV2(word){
+  const keys=Object.keys(JP_WORD_READINGS||{}).sort((a,b)=>b.length-a.length);
+  for(const k of keys){ if(k===word) return kataTextToHira(JP_WORD_READINGS[k]); }
+  return '';
+}
+function furiganaInnerHTMLV2(jp,r){
+  const source=String(jp||'');
+  const read=cleanReadingV2(r||'');
+  let rp=0, i=0, html='';
+  while(i<source.length){
+    const ch=source[i];
+    if(isKanjiCharV2(ch)){
+      let j=i+1; while(j<source.length && isKanjiCharV2(source[j])) j++;
+      const word=source.slice(i,j);
+      let reading='';
+      const mapped=findMappedReadingV2(word);
+      if(mapped && read.slice(rp,rp+mapped.length)===mapped){ reading=mapped; rp+=mapped.length; }
+      else {
+        let k=j; while(k<source.length && !isKanaV2(source[k]) && !isKanjiCharV2(source[k])) k++;
+        const anchorCh=source[j];
+        const anchor=findReadingAnchorV2(read,rp,anchorCh);
+        if(anchor){ reading=read.slice(rp,anchor.i); rp=anchor.i; }
+        else { reading=read.slice(rp); rp=read.length; }
+      }
+      if(reading){ html += `<ruby>${esc(word)}<rt>${esc(reading)}</rt></ruby>`; }
+      else { html += esc(word); }
+      i=j; continue;
+    }
+    if(isKanaV2(ch)){
+      const out=kataTextToHira(ch);
+      const anchor=findReadingAnchorV2(read,rp,ch);
+      if(anchor) rp=anchor.i+anchor.len;
+      html += esc(ch); i++; continue;
+    }
+    html += esc(ch); i++;
+  }
+  return html;
+}
+function orthographicHiraganaV2(jp,r){
+  /* Giữ nguyên kana theo chính tả Nhật; chỉ chuyển KANJI → hiragana.
+     Đây là điểm khác bản cũ vốn dùng âm đọc của trợ từ (は→わ, を→お). */
+  const source=String(jp||'');
+  const read=cleanReadingV2(r||'');
+  if(!/[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/.test(source)) return kataTextToHira(source);
+  let rp=0,i=0,out='';
+  while(i<source.length){
+    const ch=source[i];
+    if(isKanjiCharV2(ch)){
+      let j=i+1; while(j<source.length && isKanjiCharV2(source[j])) j++;
+      const word=source.slice(i,j);
+      const mapped=findMappedReadingV2(word);
+      if(mapped && read.slice(rp,rp+mapped.length)===mapped){ out+=mapped; rp+=mapped.length; }
+      else {
+        const anchorCh=source[j];
+        const anchor=findReadingAnchorV2(read,rp,anchorCh);
+        if(anchor){ out+=read.slice(rp,anchor.i); rp=anchor.i; }
+        else out+=read.slice(rp), rp=read.length;
+      }
+      i=j; continue;
+    }
+    if(isKanaV2(ch)){
+      const outCh=kataTextToHira(ch), anchor=findReadingAnchorV2(read,rp,ch);
+      if(anchor) rp=anchor.i+anchor.len;
+      out+=outCh; i++; continue;
+    }
+    out+=ch; i++;
+  }
+  return out;
+}
+function jpDisplay(jp,r,cls){
+  const mode=jpDisplayMode(), hira=orthographicHiraganaV2(jp,r), rom=jpToRomaji(jp,r);
+  let mainHtml='';
+  if(mode===1) mainHtml=esc(jp||'');
+  else if(mode===2) mainHtml=furiganaInnerHTMLV2(jp,r);
+  else mainHtml=esc(hira);
+  const sub=mode===4?`<div class="jp-sub-romaji">${esc(rom)}</div>`:'';
+  return `<div class="jp-display ${cls||''}"><div class="jp-main">${mainHtml}</div>${sub}</div>`;
+}
+function grammarSentenceDisplay(e,filled){
+  const jp=e.b+(filled?e.ans:'＿＿')+e.a;
+  const hira=orthographicHiraganaV2(jp,e.r);
+  let displayHira=hira;
+  if(!filled && e.ans){ const ah=orthographicHiraganaV2(e.ans,''); if(ah) displayHira=hira.replace(ah,'＿＿'); }
+  const mode=jpDisplayMode();
+  let mainHtml=mode===1?esc(jp):(mode===2?furiganaInnerHTMLV2(jp,e.r):esc(displayHira));
+  const sub=mode===4?`<div class="jp-sub-romaji">${esc(jpToRomaji(jp,e.r))}</div>`:'';
+  return `<div class="jp-display"><div class="jp-main">${mainHtml}</div>${sub}</div>`;
+}
+
+/* =====================================================================
+   V2 — STATE MỞ RỘNG
+===================================================================== */
+const COURSE_LEVELS_V2 = ['N5','N4','N3','N2','N1'];
+const COURSE_DEFS_V2 = {
+  starter:{id:'starter',icon:'🇯🇵',title:'Japanese Starter',level:'START',desc:'Khóa nền tảng: chào hỏi, giới thiệu, số, thời gian, gia đình, trường học, địa điểm, ăn uống và sinh hoạt.',units:[
+    ['starter-greet','Chào hỏi','こんにちは・こんばんは・すみません','vocab'],
+    ['starter-self','Giới thiệu bản thân','Tên, quốc tịch, học sinh/sinh viên, sở thích.','grammar'],
+    ['starter-number','Số & thời gian','Số đếm, ngày, giờ, phút, hôm nay/hôm qua.','kanji'],
+    ['starter-school','Trường học','学校・先生・学生・勉強…','vocab'],
+    ['starter-place','Địa điểm','ここ・そこ・どこ・駅・学校…','reading'],
+    ['starter-food','Ăn uống','ごはん・水・お茶・ください…','conversation'],
+    ['starter-daily','Sinh hoạt hằng ngày','起きる・食べる・行く・見る…','listening'],
+    ['starter-review','Ôn tổng hợp','Nghe + đọc + hội thoại + SRS.','games']
+  ]},
+  N5:{id:'N5',icon:'🟢',title:'JLPT N5',level:'N5',desc:'N5 tích hợp từ vựng, ngữ pháp, kanji, đọc hiểu, nghe và bài mô phỏng.',units:[
+    ['n5-vocab','Từ vựng thiết yếu','Ôn từ/cụm từ theo chủ đề và ngữ cảnh.','vocab'],
+    ['n5-grammar','Ngữ pháp N5','97 cấu trúc đang có trong app, chọn cấu trúc đã học để vận dụng.','grammar'],
+    ['n5-kanji','Kanji cốt lõi','Kanji theo nhóm, đọc On/Kun, ví dụ và luyện viết.','kanji'],
+    ['n5-reading','Đọc hiểu N5','Đoạn ngắn + 4 kiểu câu hỏi.','reading'],
+    ['n5-listening','Listening N5','Nghe → chọn nghĩa / nghe → gõ lại.','listening'],
+    ['n5-games','Mini-game N5','Ghép từ, xếp câu, kana, kanji và đua thời gian.','games'],
+    ['n5-conversation','Hội thoại N5','Các tình huống đời thường với giới hạn cấp độ.','conversation'],
+    ['n5-mock','Mock test','Ôn tổng hợp có chấm điểm và nhật ký lỗi.','mock']
+  ]},
+  N4:{id:'N4',icon:'🟡',title:'JLPT N4',level:'N4',desc:'Lộ trình N4: câu dài hơn, nhiều biến đổi động từ, đọc và nghe tăng dần độ khó.',units:[
+    ['n4-grammar','Ngữ pháp N4','Thể điều kiện, bổ nghĩa danh từ, khả năng, kinh nghiệm, cho/nhận…','lesson'],
+    ['n4-vocab','Từ vựng N4','Sinh hoạt, trường lớp, công việc, giao thông và cảm xúc.','lesson'],
+    ['n4-kanji','Kanji N4','Mở rộng đọc kanji trong cụm từ và câu.','lesson'],
+    ['n4-reading','Đọc hiểu N4','Đoạn văn ngắn → trung bình.','lesson'],
+    ['n4-listening','Listening N4','Hội thoại tốc độ vừa, giảm gợi ý tiếng Việt.','lesson']
+  ]},
+  N3:{id:'N3',icon:'🟠',title:'JLPT N3',level:'N3',desc:'Chuyển dần sang văn viết, cấu trúc phức tạp và đọc đoạn dài hơn.',units:[
+    ['n3-grammar','Ngữ pháp N3','Nguyên nhân, nhượng bộ, mục đích, suy đoán, quan điểm…','lesson'],
+    ['n3-vocab','Từ vựng N3','Từ trừu tượng, tin tức, xã hội và học tập.','lesson'],
+    ['n3-kanji','Kanji N3','Đọc cụm Hán tự thường gặp trong văn bản.','lesson'],
+    ['n3-reading','Đọc hiểu N3','Đoạn dài + suy luận ý.','lesson'],
+    ['n3-listening','Listening N3','Hội thoại tự nhiên hơn, tốc độ cao hơn.','lesson']
+  ]},
+  N2:{id:'N2',icon:'🔴',title:'JLPT N2',level:'N2',desc:'Lộ trình nâng cao: văn viết, tin tức, từ vựng học thuật và nghe gần tốc độ tự nhiên.',units:[
+    ['n2-grammar','Ngữ pháp N2','Liên kết lập luận, sắc thái và văn viết.','lesson'],
+    ['n2-reading','Đọc hiểu N2','Tin/giải thích/ý kiến.','lesson'],
+    ['n2-listening','Listening N2','Bài nghe dài, nhiều người nói.','lesson'],
+    ['n2-kanji','Kanji N2','Kanji trong văn bản thực tế.','lesson']
+  ]},
+  N1:{id:'N1',icon:'🟣',title:'JLPT N1',level:'N1',desc:'Lộ trình cao nhất: văn bản dài, sắc thái ngôn ngữ và từ vựng nâng cao.',units:[
+    ['n1-grammar','Ngữ pháp N1','Mẫu văn viết và sắc thái tinh tế.','lesson'],
+    ['n1-reading','Đọc hiểu N1','Văn nghị luận, học thuật và trừu tượng.','lesson'],
+    ['n1-listening','Listening N1','Hội thoại và thuyết minh tốc độ tự nhiên.','lesson'],
+    ['n1-kanji','Kanji N1','Đọc hiểu chữ Hán trong văn bản.','lesson']
+  ]},
+  CONVERSATION:{id:'conversation',icon:'💬',title:'Japanese Conversation',level:'N5',desc:'Khóa giao tiếp độc lập: học theo tình huống, không phụ thuộc JLPT. Có thể gõ, chọn câu và dùng micro.',units:[
+    ['conv-store','🏪 Cửa hàng tiện lợi','Hỏi giá, tìm đồ, thanh toán và nói câu đơn giản.','conversation'],
+    ['conv-restaurant','🍜 Nhà hàng','Gọi món, hỏi món ăn và nói nhu cầu cơ bản.','conversation'],
+    ['conv-station','🚉 Ga tàu','Hỏi đường, địa điểm và cách đi.','conversation'],
+    ['conv-school','🏫 Trường học','Nói về lớp học, bài tập và kế hoạch.','conversation'],
+    ['conv-home','🏠 Ở nhà','Sinh hoạt hằng ngày và câu hỏi đáp cơ bản.','conversation'],
+    ['conv-friends','👬 Gặp bạn bè','Rủ đi chơi, hỏi kế hoạch và phản hồi lời rủ.','conversation'],
+    ['conv-hotel','🏨 Khách sạn · N4','Check-in, giấy tờ và yêu cầu lịch sự hơn.','conversation'],
+    ['conv-airport','✈️ Sân bay · N4','Check-in, quầy, giờ bay và chỉ đường.','conversation']
+  ]},
+  JPONLY:{id:'jponly',icon:'🇯🇵',title:'日本語で日本語を学ぶ',level:'N5',desc:'Khóa “học tiếng Nhật bằng tiếng Nhật”. Nội dung tự tăng độ khó theo cấp; có thể bật/tắt giảm tiếng Việt trong Cài đặt.',units:[
+    ['j2j-n5','N5 · Hỏi & đáp bằng tiếng Nhật','これはなんですか？ → ほんです。 Câu hỏi đáp cực ngắn, có gợi ý tiếng Việt khi cần.','lesson'],
+    ['j2j-n4','N4 · Nói về hoạt động','きのう、なにをしましたか？ → ... Câu hỏi dài hơn, giảm dần tiếng Việt.','lesson'],
+    ['j2j-n3','N3 · Nêu ý kiến','日本語を勉強するとき、何が大切だと思いますか？','lesson'],
+    ['j2j-n2','N2 · Giải thích & lý do','理由や考えを日本語で説明する練習。','lesson'],
+    ['j2j-n1','N1 · Ngôn ngữ tự nhiên','Thảo luận xã hội, văn hóa và sắc thái bằng tiếng Nhật.','lesson']
+  ]}
+};
+
+const READING_PASSAGES_V2 = [
+ {id:'r1',level:'N5',title:'Một buổi sáng',text:'きょうは あさ 7じに おきました。ごはんを たべて、がっこうへ いきました。',rom:'Kyou wa asa shichi-ji ni okimashita. Gohan o tabete, gakkou e ikimashita.',meaning:'Hôm nay tôi dậy lúc 7 giờ sáng. Tôi ăn cơm rồi đi đến trường.',vocab:[['きょう','hôm nay'],['あさ','buổi sáng'],['おきます','thức dậy'],['がっこう','trường học']],questions:[
+   {kind:'read',q:'Bạn dậy lúc mấy giờ?',opts:['6 giờ','7 giờ','8 giờ','9 giờ'],ans:1},
+   {kind:'vocab',q:'「おきました」 gần nghĩa với từ nào?',opts:['thức dậy','ăn','đi','ngủ'],ans:0},
+   {kind:'particle',q:'Trong 「がっこうへ いきました」, trợ từ chỉ hướng là gì?',opts:['を','で','へ','が'],ans:2},
+   {kind:'trans',q:'Câu 「ごはんを たべて」 nghĩa là gì?',opts:['đi học','ăn cơm','đọc sách','uống nước'],ans:1}
+ ]},
+ {id:'r2',level:'N5',title:'Cuối tuần',text:'どようびに ともだちと えきの ちかくで あいました。それから、カフェで おちゃを のみました。',rom:'Doyoubi ni tomodachi to eki no chikaku de aimashita. Sorekara, kafe de ocha o nomimashita.',meaning:'Thứ bảy tôi gặp bạn gần nhà ga. Sau đó chúng tôi uống trà ở quán cà phê.',vocab:[['どようび','thứ bảy'],['ともだち','bạn'],['ちかく','gần'],['おちゃ','trà']],questions:[
+   {kind:'read',q:'Ai mà người kể gặp?',opts:['thầy giáo','gia đình','bạn','nhân viên'],ans:2},
+   {kind:'vocab',q:'「ちかく」 nghĩa là gì?',opts:['xa','gần','trong','ngoài'],ans:1},
+   {kind:'particle',q:'「ともだちと」 dùng trợ từ nào?',opts:['と','に','へ','を'],ans:0},
+   {kind:'trans',q:'「おちゃを のみました」 là gì?',opts:['đã ăn trà','đã mua trà','đã uống trà','đã gọi trà'],ans:2}
+ ]},
+ {id:'r3',level:'N5',title:'Ngày mưa',text:'きょうは あめです。わたしは いえで ほんを よみます。そとへ いきません。',rom:'Kyou wa ame desu. Watashi wa ie de hon o yomimasu. Soto e ikimasen.',meaning:'Hôm nay trời mưa. Tôi đọc sách ở nhà. Tôi không ra ngoài.',vocab:[['あめ','mưa'],['いえ','nhà'],['ほん','sách'],['そと','bên ngoài']],questions:[
+   {kind:'read',q:'Người kể làm gì ở nhà?',opts:['ngủ','ăn','đọc sách','học bài'],ans:2},
+   {kind:'vocab',q:'「そと」 nghĩa là gì?',opts:['trường','bên ngoài','phòng','nhà ga'],ans:1},
+   {kind:'particle',q:'「いえで」 dùng で vì đó là gì?',opts:['đích đến','thời điểm','nơi diễn ra hành động','sở hữu'],ans:2},
+   {kind:'trans',q:'「そとへ いきません」 nghĩa là gì?',opts:['không đi ra ngoài','không ở ngoài','đã đi ngoài','muốn ra ngoài'],ans:0}
+ ]},
+ {id:'r4',level:'N4',title:'Một ngày bận rộn',text:'きのうは しごとが たくさん ありました。それでも、よるに 30ぷん ほんを よみました。',rom:'Kinou wa shigoto ga takusan arimashita. Soredemo, yoru ni sanjuppun hon o yomimashita.',meaning:'Hôm qua có rất nhiều việc. Dù vậy, buổi tối tôi vẫn đọc sách 30 phút.',vocab:[['きのう','hôm qua'],['しごと','công việc'],['たくさん','nhiều'],['よる','buổi tối']],questions:[
+   {kind:'read',q:'Buổi tối người kể đã làm gì?',opts:['đi làm','đọc sách','đi chơi','ngủ sớm'],ans:1},
+   {kind:'vocab',q:'「それでも」 gần nghĩa với gì?',opts:['sau đó','tuy vậy','bởi vì','chẳng hạn'],ans:1},
+   {kind:'particle',q:'「よるに」 dùng に chỉ điều gì?',opts:['thời điểm','đối tượng','phương tiện','nơi hành động'],ans:0},
+   {kind:'trans',q:'「30ぷん ほんを よみました」 nghĩa là gì?',opts:['đọc sách 30 phút','mua 30 quyển sách','đọc 30 trang','viết 30 phút'],ans:0}
+ ]}
+];
+
+const LISTENING_ITEMS_V2 = [
+ {id:'l1',level:'N5',jp:'今日は学校へ行きます。',r:'kyou wa gakkou e ikimasu.',m:'Hôm nay tôi đi đến trường.',opts:['Hôm nay tôi đi đến trường.','Hôm nay tôi ở nhà.','Hôm qua tôi đi học.','Ngày mai tôi đi Nhật.']},
+ {id:'l2',level:'N5',jp:'水を飲みます。',r:'mizu o nomimasu.',m:'Tôi uống nước.',opts:['Tôi ăn cơm.','Tôi uống nước.','Tôi mua nước.','Tôi muốn trà.']},
+ {id:'l3',level:'N5',jp:'本を読んでいます。',r:'hon o yonde imasu.',m:'Tôi đang đọc sách.',opts:['Tôi đang xem tivi.','Tôi đang viết.','Tôi đang đọc sách.','Tôi đã mua sách.']},
+ {id:'l4',level:'N5',jp:'駅はどこですか。',r:'eki wa doko desu ka.',m:'Ga tàu ở đâu?',opts:['Ga tàu ở đâu?','Trường ở đâu?','Ai là giáo viên?','Mấy giờ rồi?']},
+ {id:'l5',level:'N5',jp:'七時に起きます。',r:'shichiji ni okimasu.',m:'Tôi dậy lúc 7 giờ.',opts:['Tôi ngủ lúc 7 giờ.','Tôi dậy lúc 7 giờ.','Tôi đi lúc 7 giờ.','Tôi ăn lúc 7 giờ.']},
+ {id:'l6',level:'N5',jp:'猫が好きです。',r:'neko ga suki desu.',m:'Tôi thích mèo.',opts:['Tôi ghét mèo.','Tôi thích mèo.','Tôi nuôi chó.','Tôi thấy mèo.']},
+ {id:'l7',level:'N5',jp:'一緒に行きませんか。',r:'issho ni ikimasen ka.',m:'Cùng đi nhé? / Đi cùng nhau không?',opts:['Bạn có đi cùng không?','Bạn muốn ngủ không?','Bạn đã đi chưa?','Bạn ở đâu?']},
+ {id:'l8',level:'N5',jp:'ゆっくり話してください。',r:'yukkuri hanashite kudasai.',m:'Xin hãy nói chậm lại.',opts:['Xin nói to hơn.','Xin hãy nói chậm lại.','Xin viết lại.','Xin đợi bên ngoài.']},
+ {id:'l9',level:'N4',jp:'明日は雨かもしれません。',r:'ashita wa ame kamo shiremasen.',m:'Ngày mai có thể sẽ mưa.',opts:['Ngày mai chắc chắn nắng.','Ngày mai có thể mưa.','Hôm qua đã mưa.','Hôm nay không mưa.']},
+ {id:'l10',level:'N4',jp:'忘れないようにメモしてください。',r:'wasurenai you ni memo shite kudasai.',m:'Hãy ghi chú để không quên.',opts:['Hãy ghi chú để không quên.','Hãy đọc to ghi chú.','Hãy xóa ghi chú.','Hãy mang ghi chú theo.']}
+];
+
+const SHADOWING_ITEMS_V2 = [
+ LISTENING_ITEMS_V2[0], LISTENING_ITEMS_V2[1], LISTENING_ITEMS_V2[2],
+ {id:'s4',level:'N5',jp:'日本語を勉強しています。',r:'nihongo o benkyou shite imasu.',m:'Tôi đang học tiếng Nhật.'},
+ {id:'s5',level:'N5',jp:'ありがとうございます。',r:'arigatou gozaimasu.',m:'Cảm ơn rất nhiều.'},
+ {id:'s6',level:'N4',jp:'日本へ行ったことがあります。',r:'nihon e itta koto ga arimasu.',m:'Tôi đã từng đi Nhật.'}
+];
+
+function levelRankV2(l){ return {START:0,N5:1,N4:2,N3:3,N2:4,N1:5}[l]||1; }
+function activeLevelV2(){ return LS.activeLevel||'N5'; }
+function canUseLevelV2(level){ return levelRankV2(level)<=levelRankV2(activeLevelV2()); }
+function ensureExtendedLS(){
+  ensureLS();
+  LS.errorLog=Array.isArray(LS.errorLog)?LS.errorLog:[];
+  LS.courseDone=LS.courseDone&&typeof LS.courseDone==='object'?LS.courseDone:{};
+  LS.media=LS.media&&typeof LS.media==='object'?LS.media:{};
+  LS.media.reading=Array.isArray(LS.media.reading)?LS.media.reading:[];
+  LS.media.listening=Array.isArray(LS.media.listening)?LS.media.listening:[];
+  LS.media.shadowing=Array.isArray(LS.media.shadowing)?LS.media.shadowing:[];
+  LS.activeLevel=LS.activeLevel||'N5';
+  if(!['N5','N4','N3','N2','N1'].includes(LS.activeLevel)) LS.activeLevel='N5';
+  LS.jpAssist = LS.jpAssist!==false;
+  LS.quest=LS.quest&&typeof LS.quest==='object'?LS.quest:{};
+  const t=todayStr();
+  if(LS.quest.date!==t) LS.quest={date:t,counts:{vocab:0,kanji:0,grammar:0,reading:0,conversation:0}};
+  LS.quest.counts=LS.quest.counts||{vocab:0,kanji:0,grammar:0,reading:0,conversation:0};
+  LS.grammar=LS.grammar||{done:[],learned:[]};
+  LS.grammar.done=LS.grammar.done||[];
+  LS.grammar.learned=Array.isArray(LS.grammar.learned)?LS.grammar.learned:[];
+  LS.grammar.done.forEach(id=>{if(!LS.grammar.learned.includes(id))LS.grammar.learned.push(id);});
+}
+ensureExtendedLS();
+function questMarkV2(kind,n=1){
+  ensureExtendedLS(); LS.quest.counts[kind]=Math.min(99,(LS.quest.counts[kind]||0)+n); saveLS();
+}
+function logErrorV2(meta){
+  if(!meta) return;
+  ensureExtendedLS();
+  LS.errorLog.unshift({date:todayStr(),time:new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}),...meta});
+  if(LS.errorLog.length>120) LS.errorLog=LS.errorLog.slice(0,120);
+  saveLS();
+}
+function captureTrackActivityV2(){
+  const base=trackActivity;
+  window._mojiBaseTrack=base;
+  return function(ok){
+    base(ok);
+    const s=state.screen,t=state.table;
+    if(ok){
+      if(s==='quiz' && (t==='vocab'||t==='custom')) questMarkV2('vocab');
+      if(s==='quiz' && t==='kanji') questMarkV2('kanji');
+      if(s==='grammarView'||s==='grammarQuiz'||s==='grammarAppQuiz') questMarkV2('grammar');
+      if(s==='srs' && t==='vocab') questMarkV2('vocab');
+      if(s==='srs' && t==='kanji') questMarkV2('kanji');
+    }
+  };
+}
+trackActivity=captureTrackActivityV2();
+const _recordAnswerV2Base=recordAnswer;
+function recordAnswer(ok,missLabel,charKey,specType){
+  _recordAnswerV2Base(ok,missLabel,charKey,specType);
+  if(!ok && missLabel){
+    const given=missLabel.given||'';
+    logErrorV2({source:'quiz',prompt:missLabel.k||'Câu hỏi',correct:missLabel.correct||'',given});
+  }
+}
+
+/* =====================================================================
+   V2 — THỐNG KÊ & LỘ TRÌNH
+===================================================================== */
+function courseDoneSetV2(level){ return new Set(LS.courseDone[level]||[]); }
+function toggleCourseUnitV2(level,id){
+  const s=courseDoneSetV2(level); s.has(id)?s.delete(id):s.add(id); LS.courseDone[level]=[...s]; saveLS(); render();
+}
+function masteredFractionV2(table){
+  const all=allItems(table); if(!all.length)return 0;
+  const mm=LS.mastery[table]||{};
+  return all.filter(c=>Number(mm[c.k]||0)>=65).length/all.length;
+}
+function levelProgressV2(level){
+  if(level==='N5'){
+    const grammar=(LS.grammar.done||[]).length/Math.max(1,GRAMMAR.length);
+    const kanji=masteredFractionV2('kanji');
+    const vocab=masteredFractionV2('vocab');
+    const reading=LS.media.reading.filter(id=>READING_PASSAGES_V2.find(x=>x.id===id&&x.level==='N5')).length/Math.max(1,READING_PASSAGES_V2.filter(x=>x.level==='N5').length);
+    const listening=LS.media.listening.filter(id=>LISTENING_ITEMS_V2.find(x=>x.id===id&&x.level==='N5')).length/Math.max(1,LISTENING_ITEMS_V2.filter(x=>x.level==='N5').length);
+    return Math.round((grammar+kanji+vocab+reading+listening)/5*100);
+  }
+  const d=COURSE_DEFS_V2[level], done=courseDoneSetV2(level); return d?Math.round(done.size/Math.max(1,d.units.length)*100):0;
+}
+function courseManualProgressV2(key){
+  const d=COURSE_DEFS_V2[key]; if(!d)return 0;
+  const done=courseDoneSetV2(key); return Math.round(done.size/Math.max(1,d.units.length)*100);
+}
+function renderJourney(){
+  ensureExtendedLS();
+  const levelCards=COURSE_LEVELS_V2.map(l=>{
+    const d=COURSE_DEFS_V2[l],p=levelProgressV2(l),active=l===activeLevelV2();
+    return `<div class="course-card ${canUseLevelV2(l)?'':'locked'}"><div class="course-top"><div class="course-icon">${d.icon}</div><div style="flex:1;"><div class="course-name">${d.title} <span style="font-size:10px;color:var(--ink-soft);">${active?'· ĐANG HỌC':''}</span></div><div class="course-desc">${esc(d.desc)}</div></div><div style="font-weight:800;color:var(--indigo-deep);">${p}%</div></div><div class="progress-mini"><span style="width:${p}%"></span></div><div class="course-actions"><button class="chip-btn" onclick="openCourseV2('${l}')">Mở khóa học</button><button class="chip-btn" onclick="setActiveLevelV2('${l}')">${active?'✓ Cấp đang học':'Chọn cấp'}</button></div></div>`;
+  }).join('');
+  const starterP=courseManualProgressV2('STARTER');
+  const convP=courseManualProgressV2('CONVERSATION');
+  const jpP=courseManualProgressV2('JPONLY');
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">🎯 Lộ trình học tiếng Nhật</h2></div>
+  <p class="section-sub">Từ Starter → N5 → N4 → N3 → N2 → N1, kèm khóa giao tiếp và khóa <b>日本語で日本語を学ぶ</b>. Mỗi cấp có % tiến độ riêng.</p>
+  <div class="course-card"><div class="course-top"><div class="course-icon">🇯🇵</div><div style="flex:1;"><div class="course-name">Japanese Starter</div><div class="course-desc">${esc(COURSE_DEFS_V2.starter.desc)}</div></div><div style="font-weight:800;color:var(--indigo-deep);">${starterP}%</div></div><div class="progress-mini"><span style="width:${starterP}%"></span></div><div class="course-actions"><button class="chip-btn" onclick="openCourseV2('STARTER')">Mở Starter</button></div></div>
+  <div class="course-grid" style="margin-top:10px;">
+    <div class="course-card"><div class="course-top"><div class="course-icon">💬</div><div style="flex:1;"><div class="course-name">Japanese Conversation</div><div class="course-desc">${esc(COURSE_DEFS_V2.CONVERSATION.desc)}</div></div><div style="font-weight:800;color:var(--indigo-deep);">${convP}%</div></div><div class="progress-mini"><span style="width:${convP}%"></span></div><div class="course-actions"><button class="chip-btn" onclick="openCourseV2('CONVERSATION')">Mở giao tiếp</button></div></div>
+    <div class="course-card"><div class="course-top"><div class="course-icon">🇯🇵</div><div style="flex:1;"><div class="course-name">日本語で日本語を学ぶ</div><div class="course-desc">${esc(COURSE_DEFS_V2.JPONLY.desc)}</div></div><div style="font-weight:800;color:var(--indigo-deep);">${jpP}%</div></div><div class="progress-mini"><span style="width:${jpP}%"></span></div><div class="course-actions"><button class="chip-btn" onclick="openCourseV2('JPONLY')">Mở khóa</button></div></div>
+  </div>
+  <h3 class="section-title" style="font-size:14px;margin-top:20px;">📚 Lộ trình JLPT</h3>
+  <div class="course-grid">${levelCards}</div>`;
+}
+
+function openJourney(){state.screen='journey';render();}
+function setActiveLevelV2(level){if(!COURSE_LEVELS_V2.includes(level))return;LS.activeLevel=level;saveLS();render();}
+function openCourseV2(level){state.courseLevel=level;state.screen='course';render();}
+function openCourseActionV2(action){
+  if(action==='vocab'){chooseTable('vocab');return;} if(action==='kanji'){chooseTable('kanji');return;} if(action==='grammar'){openGrammarList();return;} if(action==='reading'){openReadingListV2();return;} if(action==='listening'){openListeningV2();return;} if(action==='games'){openGamesV2();return;} if(action==='conversation'){openRoleplayList();return;} if(action==='jponly'){openCourseV2('JPONLY');return;} if(action==='mock'){beginGrammarQuiz();return;}
+}
+function renderCourseV2(){
+  const level=state.courseLevel, d=level==='STARTER'?COURSE_DEFS_V2.starter:COURSE_DEFS_V2[level]; if(!d){openJourney();return;}
+  const done=courseDoneSetV2(level==='STARTER'?'STARTER':level);
+  const p=level==='STARTER'?Math.round(done.size/d.units.length*100):levelProgressV2(level);
+  const rows=d.units.map(u=>{const [id,title,desc,action]=u, isdone=done.has(id); const demo=['lesson'].includes(action);return `<div class="unit-row ${isdone?'done':''}"><button class="unit-check" onclick="toggleCourseUnitV2('${level==='STARTER'?'STARTER':level}','${id}')">${isdone?'✓':''}</button><div class="unit-main"><div class="unit-title">${esc(title)}</div><div class="unit-desc">${esc(desc)}</div></div><div class="unit-buttons">${demo?`<button class="chip-btn" onclick="openCourseLessonV2('${level}','${id}')">Xem</button>`:`<button class="chip-btn" onclick="openCourseActionV2('${action}')">Mở</button>`}</div></div>`;}).join('');
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openJourney()">←</button><h2 class="section-title">${d.icon} ${d.title}</h2></div><p class="section-sub">${esc(d.desc)}</p><div class="card-stage" style="padding:15px 16px;"><div class="progress-line">Tiến độ</div><div class="progress-mini"><span style="width:${p}%"></span></div><div class="q-hint" style="margin-top:6px;">${p}%</div></div><div class="unit-list">${rows}</div><div class="ja-assist" style="margin-top:14px;">💡 <b>Cấp đang học: ${esc(activeLevelV2())}</b> — conversation, listening, reading và material mới sẽ không cao hơn cấp này.</div>`;
+}
+function openCourseLessonV2(level,id){state.lesson={level,id};state.screen='courseLesson';render();}
+function renderCourseLessonV2(){
+  const level=state.lesson.level,d=COURSE_DEFS_V2[level],u=d?.units.find(x=>x[0]===state.lesson.id);if(!u){openCourseV2(level);return;}
+  const samples={
+    N4:['〜ながら — vừa… vừa…','音楽を聞きながら、勉強します。','Tôi vừa nghe nhạc vừa học.'],
+    N3:['〜ように — để / sao cho','忘れないように、メモします。','Tôi ghi chú để không quên.'],
+    N2:['〜わけではない — không hẳn là','全部が難しいわけではありません。','Không phải tất cả đều khó.'],
+    N1:['〜にほかならない — không gì khác ngoài','努力の結果にほかなりません。','Không gì khác ngoài kết quả của nỗ lực.'],
+    'j2j-n5':['N5 · Hỏi đáp cực ngắn','これは なんですか。\n→ ほんです。','Đây là gì? → Là sách.'],
+    'j2j-n4':['N4 · Hỏi về hôm qua','きのう、なにを しましたか。\n→ ほんを よみました。','Hôm qua bạn đã làm gì? → Tôi đã đọc sách.'],
+    'j2j-n3':['N3 · Nêu ý kiến','日本語を勉強するとき、何が大切だと思いますか。','Bạn nghĩ điều gì quan trọng khi học tiếng Nhật?'],
+    'j2j-n2':['N2 · Giải thích lý do','どうして日本語を勉強し続けているのですか。','Vì sao bạn vẫn tiếp tục học tiếng Nhật?'],
+    'j2j-n1':['N1 · Thảo luận bằng tiếng Nhật','言語を学ぶことは、社会や文化への理解にどんな影響を与えると思いますか。','Bạn nghĩ việc học ngôn ngữ ảnh hưởng thế nào đến hiểu biết về xã hội và văn hóa?']
+  };
+  const s=samples[u[0]]||samples[level]||['Nội dung khóa học','このコースで日本語を勉強しましょう。','Hãy học tiếng Nhật trong khóa này.'];
+  const done=courseDoneSetV2(level).has(u[0]);
+  const hideMeaning=LS.jpAssist&&(['N4','N3','N2','N1'].includes(level)||level==='JPONLY'&&/j2j-(n4|n3|n2|n1)/.test(u[0]));
+  const meaning=hideMeaning?`<button class="reveal-meaning" onclick="alert(${JSON.stringify(s[2])})">Hiện nghĩa tiếng Việt</button>`:`<div class="vocab-meaning">${esc(s[2])}</div>`;
+  const hint=level==='JPONLY'?`<div class="q-hint">${LS.jpAssist?'Gợi ý tiếng Việt được ẩn ở các bài cao hơn.':'Đang hiển thị nghĩa tiếng Việt theo cài đặt.'} Bạn có thể đổi tùy chọn này trong Cài đặt.</div>`:`<div class="q-hint">Khung bài học theo cấp ${esc(level)}. Nội dung sẽ tăng dần độ khó.</div>`;
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openCourseV2('${level}')">←</button><h2 class="section-title">${esc(u[1])}</h2></div><div class="course-lesson-box"><h3>${esc(s[0])}</h3><div style="white-space:pre-line;">${jpDisplay(s[1], '', 'course-lesson-example')}</div>${meaning}<div class="course-lesson-example">${hint}<button class="primary-btn" onclick="toggleCourseUnitV2('${level}','${u[0]}')">${done?'Bỏ đánh dấu hoàn thành':'✓ Đánh dấu đã học'}</button></div></div>`;
+}
+
+/* =====================================================================
+   V2 — BÀI TẬP VẬN DỤNG NGỮ PHÁP: chọn cấu trúc đã học
+===================================================================== */
+const GRAMMAR_PRACTICE_GIDS_V2=['wa','ni','de','e','o','no','existIru','existAru','masenKa','te','naide','teIi','teWaIkenai','teimasu','tai','taiNai','purposeNi','karaMade','de','sukiKirai','yori','houGa','ichiban','dake','shika','amari','zenzen','mada','karaReason','te'];
+GRAMMAR_PRACTICE.forEach((q,i)=>{q.gid=GRAMMAR_PRACTICE_GIDS_V2[i]||'te';});
+function toggleGrammarLearnedV2(id){const s=new Set(LS.grammar.learned||[]);s.has(id)?s.delete(id):s.add(id);LS.grammar.learned=[...s];saveLS();render();}
+function openGrammarApplicationPickerV2(){state.screen='grammarAppPicker';state.gaSel=new Set((LS.grammar.learned||[]));render();}
+function toggleGaSelV2(id){const s=state.gaSel||new Set();s.has(id)?s.delete(id):s.add(id);state.gaSel=s;render();}
+function selectGaLearnedV2(){state.gaSel=new Set(LS.grammar.learned||[]);render();}
+function selectGaAllV2(){state.gaSel=new Set(GRAMMAR.map(g=>g.id));render();}
+function clearGaV2(){state.gaSel=new Set();render();}
+function startGrammarApplicationSelectedV2(){
+  const ids=[...(state.gaSel||new Set())]; const pool=GRAMMAR_PRACTICE.filter(x=>ids.includes(x.gid));
+  if(!pool.length){alert('Bạn chưa chọn cấu trúc có bài vận dụng. Hãy chọn ít nhất một cấu trúc đã học.');return;}
+  state.ga={items:shuffle(pool).slice(0,Math.min(15,pool.length)),idx:0,correct:0,picked:null,selectedIds:ids};state.screen='grammarAppQuiz';render();
+}
+function renderGrammarAppPickerV2(){
+  const sel=state.gaSel||new Set(), learned=new Set(LS.grammar.learned||[]);
+  const rows=GRAMMAR.map((g,i)=>`<div class="selector-row"><input type="checkbox" id="ga_${i}" ${sel.has(g.id)?'checked':''} onchange="toggleGaSelV2('${g.id}')"><label for="ga_${i}"><b>${i+1}. ${esc(g.title)}</b><br><span style="color:var(--ink-soft);">${esc(g.formula)}</span></label>${learned.has(g.id)?'<span class="selector-badge">ĐÃ HỌC</span>':''}</div>`).join('');
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openGrammarList()">←</button><h2 class="section-title">🎯 Chọn cấu trúc để vận dụng</h2></div><p class="section-sub">Không còn tự động lấy toàn bộ 97 cấu trúc. Mặc định chọn các cấu trúc bạn đã đánh dấu <b>Đã học</b>. Bạn có thể thu hẹp hoặc mở rộng danh sách.</p><div class="selector-tools"><button class="chip-btn" onclick="selectGaLearnedV2()">✓ Chọn các cấu trúc đã học</button><button class="chip-btn" onclick="selectGaAllV2()">Chọn tất cả</button><button class="chip-btn" onclick="clearGaV2()">Bỏ chọn</button></div><div class="q-hint">Đã chọn: <b>${sel.size}</b> / ${GRAMMAR.length}</div><div class="selector-list">${rows}</div><button class="primary-btn" style="margin-top:12px;" onclick="startGrammarApplicationSelectedV2()">🎯 Bắt đầu với ${sel.size} cấu trúc</button>`;
+}
+function renderGrammarList(){
+  const done=new Set(LS.grammar.done||[]), learned=new Set(LS.grammar.learned||[]);
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">Ngữ pháp N5</h2></div><p class="section-sub">${GRAMMAR.length} cấu trúc. <b>Đã học ${learned.size}</b> · hoàn thành bài ví dụ ${done.size}.</p><button class="primary-btn" onclick="beginGrammarQuiz()">📝 Ôn tập tổng hợp</button><button class="secondary-btn" onclick="openGrammarApplicationPickerV2()">🎯 Chọn cấu trúc để vận dụng</button><div class="tile-grid" style="margin-top:14px;">${GRAMMAR.map((g,i)=>`<div class="tile" onclick="openGrammar(${i})"><div class="tile-glyph" style="font-size:18px;width:52px;">${done.has(g.id)?'✅':(i+1)}</div><div class="tile-body"><h3 style="font-size:14.5px;">${esc(g.title)}</h3><p>${esc(g.formula)}</p><div class="course-actions"><button class="chip-btn" onclick="event.stopPropagation();toggleGrammarLearnedV2('${g.id}')">${learned.has(g.id)?'✓ Đã học':'○ Chưa học'}</button></div></div></div>`).join('')}</div>`;
+}
+function beginGrammarApplicationQuiz(){openGrammarApplicationPickerV2();}
+function gaPick(i){const q=state.ga;if(q.picked!==null)return;q.picked=i;const it=q.items[q.idx];if(i===it.ans){q.correct++;trackActivity(true);}else{trackActivity(false);logErrorV2({source:'grammar-app',prompt:it.q,correct:it.opts[it.ans],given:it.opts[i]});}render();}
+function gaNext(){state.ga.idx++;state.ga.picked=null;if(state.ga.idx>=state.ga.items.length){render();}else render();}
+
+/* =====================================================================
+   V2 — NHẬT KÝ LỖI
+===================================================================== */
+function openErrorLogV2(){state.screen='errors';render();}
+function clearErrorLogV2(){if(!confirm('Xóa toàn bộ nhật ký lỗi?'))return;LS.errorLog=[];saveLS();render();}
+function renderErrorsV2(){
+  const list=LS.errorLog||[];
+  const html=list.length?list.slice(0,50).map((e,i)=>`<div class="error-item"><div class="error-head"><span>${esc(e.source||'luyện tập')}</span><span>${esc(e.date||'')} ${esc(e.time||'')}</span></div><div class="error-prompt">${jpDisplay(e.prompt||'','','error-prompt')}</div><div class="error-detail">✅ ${esc(e.correct||'')}<br>❌ ${esc(e.given||'')}</div><div class="error-actions"><button class="chip-btn" onclick="errorSpeakV2(${i})">🔊 Nghe</button><button class="chip-btn" onclick="errorAgainV2(${i})">🔁 Luyện lại</button></div></div>`).join(''):'<div class="empty-note">Chưa có lỗi được lưu. Làm bài rồi những câu sai sẽ tự vào đây.</div>';
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">📝 Nhật ký lỗi</h2></div><p class="section-sub">Những câu trả lời sai gần đây được lưu lại để bạn xem và luyện lại.</p><button class="secondary-btn" onclick="beginErrorPracticeV2()">🔁 Luyện lại các lỗi</button><button class="secondary-btn" style="color:var(--hanko);border-color:var(--hanko);" onclick="clearErrorLogV2()">Xóa nhật ký</button><div class="unit-list">${html}</div>`;
+}
+function errorSpeakV2(i){const e=(LS.errorLog||[])[i];if(e&&e.prompt)speak(e.prompt);}
+function errorAgainV2(i){const e=(LS.errorLog||[])[i];if(!e)return;state.errorReview={items:[e],idx:0,revealed:false};state.screen='errorPractice';render();}
+function beginErrorPracticeV2(){const items=(LS.errorLog||[]).slice(0,20);if(!items.length){alert('Chưa có lỗi để luyện lại.');return;}state.errorReview={items,idx:0,revealed:false};state.screen='errorPractice';render();}
+function errorReviewRevealV2(){state.errorReview.revealed=true;render();}
+function errorReviewNextV2(){const q=state.errorReview;q.idx++;q.revealed=false;if(q.idx>=q.items.length){state.screen='errors';}render();}
+function renderErrorPracticeV2(){const q=state.errorReview,e=q.items[q.idx];app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openErrorLogV2()">←</button><h2 class="section-title">🔁 Luyện lại lỗi</h2></div><div class="quiz-top"><span>Lỗi ${q.idx+1}/${q.items.length}</span><span class="quiz-score">${esc(e.source||'')}</span></div><div class="card-stage"><div class="qtype-label">THỬ NHỚ LẠI TRƯỚC</div><div class="error-prompt">${jpDisplay(e.prompt||'','','error-prompt')}</div><div class="error-detail">Bạn đã trả lời: <b>${esc(e.given||'(trống)')}</b></div>${q.revealed?`<div class="feedback show ok"><b>Đáp án chuẩn</b>${esc(e.correct||'')}</div><button class="next-btn show" onclick="errorReviewNextV2()">${q.idx<q.items.length-1?'Lỗi tiếp theo →':'Kết thúc ôn lỗi'}</button>`:`<button class="primary-btn" onclick="errorReviewRevealV2()">👀 Hiện đáp án</button>`}</div>`;}
+
+/* =====================================================================
+   V2 — LISTENING
+===================================================================== */
+function openListeningV2(){state.listen={idx:0,mode:'meaning',picked:null,typed:'',correct:0,done:false,rateIndex:1};state.screen='listening';render();}
+function listenCurrentV2(){return LISTENING_ITEMS_V2[state.listen.idx];}
+function listeningRateV2(){return [0.65,0.8,0.95,1.1][state.listen.rateIndex||1];}
+function listenSpeakV2(slow){const it=listenCurrentV2();speak(it.jp,slow?Math.max(.55,listeningRateV2()-.2):listeningRateV2());}
+function listenPickV2(i){const q=state.listen;if(q.picked!==null)return;const it=listenCurrentV2();q.picked=i;const ok=i!==null && it.opts[i]===it.opts[0];if(ok){q.correct++;if(q.rateIndex<3)q.rateIndex++;questMarkV2('vocab');}else{if(q.rateIndex>0)q.rateIndex--;logErrorV2({source:'listening',prompt:it.jp,correct:it.m,given:it.opts[i]||'(không chọn)'});}trackActivity(ok);q.done=true;if(ok&&!LS.media.listening.includes(it.id))LS.media.listening.push(it.id);saveLS();render();}
+function normalizeJPAnswerV2(s){return kataTextToHira(String(s||'').toLowerCase()).replace(/[\s。、！？!?,.・「」『』\-]/g,'');}
+function listenSubmitTypedV2(){const q=state.listen;if(q.picked!==null)return;const it=listenCurrentV2(),v=(document.getElementById('listenTypeInput').value||'').trim();const ok=normalizeJPAnswerV2(v)===normalizeJPAnswerV2(orthographicHiraganaV2(it.jp,it.r)) || norm(v)===norm(it.r);q.picked=ok?0:-1;q.typed=v; if(ok){q.correct++;if(q.rateIndex<3)q.rateIndex++;}else{if(q.rateIndex>0)q.rateIndex--;logErrorV2({source:'listening',prompt:it.jp,correct:it.r,given:v||'(bỏ trống)'});}trackActivity(ok);q.done=true;if(ok&&!LS.media.listening.includes(it.id))LS.media.listening.push(it.id);saveLS();render();}
+function listenNextV2(){const q=state.listen;q.idx++;q.mode=q.mode==='meaning'?'type':'meaning';q.picked=null;q.typed='';q.done=false;if(q.idx>=LISTENING_ITEMS_V2.length){q.idx=0;state.screen='home';}render();}
+function renderListeningV2(){const q=state.listen,it=listenCurrentV2();const answered=q.picked!==null;const opts=shuffle(it.opts.map((x,i)=>({x,i})));const correctOpt=opts.findIndex(x=>x.x===it.opts[0]);
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">🎧 Listening</h2></div><p class="section-sub">Nghe câu tiếng Nhật bằng TTS offline. Đúng nhiều → tốc độ tăng; sai → tự chậm lại.</p><div class="listening-stage"><div class="qtype-label">${q.mode==='meaning'?'NGHE → CHỌN NGHĨA':'NGHE → GÕ LẠI'}</div><button class="primary-btn" style="margin:0;max-width:280px;margin-inline:auto;" onclick="listenSpeakV2(false)">🔊 Phát câu · ${listeningRateV2().toFixed(2)}×</button><button class="secondary-btn" onclick="listenSpeakV2(true)">🐢 Nghe chậm</button><div class="speed-chip">Cấp tốc độ ${q.rateIndex+1}/4</div>${q.mode==='meaning'?`<div class="choice-list">${opts.map((o,i)=>`<button class="choice-btn ${answered&&o.x===it.opts[0]?'correct':''} ${answered&&q.picked!==null&&o.x===it.opts[q.picked]&&o.x!==it.opts[0]?'wrong':''}" ${answered?'disabled':''} onclick="listenPickV2(${o.i})">${esc(o.x)}</button>`).join('')}</div>`:`<div class="answer-row"><input id="listenTypeInput" class="answer-input" ${answered?'disabled':''} placeholder="Gõ tiếng Nhật hoặc romanji…" onkeydown="if(event.key==='Enter')listenSubmitTypedV2()"><button class="check-btn" onclick="listenSubmitTypedV2()">Kiểm tra</button></div>`}${answered?`<div class="feedback show ${((q.mode==='meaning'&&q.picked===it.opts.indexOf(it.opts[0]))||(q.mode==='type'&&q.picked===0))?'ok':'bad'}"><b>${((q.mode==='meaning'&&q.picked===0)||(q.mode==='type'&&q.picked===0))?'Đúng! 🎉':'Đáp án / câu chuẩn'}</b>${jpDisplay(it.jp,it.r,'listen-answer')}<div class="q-hint">${esc(it.m)}</div></div><button class="next-btn show" onclick="listenNextV2()">Câu tiếp theo →</button>`:''}</div>`;
+}
+
+/* =====================================================================
+   V2 — SHADOWING
+===================================================================== */
+function openShadowingV2(){state.shadow={idx:0,status:'idle',score:null,said:''};state.screen='shadowing';render();}
+function shadowCurrentV2(){return SHADOWING_ITEMS_V2[state.shadow.idx];}
+function shadowSpeakV2(){speak(shadowCurrentV2().jp);}
+function shadowSubmitV2(said){const it=shadowCurrentV2(),sc=simScore(it.jp,said);state.shadow.status='done';state.shadow.said=said;state.shadow.score=sc;LS.speech.count++;LS.speech.sum+=sc;LS.media.shadowing.includes(it.id)||LS.media.shadowing.push(it.id);saveLS();trackActivity(sc>=70);if(sc<70)logErrorV2({source:'shadowing',prompt:it.jp,correct:it.r,given:said});render();}
+function shadowMicV2(){if(!getSR()){state.shadow.status='error';state.shadow.said=speechErrText('unsupported');render();return;}state.shadow.status='listening';render();recognizeOnce(res=>{if(state.screen!=='shadowing')return;if(res.error){state.shadow.status='error';state.shadow.said=speechErrText(res.error);render();return;}shadowSubmitV2(res.alts[0].t);});}
+function shadowNextV2(){state.shadow.idx=(state.shadow.idx+1)%SHADOWING_ITEMS_V2.length;state.shadow.status='idle';state.shadow.score=null;state.shadow.said='';render();}
+function renderShadowingV2(){const q=state.shadow,it=shadowCurrentV2();const done=q.status==='done';app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">🗣️ Shadowing</h2></div><p class="section-sub">Nghe mẫu → nói theo → app chấm tương đối bằng Speech Recognition nếu trình duyệt hỗ trợ.</p><div class="card-stage"><div class="qtype-label">NÓI THEO CÂU MẪU</div><button class="primary-btn" style="margin:0 0 8px;" onclick="shadowSpeakV2()">🔊 Nghe mẫu</button><div class="jp-mode-note">Câu chỉ xuất hiện sau khi bạn bấm <b>“Hiện câu”</b>, để có thể luyện như thật.</div>${done?jpDisplay(it.jp,it.r,'sp-target'):''}${done?`<div class="q-hint" style="margin-top:5px;">${esc(it.r)}</div><div class="q-hint">${!(LS.jpAssist&&levelRankV2(it.level)>=2)?esc(it.m):'<button class="reveal-meaning" onclick="alert('+JSON.stringify(it.m)+')">Hiện nghĩa tiếng Việt</button>'}</div><div class="sp-result"><b>Điểm tương đối: ${Math.round(q.score)}/100</b><div class="sp-bar"><div class="sp-bar-fill" style="width:${Math.max(0,Math.min(100,q.score))}%;background:var(--${q.score>=85?'ok':'indigo'});"></div></div><span>${esc(q.said)}</span></div>`:''}<div class="answer-row"><input id="shadowInput" class="answer-input" placeholder="Hoặc gõ câu bạn vừa nói…" onkeydown="if(event.key==='Enter')shadowSubmitV2(this.value)"><button class="check-btn" onclick="shadowSubmitV2(document.getElementById('shadowInput').value)">Gửi</button></div><div class="quickrow"><button class="chip-btn" onclick="shadowMicV2()">🎤 Nói bằng micro</button><button class="chip-btn" onclick="shadowSpeakV2()">🔊 Nghe lại</button></div>${done?`<button class="next-btn show" onclick="shadowNextV2()">Câu tiếp theo →</button>`:''}</div>`;}
+
+/* =====================================================================
+   V2 — ĐỌC HIỂU
+===================================================================== */
+function openReadingListV2(){state.screen='readingList';render();}
+function openReadingV2(i){state.reading={pi:i,qi:0,picked:null,correct:0,done:false};state.screen='readingQuiz';render();}
+function readingCurrentV2(){return READING_PASSAGES_V2[state.reading.pi];}
+function readingPickV2(i){const q=state.reading,p=readingCurrentV2(),it=p.questions[q.qi];if(q.picked!==null)return;q.picked=i;q.done=true;const ok=i===it.ans;if(ok)q.correct++;trackActivity(ok);if(!ok)logErrorV2({source:'reading',prompt:it.q,correct:it.opts[it.ans],given:it.opts[i]});render();}
+function readingNextV2(){const q=state.reading,p=readingCurrentV2();if(q.qi<p.questions.length-1){q.qi++;q.picked=null;q.done=false;render();}else{if(!LS.media.reading.includes(p.id))LS.media.reading.push(p.id);questMarkV2('reading');saveLS();q.finished=true;render();}}
+function renderReadingListV2(){const rows=READING_PASSAGES_V2.map((p,i)=>`<div class="course-card ${canUseLevelV2(p.level)?'':'locked'}"><div class="course-top"><div class="course-icon">${p.level==='N5'?'📖':'📘'}</div><div style="flex:1;"><div class="course-name">${esc(p.title)} · ${p.level}</div><div class="course-desc">${esc(p.meaning)}</div></div></div><div class="course-actions"><button class="chip-btn" ${canUseLevelV2(p.level)?'':'disabled'} onclick="openReadingV2(${i})">${canUseLevelV2(p.level)?'Đọc & làm bài':'🔒 Chưa mở'}</button></div></div>`).join('');app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">📖 Đọc hiểu</h2></div><p class="section-sub">Mỗi bài có 4 loại câu hỏi: đọc hiểu · từ vựng · trợ từ · chọn cách dịch.</p><div class="course-grid">${rows}</div>`;}
+function renderReadingQuizV2(){const q=state.reading,p=readingCurrentV2();if(q.finished){app.innerHTML=`<div class="result-score"><div class="big">${q.correct}/${p.questions.length}</div><div class="pct">Hoàn thành bài đọc “${esc(p.title)}”</div></div>${jpDisplay(p.text,p.rom,'reading-finished')}<button class="primary-btn" onclick="openReadingListV2()">Bài đọc khác</button><button class="secondary-btn" onclick="goHome()">Về trang chủ</button>`;return;}const it=p.questions[q.qi],answered=q.picked!==null;app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openReadingListV2()">←</button><h2 class="section-title">📖 ${esc(p.title)}</h2></div><div class="reading-passage">${jpDisplay(p.text,p.rom,'reading-passage')}</div>${(!(LS.jpAssist&&levelRankV2(p.level)>=2))?`<div class="q-hint" style="margin:8px 0;">${esc(p.meaning)}</div>`:`<div class="q-hint" style="margin:8px 0;"><button class="reveal-meaning" onclick="alert(${JSON.stringify(p.meaning)})">Hiện nghĩa tiếng Việt</button></div>`}<div class="quiz-top"><span>Câu ${q.qi+1}/${p.questions.length}</span><span class="quiz-score">${q.correct} đúng</span></div><div class="card-stage"><div class="qtype-label">${it.kind==='read'?'ĐỌC HIỂU':it.kind==='vocab'?'TỪ VỰNG':it.kind==='particle'?'TRỢ TỪ':'DỊCH CÂU'}</div><div class="reading-q">${esc(it.q)}</div><div class="choice-list">${it.opts.map((o,i)=>`<button class="choice-btn ${answered&&i===it.ans?'correct':''} ${answered&&i===q.picked&&i!==it.ans?'wrong':''}" ${answered?'disabled':''} onclick="readingPickV2(${i})">${esc(o)}</button>`).join('')}</div>${answered?`<div class="feedback show ${q.picked===it.ans?'ok':'bad'}"><b>${q.picked===it.ans?'Chính xác! 🎉':'Chưa đúng.'}</b>${q.picked===it.ans?esc(p.meaning):'Xem lại đoạn văn và thử bài tiếp theo.'}</div><button class="next-btn show" onclick="readingNextV2()">${q.qi<p.questions.length-1?'Câu tiếp theo →':'Hoàn thành bài đọc'}</button>`:''}</div>`;}
+
+/* =====================================================================
+   V2 — MINI-GAMES
+===================================================================== */
+function openGamesV2(){state.screen='games';render();}
+function openKanaConvertV2(){state.kg={idx:0,items:shuffle(HIRA_GROUPS.flatMap(g=>g.chars).filter(c=>c.r&&c.k!=='っ')),picked:null,score:0};state.screen='kanaGame';render();}
+function kanaConvertPairV2(h){const pair=KATA_GROUPS.flatMap(g=>g.chars).find(k=>kataTextToHira(k.k)===h);return pair?pair.k:null;}
+function kanaPickV2(v){const q=state.kg,c=q.items[q.idx],ans=kanaConvertPairV2(c.k);if(q.picked!==null)return;q.picked=v;const ok=v===ans;if(ok)q.score++;trackActivity(ok);if(!ok)logErrorV2({source:'kana-game',prompt:c.k,correct:ans,given:v});render();}
+function kanaNextV2(){const q=state.kg;q.idx++;q.picked=null;if(q.idx>=q.items.length){app.innerHTML=`<div class="result-score"><div class="big">${q.score}/${q.items.length}</div><div class="pct">Hiragana → Katakana</div></div><button class="primary-btn" onclick="openGamesV2()">Về Mini-game</button>`;return;}render();}
+let speedGameTimerV2=null;
+function openSpeedGameV2(){const pool=shuffle(VOCAB_GROUPS.flatMap(g=>g.chars).filter(w=>w.r));state.speed={pool:pool.slice(0,25),idx:0,correct:0,seconds:30,picked:null,running:false};state.screen='speedGame';render();}
+function speedStartV2(){state.speed.running=true;state.speed.started=Date.now();clearInterval(speedGameTimerV2);speedGameTimerV2=setInterval(()=>{const left=Math.max(0,30-Math.floor((Date.now()-state.speed.started)/1000));state.speed.seconds=left;if(left<=0){clearInterval(speedGameTimerV2);state.speed.running=false;state.speed.finished=true;}render();if(state.speed.finished){clearInterval(speedGameTimerV2);}},600);render();}
+function speedPickV2(i){const q=state.speed;if(!q.running||q.picked!==null)return;const w=q.pool[q.idx],opts=q.opts||[];q.picked=i;const ok=opts[i]===w.m;if(ok)q.correct++;trackActivity(ok);if(!ok)logErrorV2({source:'speed-game',prompt:w.w,correct:w.m,given:opts[i]});render();}
+function speedNextV2(){const q=state.speed;if(q.seconds<=0){q.finished=true;render();return;}q.idx++;q.picked=null;q.opts=null;if(q.idx>=q.pool.length){q.finished=true;clearInterval(speedGameTimerV2);}render();}
+function renderSpeedGameV2(){const q=state.speed;if(q.finished){app.innerHTML=`<div class="result-score"><div class="big">${q.correct}</div><div class="pct">đúng trong 30 giây</div></div><button class="primary-btn" onclick="openSpeedGameV2()">Chơi lại</button><button class="secondary-btn" onclick="openGamesV2()">Mini-game khác</button>`;return;}const w=q.pool[q.idx],opts=q.opts||(q.opts=shuffle([w.m,...shuffle(VOCAB_GROUPS.flatMap(g=>g.chars).map(x=>x.m).filter(m=>m!==w.m)).slice(0,3)]));const answered=q.picked!==null;app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openGamesV2()">←</button><h2 class="section-title">⏱️ Đua thời gian</h2></div><div class="quiz-top"><span class="timer-badge">⏱️ ${q.seconds}s</span><span>${q.idx+1}/${q.pool.length}</span></div><div class="card-stage"><div class="qtype-label">CHỌN NGHĨA NHANH</div><div class="q-prompt-word" style="font-size:34px;">${jpDisplay(w.w,w.r,'quiz-word')}</div><div class="choice-list">${opts.map((o,i)=>`<button class="choice-btn ${answered&&o===w.m?'correct':''} ${answered&&q.picked===i&&o!==w.m?'wrong':''}" onclick="speedPickV2(${i})">${esc(o)}</button>`).join('')}</div>${answered?`<button class="next-btn show" onclick="speedNextV2()">Tiếp →</button>`:''}</div>${!q.running?'<button class="primary-btn" onclick="speedStartV2()">▶️ Bắt đầu 30 giây</button>':''}`;}
+function renderKanaGameV2(){const q=state.kg,c=q.items[q.idx],ans=kanaConvertPairV2(c.k),all=shuffle([ans,...shuffle(KATA_GROUPS.flatMap(g=>g.chars).map(x=>x.k).filter(k=>k!==ans)).slice(0,3)]),answered=q.picked!==null;app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openGamesV2()">←</button><h2 class="section-title">あ → ア</h2></div><div class="card-stage"><div class="qtype-label">HIRAGANA → KATAKANA</div><div class="flash-glyph" style="font-size:74px;">${esc(c.k)}</div><div class="choice-list">${all.map(x=>`<button class="choice-btn jp-choice ${answered&&x===ans?'correct':''} ${answered&&q.picked===x&&x!==ans?'wrong':''}" onclick="kanaPickV2('${x}')">${x}</button>`).join('')}</div>${answered?`<button class="next-btn show" onclick="kanaNextV2()">Tiếp →</button>`:''}</div>`;}
+function renderGamesV2(){app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">🎮 Mini-game</h2></div><p class="section-sub">Các game ngắn để thay đổi cách ôn: ghép từ ↔ nghĩa, xếp câu, trợ từ, nghe, kanji, kana và đua thời gian.</p><div class="game-grid"><div class="game-card" onclick="state.table='vocab';beginMatch()"><div class="gi">🔗</div><div class="gt">Ghép từ ↔ nghĩa</div><div class="gd">Dùng game ghép cặp hiện có</div></div><div class="game-card" onclick="state.table='vocab';beginQuiz()"><div class="gi">🧩</div><div class="gt">Xếp câu</div><div class="gd">Câu vựng + trật tự từ</div></div><div class="game-card" onclick="openGrammarApplicationPickerV2()"><div class="gi">🎯</div><div class="gt">Điền trợ từ</div><div class="gd">Chọn cấu trúc đã học</div></div><div class="game-card" onclick="openListeningV2()"><div class="gi">🎧</div><div class="gt">Nghe → chọn</div><div class="gd">Tăng giảm tốc độ</div></div><div class="game-card" onclick="state.table='kanji';beginQuiz()"><div class="gi">漢</div><div class="gt">Kanji → cách đọc</div><div class="gd">Ôn đọc + nghĩa</div></div><div class="game-card" onclick="openKanaConvertV2()"><div class="gi">あ→ア</div><div class="gt">Hiragana → Katakana</div><div class="gd">Chọn nhanh</div></div><div class="game-card" onclick="openSpeedGameV2()"><div class="gi">⏱️</div><div class="gt">Đua thời gian</div><div class="gd">30 giây, càng đúng càng nhiều</div></div><div class="game-card" onclick="openShadowingV2()"><div class="gi">🗣️</div><div class="gt">Shadowing</div><div class="gd">Nghe → nói theo</div></div></div>`;}
+
+/* =====================================================================
+   V2 — DAILY QUEST
+===================================================================== */
+function questDataV2(){return [{k:'vocab',icon:'🔤',title:'10 từ vựng',target:10,desc:'Luyện đúng 10 câu/từ vựng hôm nay.',action:"state.table='vocab';beginQuiz()"},{k:'kanji',icon:'漢',title:'5 kanji',target:5,desc:'Luyện đúng 5 câu kanji.',action:"state.table='kanji';beginQuiz()"},{k:'grammar',icon:'📐',title:'5 câu ngữ pháp',target:5,desc:'Trả lời đúng 5 câu ngữ pháp.',action:'openGrammarApplicationPickerV2()'},{k:'reading',icon:'📖',title:'1 bài đọc',target:1,desc:'Hoàn thành một bài đọc hiểu.',action:'openReadingListV2()'},{k:'conversation',icon:'💬',title:'3 lượt hội thoại',target:3,desc:'Trả lời 3 lượt trong chatbot/nhập vai.',action:'openRoleplayList()'}];}
+function questOpenV2(action){eval(action);}
+function renderQuestV2(){ensureExtendedLS();const c=LS.quest.counts;const rows=questDataV2().map(q=>{const n=Math.min(q.target,c[q.k]||0),done=n>=q.target;return `<div class="quest-row ${done?'done':''}"><div class="quest-top"><span>${q.icon} ${q.title}</span><span>${n}/${q.target}</span></div><div class="quest-desc">${esc(q.desc)}</div><div class="progress-mini"><span style="width:${Math.min(100,n/q.target*100)}%"></span></div><div class="quest-actions">${done?'<span class="selector-badge">✓ HOÀN THÀNH</span>':`<button class="chip-btn" onclick="questOpenV2(${JSON.stringify(q.action)})">Bắt đầu</button>`}</div></div>`;}).join('');const total=questDataV2().reduce((s,q)=>s+q.target,0),got=questDataV2().reduce((s,q)=>s+Math.min(q.target,c[q.k]||0),0);app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">📅 Daily Quest</h2></div><p class="section-sub">Nhiệm vụ tự làm mới theo ngày <b>${esc(todayStr())}</b>. Bạn cứ học bình thường; app tự cộng tiến độ.</p><div class="card-stage" style="padding:15px;"><div class="progress-line">Tiến độ hôm nay</div><div class="progress-mini"><span style="width:${got/total*100}%"></span></div><div class="q-hint" style="margin-top:6px;">${got}/${total} mục</div></div><div class="quest-list">${rows}</div>`;}
+function openQuestV2(){state.screen='quest';render();}
+
+/* =====================================================================
+   V2 — BOT/ROLEPLAY LEVEL GATING + THÊM TÌNH HUỐNG
+===================================================================== */
+ROLEPLAYS.forEach((x)=>{x.level=x.level||'N5';});
+ROLEPLAYS.push(
+ {level:'N5',title:'Trường học',icon:'🏫',intro:'Bạn nói chuyện với bạn cùng lớp sau giờ học.',turns:[
+  {bot:{jp:'今日は何を勉強しましたか。',r:'kyou wa nani o benkyou shimashita ka.',m:'Hôm nay bạn đã học gì?'},replies:[R('日本語を勉強しました。','nihongo o benkyou shimashita.','Tôi đã học tiếng Nhật.',1),R('駅はどこですか。','eki wa doko desu ka.','Ga tàu ở đâu?',0,'Đang nói về việc học.'),R('おやすみなさい。','oyasuminasai.','Chúc ngủ ngon.',0,'Chưa phải lúc chia tay.')]},
+  {bot:{jp:'宿題をしましたか。',r:'shukudai o shimashita ka.',m:'Bạn đã làm bài tập chưa?'},replies:[R('はい、しました。','hai, shimashita.','Vâng, tôi đã làm.',1),R('水をください。','mizu o kudasai.','Cho tôi nước.',0,'Không trả lời câu hỏi.'),R('五時です。','goji desu.','5 giờ.',0,'Không phải câu trả lời về bài tập.')]}
+ ]},
+ {level:'N5',title:'Ở nhà',icon:'🏠',intro:'Bạn trò chuyện với người nhà về sinh hoạt hằng ngày.',turns:[
+  {bot:{jp:'今、何をしていますか。',r:'ima, nani o shite imasu ka.',m:'Bây giờ bạn đang làm gì?'},replies:[R('本を読んでいます。','hon o yonde imasu.','Tôi đang đọc sách.',1),R('学校です。','gakkou desu.','Là trường học.',0,'Câu hỏi về hành động.'),R('三人です。','sannin desu.','Ba người.',0,'Không hỏi số người.')]},
+  {bot:{jp:'晩ごはんを食べますか。',r:'bangohan o tabemasu ka.',m:'Bạn có ăn tối không?'},replies:[R('はい、食べます。','hai, tabemasu.','Vâng, tôi ăn.',1),R('駅へ行きます。','eki e ikimasu.','Tôi đi ga.',0,'Không trả lời ăn tối.'),R('犬が好きです。','inu ga suki desu.','Tôi thích chó.',0,'Không liên quan.')]}
+ ]},
+ {level:'N5',title:'Gặp bạn bè',icon:'👬',intro:'Rủ một người bạn đi chơi và hỏi kế hoạch.',turns:[
+  {bot:{jp:'週末、何をしますか。',r:'shuumatsu, nani o shimasu ka.',m:'Cuối tuần bạn làm gì?'},replies:[R('映画を見に行きます。','eiga o mi ni ikimasu.','Tôi đi xem phim.',1),R('本です。','hon desu.','Là sách.',0,'Câu hỏi về hành động.'),R('おはようございます。','ohayou gozaimasu.','Chào buổi sáng.',0,'Không hợp ngữ cảnh.')]},
+  {bot:{jp:'一緒に映画を見ませんか。',r:'issho ni eiga o mimasen ka.',m:'Đi xem phim cùng nhau nhé?'},replies:[R('はい、行きましょう。','hai, ikimashou.','Vâng, đi nhé.',1),R('水を飲みます。','mizu o nomimasu.','Tôi uống nước.',0,'Bạn cần trả lời lời rủ.'),R('どこですか。','doko desu ka.','Ở đâu?',0,'Chưa trả lời lời rủ.')]}
+ ]},
+ {level:'N4',title:'Khách sạn',icon:'🏨',intro:'Check-in tại khách sạn. Một số mẫu N4 đã xuất hiện.',turns:[
+  {bot:{jp:'ご予約のお名前をお願いします。',r:'goyoyaku no onamae o onegaishimasu.',m:'Xin cho biết tên đặt phòng.'},replies:[R('田中です。','Tanaka desu.','Tôi là Tanaka.',1),R('駅へ行きます。','eki e ikimasu.','Tôi đi ra ga.',0,'Nhân viên đang hỏi tên.'),R('お茶をください。','ocha o kudasai.','Cho tôi trà.',0,'Chưa phải lúc gọi đồ.')]},
+  {bot:{jp:'こちらの書類に名前を書いてください。',r:'kochira no shorui ni namae o kaite kudasai.',m:'Xin hãy ghi tên vào giấy này.'},replies:[R('わかりました。','wakarimashita.','Tôi hiểu rồi.',1),R('三時です。','sanji desu.','3 giờ.',0,'Không trả lời yêu cầu.'),R('犬が好きです。','inu ga suki desu.','Tôi thích chó.',0,'Không liên quan.')]}
+ ]},
+ {level:'N4',title:'Sân bay',icon:'✈️',intro:'Hỏi quầy làm thủ tục và giờ khởi hành.',turns:[
+  {bot:{jp:'チェックインカウンターはどこですか。',r:'chekkuin kauntaa wa doko desu ka.',m:'Quầy check-in ở đâu?'},replies:[R('あちらです。','achira desu.','Ở đằng kia.',1),R('日本語を勉強しています。','nihongo o benkyou shite imasu.','Tôi đang học tiếng Nhật.',0,'Không trả lời địa điểm.'),R('ありがとうございます。','arigatou gozaimasu.','Cảm ơn.',0,'Chưa trả lời câu hỏi.')]},
+  {bot:{jp:'飛行機は何時に出ますか。',r:'hikouki wa nanji ni demasu ka.',m:'Máy bay khởi hành lúc mấy giờ?'},replies:[R('10時に出ます。','juuji ni demasu.','Khởi hành lúc 10 giờ.',1),R('水を飲みます。','mizu o nomimasu.','Tôi uống nước.',0,'Đang hỏi thời gian.'),R('駅へ行きます。','eki e ikimasu.','Tôi đi ga.',0,'Không hợp ngữ cảnh.')]}
+ ]}
+);
+const ROLEPLAY_META_V2=ROLEPLAYS.map(x=>x.level||'N5');
+function startRoleplay(i){if(!canUseLevelV2(ROLEPLAY_META_V2[i]||'N5')){alert('Tình huống này thuộc '+ROLEPLAY_META_V2[i]+'. Hãy chọn cấp học tương ứng ở Lộ trình/Cài đặt.');return;}state.rp={si:i,ti:0,history:[],note:null,mistakes:0,hint:true,done:false,opts:[]};rpEnterTurn();state.screen='roleplay';render();}
+function renderRoleplayList(){app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">💬 Hội thoại tình huống</h2></div><p class="section-sub">Bot đóng vai người Nhật; tình huống chỉ dùng nội dung không cao hơn <b>${esc(activeLevelV2())}</b>. Bạn có thể chọn câu, gõ hoặc dùng micro.</p><div class="course-grid">${ROLEPLAYS.map((s,i)=>{const lv=ROLEPLAY_META_V2[i],ok=canUseLevelV2(lv);return `<div class="course-card ${ok?'':'locked'}"><div class="course-top"><div class="course-icon">${s.icon}</div><div style="flex:1;"><div class="course-name">${esc(s.title)} · ${lv}</div><div class="course-desc">${esc(s.intro)}</div></div></div><div class="course-actions"><button class="chip-btn" ${ok?'':'disabled'} onclick="startRoleplay(${i})">${ok?'🎭 Bắt đầu':'🔒 Chưa mở'}</button></div></div>`;}).join('')}</div>`;}
+const _chatBotReplyOldV2=chatBotReply;
+function chatBotReply(input){
+  const base=_chatBotReplyOldV2(input);
+  if(activeLevelV2()==='N5'){
+    const n=normSpeech(input);
+    if(/(daijoubu|okay|ok|大丈夫)/i.test(n)) return {jp:'はい、大丈夫です。',r:'hai, daijoubu desu.',m:'Vâng, không sao.'};
+    if(/(gakkou|学校)/i.test(n)) return {jp:'学校へ行きますか。',r:'gakkou e ikimasu ka.',m:'Bạn có đi đến trường không?'};
+  }
+  if(levelRankV2(activeLevelV2())>=2){
+    if(/(dự định|予定|yotei)/i.test(input)) return {jp:'週末は何をする予定ですか。',r:'shuumatsu wa nani o suru yotei desu ka.',m:'Cuối tuần bạn dự định làm gì?'};
+  }
+  return base;
+}
+function chatSend(){const inp=document.getElementById('chatInput'),v=(inp&&inp.value||'').trim();if(!v)return;state.chat.history.push({who:'me',jp:v,r:'',m:''});const rep=chatBotReply(v);state.chat.history.push({who:'bot',...rep});state.chat.note='';speak(rep.jp);questMarkV2('conversation');render();}
+function chatMic(){if(!getSR()){state.chat.note=speechErrText('unsupported');render();return;}state.chat.note='🎙️ Đang nghe…';render();recognizeOnce(res=>{if(state.screen!=='chatbot')return;if(res.error){state.chat.note=speechErrText(res.error);render();return;}const said=res.alts[0].t;state.chat.history.push({who:'me',jp:said,r:'',m:'(nhận diện từ micro)'});const rep=chatBotReply(said);state.chat.history.push({who:'bot',...rep});questMarkV2('conversation');state.chat.note='';speak(rep.jp);render();});}
+function rpAccept(reply){const rp=state.rp;rp.history.push({who:'me',jp:reply.jp,r:reply.r,m:reply.m});rp.ti++;trackActivity(true);questMarkV2('conversation');if(rp.ti>=ROLEPLAYS[rp.si].turns.length){rp.done=true;rp.note=null;}else rpEnterTurn();render();}
+function rpReject(reply){const rp=state.rp;rp.mistakes++;trackActivity(false);rp.note=reply.why||'Câu này chưa hợp với tình huống, hãy thử lại.';logErrorV2({source:'roleplay',prompt:ROLEPLAYS[rp.si].turns[rp.ti].bot.jp,correct:ROLEPLAYS[rp.si].turns[rp.ti].replies.find(x=>x.ok)?.jp||'',given:reply.jp});render();}
+
+/* =====================================================================
+   V2 — SETTINGS / STATS / HOME
+===================================================================== */
+function renderSettings(){
+  ensureExtendedLS();
+  const pct=LS.stats.totalAnswered?Math.round(LS.stats.totalCorrect/LS.stats.totalAnswered*100):0;
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">⚙️ Cài đặt & thống kê</h2></div>
+  <div class="card-stage" style="padding:20px 17px;"><div class="progress-line">Chuỗi ngày luyện tập liên tục</div><div class="flash-glyph" style="font-size:42px;margin:10px 0;">🔥 ${LS.stats.streak}</div><div class="q-hint">${LS.stats.totalAnswered} câu · đúng ${pct}% · ${LS.errorLog.length} lỗi đã lưu</div></div>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">🎯 Lộ trình & cấp đang học</h2><div class="quickrow">${COURSE_LEVELS_V2.map(l=>`<button class="chip-btn ${activeLevelV2()===l?'chip-active':''}" onclick="setActiveLevelV2('${l}')">${l}</button>`).join('')}</div><button class="secondary-btn" onclick="openJourney()">Mở lộ trình chi tiết</button>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">📊 Tiến độ theo cấp</h2><div class="progress-stack">${COURSE_LEVELS_V2.map(l=>`<div class="progress-item"><div class="pi-top"><span>${COURSE_DEFS_V2[l].icon} ${l}</span><span>${levelProgressV2(l)}%</span></div><div class="progress-mini"><span style="width:${levelProgressV2(l)}%"></span></div><div class="pi-sub">${l==='N5'?'Tính từ tiến độ ngữ pháp/kanji/từ vựng/đọc/nghe.':'Dựa trên các bài đã đánh dấu hoàn thành.'}</div></div>`).join('')}</div>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">📖 Tách theo kỹ năng</h2><div class="progress-stack"><div class="progress-item"><div class="pi-top"><span>Từ vựng</span><span>${Math.round(masteredFractionV2('vocab')*100)}%</span></div><div class="progress-mini"><span style="width:${masteredFractionV2('vocab')*100}%"></span></div></div><div class="progress-item"><div class="pi-top"><span>Ngữ pháp</span><span>${Math.round((LS.grammar.done.length/Math.max(1,GRAMMAR.length))*100)}%</span></div><div class="progress-mini"><span style="width:${LS.grammar.done.length/Math.max(1,GRAMMAR.length)*100}%"></span></div></div><div class="progress-item"><div class="pi-top"><span>Kanji</span><span>${Math.round(masteredFractionV2('kanji')*100)}%</span></div><div class="progress-mini"><span style="width:${masteredFractionV2('kanji')*100}%"></span></div></div><div class="progress-item"><div class="pi-top"><span>Đọc hiểu</span><span>${Math.round(LS.media.reading.length/Math.max(1,READING_PASSAGES_V2.length)*100)}%</span></div><div class="progress-mini"><span style="width:${LS.media.reading.length/Math.max(1,READING_PASSAGES_V2.length)*100}%"></span></div></div><div class="progress-item"><div class="pi-top"><span>Nghe</span><span>${Math.round(LS.media.listening.length/Math.max(1,LISTENING_ITEMS_V2.length)*100)}%</span></div><div class="progress-mini"><span style="width:${LS.media.listening.length/Math.max(1,LISTENING_ITEMS_V2.length)*100}%"></span></div></div></div>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">Chế độ hiển thị chữ</h2><p class="section-sub">Chỉ áp dụng cho <b>ngữ pháp, từ vựng, đọc hiểu, listening, hội thoại và chatbot</b>. Học Hiragana/Katakana/Kanji vẫn không bị đổi.</p><div class="quickrow">${[1,2,3,4].map(m=>`<button class="chip-btn ${jpDisplayMode()===m?'chip-active':''}" onclick="setJpDisplayMode(${m})">${esc(displayModeLabel(m))}</button>`).join('')}</div>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">🇯🇵 Học tiếng Nhật giảm dần tiếng Việt</h2><label class="settings-row" style="cursor:pointer;justify-content:flex-start;gap:10px;"><input type="checkbox" ${LS.jpAssist?'checked':''} onchange="toggleJpAssistV2(this.checked)" style="width:19px;height:19px;accent-color:var(--indigo);"><span style="color:var(--ink);font-size:13px;">Cho phép giảm gợi ý tiếng Việt khi lên N4/N3/N2/N1</span></label><p class="section-sub">Bật: N5 vẫn có nghĩa rõ ràng; từ N4 trở lên một số bài mới sẽ ẩn nghĩa cho tới khi bạn bấm “Hiện nghĩa”. Tắt: luôn hiện tiếng Việt.</p>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">🎧 Tốc độ đọc</h2><div class="quickrow">${[['0.55','Rất chậm'],['0.7','Chậm'],['0.85','Vừa'],['1','Bình thường']].map(([v,l])=>`<button class="chip-btn ${Math.abs(speechRate()-parseFloat(v))<.01?'chip-active':''}" onclick="setSpeechRate(${v});render()">${l}</button>`).join('')}</div><button class="secondary-btn" onclick="speak('こんにちは、これはテストです')">🔊 Nghe thử</button>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">🗂️ Công cụ</h2><button class="secondary-btn" onclick="openErrorLogV2()">📝 Nhật ký lỗi (${LS.errorLog.length})</button><button class="secondary-btn" onclick="openQuestV2()">📅 Daily Quest</button><button class="secondary-btn" onclick="openGamesV2()">🎮 Mini-game</button><button class="secondary-btn" onclick="openListeningV2()">🎧 Listening</button><button class="secondary-btn" onclick="openShadowingV2()">🗣️ Shadowing</button><button class="secondary-btn" onclick="openReadingListV2()">📖 Đọc hiểu</button>
+  <h2 class="section-title" style="font-size:15px;margin-top:18px;">Sao lưu tiến độ</h2><button class="secondary-btn" onclick="exportProgress()">⬇️ Xuất tiến độ ra tệp</button><label class="secondary-btn" style="display:block;text-align:center;cursor:pointer;">⬆️ Nhập tiến độ từ tệp<input type="file" accept="application/json" style="display:none" onchange="importProgress(event)"></label><button class="secondary-btn" style="color:var(--hanko);border-color:var(--hanko);" onclick="resetProgress()">🗑️ Đặt lại tiến độ</button>`;
+}
+function toggleJpAssistV2(v){LS.jpAssist=!!v;saveLS();render();}
+function renderHome(){
+  ensureExtendedLS();const dk=getDailyKanji(),p5=levelProgressV2('N5'),dueRows=['hiragana','katakana','kanji','vocab','custom'].map(t=>({t,due:srsDueList(t).length,fresh:srsNewList(t).length})).filter(x=>x.due||x.fresh);const srsHtml=dueRows.length?`<div class="reco-card" style="background:var(--indigo-soft);border-color:var(--indigo);"><div class="reco-title" style="color:var(--indigo-deep);">🧠 SRS hôm nay</div><div class="reco-list">${dueRows.map(r=>`<div class="reco-row"><span>${tableDisplayLabel(r.t)}</span><span class="reco-count">${r.due} đến hạn · ${r.fresh} mới</span><button class="chip-btn" onclick="state.table='${r.t}';beginSrs()">Bắt đầu</button></div>`).join('')}</div></div>`:'';
+  app.innerHTML=`<div class="hero"><div class="hero-glyphs">あ ・ ア ・ 漢</div><h1>Học tiếng Nhật — もじ</h1><p>Từ kana → kanji → từ vựng → ngữ pháp → nghe → nói → đọc hiểu, tất cả trong một file offline.</p></div><div style="display:flex;gap:9px;margin-bottom:14px;"><button class="secondary-btn" style="margin:0;flex:1;" onclick="openJourney()">🎯 Lộ trình</button><button class="secondary-btn" style="margin:0;flex:1;" onclick="openQuestV2()">📅 Quest hôm nay</button></div>${srsHtml}<div class="course-card"><div class="course-top"><div class="course-icon">🟢</div><div style="flex:1;"><div class="course-name">N5 hiện tại · ${p5}%</div><div class="course-desc">Ngữ pháp ${LS.grammar.done.length}/${GRAMMAR.length} · Đọc ${LS.media.reading.length}/${READING_PASSAGES_V2.length} · Nghe ${LS.media.listening.length}/${LISTENING_ITEMS_V2.length}</div></div></div><div class="progress-mini"><span style="width:${p5}%"></span></div></div><div class="daily-card" onclick="openDailyKanji()"><div class="daily-top"><span>📅 Kanji hôm nay</span><span class="daily-streak">🔥 ${LS.stats.streak} ngày</span></div><div class="daily-body"><div class="daily-glyph">${esc(dk.k)}</div><div class="daily-info"><div class="daily-meaning">${esc(dk.meaning)}</div><div class="daily-reading">On: ${esc(dk.on.join('、')||'—')} · Kun: ${esc(dk.kun.join('、')||'—')}</div><div class="daily-example">${esc(dk.example.kana)} — ${esc(dk.example.meaning)}</div></div></div></div><div class="tile-grid"><div class="tile" onclick="chooseTable('hiragana')"><div class="tile-glyph">あ</div><div class="tile-body"><h3>Hiragana</h3><p>Học bảng chữ — chế độ hiển thị không bị thay đổi bởi phần chữ Nhật.</p></div></div><div class="tile" onclick="chooseTable('katakana')"><div class="tile-glyph">ア</div><div class="tile-body"><h3>Katakana</h3><p>Âm ghép, âm đục, từ mượn.</p></div></div><div class="tile" onclick="chooseTable('kanji')"><div class="tile-glyph">漢</div><div class="tile-body"><h3>Kanji</h3><p>120 chữ hiện có, On/Kun, ví dụ, SRS.</p></div></div><div class="tile" onclick="chooseTable('vocab')"><div class="tile-glyph">💬</div><div class="tile-body"><h3>Từ vựng & giao tiếp</h3><p>Hơn 200 từ/cụm từ đời thường.</p></div></div></div><h2 class="section-title" style="font-size:14px;margin-top:22px;">🚀 Học tiếp</h2><div class="mini-tiles"><div class="mini-tile" onclick="openGrammarList()"><div class="mt-i">📐</div><div class="mt-t">Ngữ pháp</div><div class="mt-d">${LS.grammar.learned.length} đã học</div></div><div class="mini-tile" onclick="openListeningV2()"><div class="mt-i">🎧</div><div class="mt-t">Listening</div><div class="mt-d">${LISTENING_ITEMS_V2.length} câu</div></div><div class="mini-tile" onclick="openShadowingV2()"><div class="mt-i">🗣️</div><div class="mt-t">Shadowing</div><div class="mt-d">${SHADOWING_ITEMS_V2.length} câu</div></div><div class="mini-tile" onclick="openReadingListV2()"><div class="mt-i">📖</div><div class="mt-t">Đọc hiểu</div><div class="mt-d">${READING_PASSAGES_V2.length} bài</div></div><div class="mini-tile" onclick="openGamesV2()"><div class="mt-i">🎮</div><div class="mt-t">Mini-game</div><div class="mt-d">7+ kiểu luyện</div></div><div class="mini-tile" onclick="openErrorLogV2()"><div class="mt-i">📝</div><div class="mt-t">Nhật ký lỗi</div><div class="mt-d">${LS.errorLog.length} lỗi</div></div><div class="mini-tile" onclick="openRoleplayList()"><div class="mt-i">🎭</div><div class="mt-t">Hội thoại</div><div class="mt-d">${ROLEPLAYS.length} tình huống</div></div><div class="mini-tile" onclick="openChatbot()"><div class="mt-i">🤖</div><div class="mt-t">Bot</div><div class="mt-d">Cấp ${activeLevelV2()}</div></div></div>`;
+}
+
+
+const _srsNextBaseV2=srsNext;
+function srsNext(e,grade){
+  const base=_srsNextBaseV2(e,grade), lapses=e&&e.lapses||0, table=state.table, key=state.srs&&state.srs.currentKey?state.srs.currentKey:null;
+  if(grade==='again') return base;
+  if(e && lapses>=2){ base.ivl=Math.min(base.ivl,3); base.ease=Math.max(1.45,base.ease-.05); }
+  if(table && key){ const m=masteryOf(table,key); if(typeof m==='number' && m<50) base.ivl=Math.min(base.ivl,2); }
+  return base;
+}
+function beginSrs(){
+  const t=state.table,m=LS.srs[t]||{};
+  const due=srsDueList(t).sort((a,b)=>{const ma=masteryOf(t,a.k);const mb=masteryOf(t,b.k);const wa=ma===null?50:ma,wb=mb===null?50:mb;return wa-wb || (m[a.k].due<m[b.k].due?-1:1);});
+  const fresh=shuffle(srsNewList(t)).slice(0,10);
+  const queue=due.concat(fresh).map(c=>({c,retry:false}));
+  state.srs={queue,flipped:false,total:queue.length,done:0,again:0,dueCount:due.length,newCount:fresh.length,currentKey:null};
+  state.screen='srs'; render();
+}
+/* =====================================================================
+   V2 — CHATBOT: ngân hàng câu trả lời có cấp độ, không tự nhảy level
+===================================================================== */
+const CHAT_BANK_V2={
+ N5:[
+  {keys:/\b(hello|hi|xin chao|こんにちは|こんばんは|おはよう)\b/i,jp:'こんにちは！元気ですか。',r:'konnichiwa! genki desu ka.',m:'Xin chào! Bạn khỏe không?'},
+  {keys:/(ありがとう|arigatou|cam on)/i,jp:'どういたしまして。',r:'dou itashimashite.',m:'Không có gì.'},
+  {keys:/(すみません|ごめん|xin loi)/i,jp:'大丈夫です。',r:'daijoubu desu.',m:'Không sao.'},
+  {keys:/(名前|namae|ten)/i,jp:'私は日本語の練習ボットです。',r:'watashi wa nihongo no renshuu botto desu.',m:'Mình là bot luyện tiếng Nhật.'},
+  {keys:/(好き|suki|thich)/i,jp:'何が好きですか。',r:'nani ga suki desu ka.',m:'Bạn thích gì?'},
+  {keys:/(勉強|benkyou|hoc)/i,jp:'日本語を勉強しています。',r:'nihongo o benkyou shite imasu.',m:'Mình đang học tiếng Nhật.'},
+  {keys:/(何|nani|gì|gi)/i,jp:'今日は何をしますか。',r:'kyou wa nani o shimasu ka.',m:'Hôm nay bạn làm gì?'},
+  {keys:/(どこ|doko|o dau)/i,jp:'私はここにいます。',r:'watashi wa koko ni imasu.',m:'Mình ở đây.'}
+ ],
+ N4:[
+  {keys:/(予定|yotei|du dinh|dự định)/i,jp:'週末は何をする予定ですか。',r:'shuumatsu wa nani o suru yotei desu ka.',m:'Cuối tuần bạn dự định làm gì?'},
+  {keys:/(理由|riyuu|ly do)/i,jp:'どうして日本語を勉強していますか。',r:'doushite nihongo o benkyou shite imasu ka.',m:'Vì sao bạn học tiếng Nhật?'},
+  {keys:/(最近|saikin|gan day|gần đây)/i,jp:'最近、何をしていますか。',r:'saikin, nani o shite imasu ka.',m:'Gần đây bạn đang làm gì?'}
+ ],
+ N3:[
+  {keys:/(毎日|mainichi|moi ngay|mỗi ngày)/i,jp:'日本語を上達させるために、毎日何をしていますか。',r:'nihongo o joutatsu saseru tame ni, mainichi nani o shite imasu ka.',m:'Để cải thiện tiếng Nhật, mỗi ngày bạn làm gì?'},
+  {keys:/(意見|iken|y kien|ý kiến)/i,jp:'日本語を勉強するとき、何が大切だと思いますか。',r:'nihongo o benkyou suru toki, nani ga taisetsu da to omoimasu ka.',m:'Bạn nghĩ điều gì quan trọng khi học tiếng Nhật?'}
+ ],
+ N2:[
+  {keys:/(難しい|muzukashii|kho|khó)/i,jp:'日本語を学ぶうえで、最も難しいと感じることは何ですか。',r:'nihongo o manabu ue de, mottomo muzukashii to kanjiru koto wa nan desu ka.',m:'Điều gì bạn cảm thấy khó nhất khi học tiếng Nhật?'},
+  {keys:/(大切|taisetsu|quan trong|quan trọng)/i,jp:'外国語を学ぶうえで、継続することがなぜ大切だと思いますか。',r:'gaikokugo o manabu ue de, keizoku suru koto ga naze taisetsu da to omoimasu ka.',m:'Bạn nghĩ vì sao sự duy trì lại quan trọng khi học ngoại ngữ?'}
+ ],
+ N1:[
+  {keys:/(考え|kangae|suy nghi|suy nghĩ)/i,jp:'日本語を学ぶ上で、最も重要だと思うことは何ですか。',r:'nihongo o manabu ue de, mottomo juuyou da to omou koto wa nan desu ka.',m:'Theo bạn điều quan trọng nhất khi học tiếng Nhật là gì?'},
+  {keys:/(社会|shakai|xa hoi|xã hội)/i,jp:'言語を学ぶことは、社会や文化への理解にどのような影響を与えると思いますか。',r:'gengo o manabu koto wa, shakai ya bunka e no rikai ni dono you na eikyou o ataeru to omoimasu ka.',m:'Bạn nghĩ học ngôn ngữ ảnh hưởng thế nào đến hiểu biết về xã hội và văn hóa?'}
+ ]
+};
+function chatBotReply(input){
+ const lv=activeLevelV2(),bank=CHAT_BANK_V2[lv]||CHAT_BANK_V2.N5,raw=String(input||'').trim();
+ for(const item of bank){if(item.keys.test(raw))return item;}
+ return lv==='N5'?{jp:'わかりました。もう一度言ってください。',r:'wakarimashita. mou ichido itte kudasai.',m:'Mình hiểu rồi. Hãy nói lại một lần nữa.'}:{jp:'そうなんですね。もう少し詳しく話してみませんか。',r:'sou nan desu ne. mou sukoshi kuwashiku hanashite mimasen ka.',m:'Vậy à. Bạn thử nói chi tiết hơn nhé.'};
+}
+function renderChatbot(){const c=state.chat,hide=!(!LS.jpAssist||levelRankV2(activeLevelV2())<2);const bubbles=c.history.map(h=>`<div class="dlg-row ${h.who==='me'?'right':'left'}"><div class="dlg-bubble"><div class="dlg-speaker">${h.who==='me'?'👤 BẠN':'🤖 BOT'}</div>${h.who==='me'?`<div class="chat-me-text">${esc(h.jp)}</div>`:jpDisplay(h.jp,h.r,'chat-jp')}${h.m?(hide&&h.who==='bot'?`<div class="dlg-meaning"><button class="reveal-meaning" onclick="alert(${JSON.stringify(h.m)})">Hiện nghĩa tiếng Việt</button></div>`:`<div class="dlg-meaning">${esc(h.m)}</div>`):''}</div>${h.who==='bot'?`<button class="mini-speak" onclick="speak('${esc(h.jp).replace(/'/g,"\\'")}')">🔊</button>`:''}</div>`).join('');app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="goHome()">←</button><h2 class="section-title">🤖 Bot hội thoại · ${esc(activeLevelV2())}</h2></div><p class="section-sub">Bot dùng <b>ngân hàng câu trả lời theo cấp đang học</b>, không tự nhảy lên level cao hơn. Gõ tiếng Nhật/romanji hoặc dùng micro.</p>${hide?'<div class="ja-assist">🇯🇵 Đang giảm gợi ý tiếng Việt vì bạn đang học từ N4 trở lên.</div>':''}<div class="chat-wrap">${bubbles}</div>${c.note?`<div class="feedback show ok" style="margin:8px 0;">${esc(c.note)}</div>`:''}<div class="quickrow">${(CHAT_BANK_V2[activeLevelV2()]||CHAT_BANK_V2.N5).slice(0,3).map(x=>`<button class="chip-btn" onclick="chatQuick(${JSON.stringify(x.jp)})">${esc(x.jp)}</button>`).join('')}</div><div class="answer-row"><input class="answer-input" id="chatInput" placeholder="Gõ tiếng Nhật hoặc romanji…" autocomplete="off" onkeydown="if(event.key==='Enter')chatSend()"><button class="check-btn" onclick="chatSend()">Gửi</button><button class="check-btn" style="background:var(--hanko);" onclick="chatMic()">🎤</button></div><button class="secondary-btn" onclick="chatReset()">🔄 Bắt đầu lại đoạn chat</button>`;}
+
+
+function srsGrade(g){
+  const S=state.srs,it=S.queue.shift(),c=it.c;S.currentKey=c.k;S.flipped=false;
+  if(!it.retry){srsApply(state.table,c.k,g);S.done++;trackActivity(g!=='again');updateMastery(state.table,c.k,{again:0,good:80,easy:100}[g]);}
+  if(g==='again'){S.again++;S.queue.splice(Math.min(3,S.queue.length),0,{c,retry:true});}
+  S.currentKey=null;render();
+}
+
+/* Chỉ cho media dùng nội dung không cao hơn cấp đang học. */
+function listeningItemsAvailableV2(){return LISTENING_ITEMS_V2.filter(x=>canUseLevelV2(x.level));}
+function shadowItemsAvailableV2(){return SHADOWING_ITEMS_V2.filter(x=>canUseLevelV2(x.level));}
+const _openListeningV2Old=openListeningV2;
+function openListeningV2(){const items=listeningItemsAvailableV2();state.listen={items,idx:0,mode:'meaning',picked:null,typed:'',correct:0,done:false,rateIndex:1};state.screen='listening';render();}
+function listenCurrentV2(){return state.listen.items[state.listen.idx];}
+function listenNextV2(){const q=state.listen;q.idx++;q.mode=q.mode==='meaning'?'type':'meaning';q.picked=null;q.typed='';q.done=false;if(q.idx>=q.items.length){q.idx=0;}render();}
+const _openShadowingV2Old=openShadowingV2;
+function openShadowingV2(){const items=shadowItemsAvailableV2();state.shadow={items,idx:0,status:'idle',score:null,said:''};state.screen='shadowing';render();}
+function shadowCurrentV2(){return state.shadow.items[state.shadow.idx];}
+const _openReadingV2Old=openReadingV2;
+function openReadingV2(i){const p=READING_PASSAGES_V2[i];if(!p)return;if(!canUseLevelV2(p.level)){alert('Bài này thuộc '+p.level+'. Hãy chọn cấp học phù hợp ở Cài đặt/Lộ trình.');return;}state.reading={pi:i,qi:0,picked:null,correct:0,done:false};state.screen='readingQuiz';render();}
+
+/* =====================================================================
+   V2 — ROLEPLAY HIDE VIETNAMESE AT HIGHER LEVELS
+===================================================================== */
+function renderRoleplay(){
+  const rp=state.rp, sc=ROLEPLAYS[rp.si], hideMeaning=LS.jpAssist&&levelRankV2(activeLevelV2())>=2;
+  const meaningHtml=(m)=>hideMeaning?`<button class="reveal-meaning" onclick="alert(${JSON.stringify(m||'')})">Hiện nghĩa tiếng Việt</button>`:`<div class="dlg-meaning">${esc(m||'')}</div>`;
+  const bubbles=rp.history.map(h=>`<div class="dlg-row ${h.who==='bot'?'left':'right'}"><div class="dlg-bubble">
+      <div class="dlg-speaker">${h.who==='bot'?'🤖 BOT':'👤 BẠN'}</div>${jpDisplay(h.jp,h.r,'dlg-jp')}
+      ${rp.hint?meaningHtml(h.m):''}</div><button class="mini-speak" onclick="speak(${JSON.stringify(h.jp)})">🔊</button></div>`).join('');
+  let controls;
+  if(rp.done){
+    controls=`<div class="feedback show ok"><b>Hoàn thành tình huống! 🎉</b> Số lần chọn chưa hợp: ${rp.mistakes}.</div>
+      <button class="primary-btn" style="margin-top:12px;" onclick="startRoleplay(${rp.si})">Chơi lại</button>
+      <button class="secondary-btn" onclick="openRoleplayList()">Chọn tình huống khác</button>`;
+  }else{
+    controls=`${rp.note?`<div class="feedback show ${rp.note.startsWith('🎙')?'ok':'bad'}" style="margin:8px 0;">${esc(rp.note)}</div>`:''}
+      <div class="rp-chips">${rp.opts.map((o,i)=>`<button class="rp-chip" onclick="rpChoose(${i})">${jpDisplay(o.jp,o.r,'rp-jp')}${rp.hint?(hideMeaning?`<span class="rp-sub"><button class="reveal-meaning" onclick="event.stopPropagation();alert(${JSON.stringify(o.m)})">Hiện nghĩa</button></span>`:`<span class="rp-sub">${esc(o.m)}</span>`):''}</button>`).join('')}</div>
+      <div class="answer-row"><input class="answer-input" id="rpInput" type="text" placeholder="Hoặc tự gõ romanji / tiếng Nhật…" autocomplete="off" autocapitalize="off" onkeydown="if(event.key==='Enter')rpSubmitText()"><button class="check-btn" onclick="rpSubmitText()">Gửi</button><button class="check-btn" style="background:var(--hanko);" onclick="rpMic()" title="Nói bằng micro">🎤</button></div>`;
+  }
+  app.innerHTML=`<div class="backrow"><button class="backbtn" onclick="openRoleplayList()">←</button><h2 class="section-title">${sc.icon} ${esc(sc.title)} · ${esc(activeLevelV2())}</h2><button class="chip-btn" style="margin-left:auto;" onclick="rpToggleHint()">${rp.hint?'Ẩn gợi ý':'Hiện gợi ý'}</button></div>
+    <p class="section-sub">${esc(sc.intro)}</p>
+    ${hideMeaning?'<div class="ja-assist">🇯🇵 Cấp N4+: gợi ý tiếng Việt đang được giảm. Bấm “Hiện nghĩa” khi cần.</div>':''}
+    <div class="jp-mode-note">Chế độ chữ: <b>${esc(displayModeLabel(jpDisplayMode()))}</b>.</div>
+    <div class="dialogue-thread" style="margin:10px 0;">${bubbles}</div>${controls}`;
+}
+
+/* =====================================================================
+   V2 — DISPATCHER cuối file (để các màn hình mới hoạt động)
+===================================================================== */
+function render(){
+  ensureExtendedLS();
+  if(state.screen==='home') return renderHome();
+  if(state.screen==='tableMenu') return renderTableMenu();
+  if(state.screen==='learnGrid') return renderLearnGrid();
+  if(state.screen==='flashcards') return renderFlashcards();
+  if(state.screen==='vocab') return renderVocab();
+  if(state.screen==='reviewPicker') return renderReviewPicker();
+  if(state.screen==='quiz') return renderQuiz();
+  if(state.screen==='result') return renderResult();
+  if(state.screen==='flip') return renderFlip();
+  if(state.screen==='match') return renderMatch();
+  if(state.screen==='settings') return renderSettings();
+  if(state.screen==='lookup') return renderLookup();
+  if(state.screen==='dialogueList') return renderDialogueList();
+  if(state.screen==='dialogueView') return renderDialogueView();
+  if(state.screen==='srs') return renderSrs();
+  if(state.screen==='grammarList') return renderGrammarList();
+  if(state.screen==='grammarView') return renderGrammarView();
+  if(state.screen==='grammarQuiz') return renderGrammarQuiz();
+  if(state.screen==='grammarAppQuiz') return renderGrammarAppQuiz();
+  if(state.screen==='chatbot') return renderChatbot();
+  if(state.screen==='customList') return renderCustomList();
+  if(state.screen==='customEdit') return renderCustomEdit();
+  if(state.screen==='roleplayList') return renderRoleplayList();
+  if(state.screen==='roleplay') return renderRoleplay();
+  if(state.screen==='journey') return renderJourney();
+  if(state.screen==='course') return renderCourseV2();
+  if(state.screen==='courseLesson') return renderCourseLessonV2();
+  if(state.screen==='grammarAppPicker') return renderGrammarAppPickerV2();
+  if(state.screen==='errors') return renderErrorsV2();
+  if(state.screen==='errorPractice') return renderErrorPracticeV2();
+  if(state.screen==='listening') return renderListeningV2();
+  if(state.screen==='shadowing') return renderShadowingV2();
+  if(state.screen==='readingList') return renderReadingListV2();
+  if(state.screen==='readingQuiz') return renderReadingQuizV2();
+  if(state.screen==='games') return renderGamesV2();
+  if(state.screen==='kanaGame') return renderKanaGameV2();
+  if(state.screen==='speedGame') return renderSpeedGameV2();
+  if(state.screen==='quest') return renderQuestV2();
+}
+
+/* Ghi nhớ người học đã học xong ví dụ → tự coi là đã học cấu trúc */
+const _gpPickV2Old=gpPick;
+function gpPick(j,opt){
+  const g=GRAMMAR[state.gp.i],e=g.ex[j],gp=state.gp;if(gp.ok[j])return;const ok=opt===e.ans;trackActivity(ok);if(ok){gp.ok[j]=true;speak(e.jp);if(!LS.grammar.learned.includes(g.id)){LS.grammar.learned.push(g.id);saveLS();}}else{gp.wrong[j]=(gp.wrong[j]||[]).concat(opt);logErrorV2({source:'grammar',prompt:e.jp,correct:e.ans,given:opt});}if(g.ex.every((_,k)=>gp.ok[k])&&!LS.grammar.done.includes(g.id)){LS.grammar.done.push(g.id);if(!LS.grammar.learned.includes(g.id))LS.grammar.learned.push(g.id);saveLS();}render();
+}
+const _gqPickV2Old=gqPick;
+function gqPick(o){const q=state.gq;if(q.picked!==null)return;const it=q.items[q.idx],e=GRAMMAR[it.pi].ex[it.ei];q.picked=o;const ok=o===e.ans;if(ok)q.correct++;trackActivity(ok);if(!ok)logErrorV2({source:'grammar-quiz',prompt:e.jp,correct:e.ans,given:o});render();}
+
 render();
 </script>
 </body>
